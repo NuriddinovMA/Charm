@@ -5,9 +5,9 @@ import lift_func as lf
 
 Args = {
 	'contact_path':'','contact_files':'','cov_files':'','dist_files':'',
-	'genome_path':'','chrom_orders':'','chrms':[],
+	'genome_path':'','chrom_orders':'','chosen_chroms':[],'random':False,
 	'out_path':'','out_name':'','resolution':10000, 'regression':0,
-	'contact_coef':{}, 'coef_resolution':False,
+	'pointview':False,'contact_coef':{}, 'coef_resolution':False,
 	'log_file':False
 }
 
@@ -17,13 +17,21 @@ for line in lines:
 	try:
 		parse = parse[0].strip().split()
 		key = parse[0]
-		if key == 'chrms': args = parse[2],parse[3]
+		if key == 'chosen_chroms': args = parse[2],parse[3]
+		elif key == 'pointview': args = parse[2:]
 		else: args = parse[2]
 		Args[key] = args
 	except IndexError: pass
 Args['resolution'] = int(Args['resolution'])
 Args['regression'] = int(Args['regression'])
 Args['contact_coef'] = lf.boolean(Args['contact_coef'])
+random = lf.boolean(Args['random'])
+Args['pointview'] = lf.boolean(Args['pointview'])
+if Args['pointview']:
+	Args['pointview'] = Args['pointview'][0],int(Args['pointview'][1])/Args['resolution'],int(Args['pointview'][2])/Args['resolution']
+	Args['chosen_chroms'] = Args['pointview'][0],Args['pointview'][0]
+	
+
 Args['log_file'] = lf.boolean(Args['log_file'])
 try: 
 	Args['coef_resolution'] = int(Args['coef_resolution'])/2
@@ -37,7 +45,7 @@ for key in Args: print key, ' = ', Args[key]
 
 try: os.makedirs(Args['out_path'])
 except OSError: pass
-suffix = '%s.%s' % (Args['contact_files'],Args['regression']/1000000)
+suffix = '%s.%s' % (Args['contact_files'],Args['regression'])
 try: os.makedirs(Args['out_path']+'/'+suffix)
 except OSError: pass
 try: os.makedirs(Args['out_path']+'/'+suffix +'/' + Args['out_name'])
@@ -81,12 +89,12 @@ for i in range(lnf):
 	fname = '%s/%s/%s' % (Args['contact_path'],Args['contact_files'],files[i])
 	parse = files[i].split('.')
 	chrm1, chrm2 = parse[-3], parse[-2]
-	if (chrm1, chrm2) == Args['chrms']:
+	if (chrm1, chrm2) == Args['chosen_chroms']:
 		lf.printlog('\tstart randomize %s, %i/%s' %(files[i],(i+1),lnf), Args['log_file'] )
 		out_name = '%s/%s/%s/%s.%s.%s.%s.pre' % (Args['out_path'],suffix,Args['out_name'],suffix,Args['out_name'],chrm1,chrm2)
 		lf.iContactRegression( fname, covHash, l2i, c2s, Args['resolution'], out_name,
-			scoring=psList, regression=Args['regression'],
-			contact_coef=contactCoef, rescale=rescale, log=Args['log_file']
+			scoring=psList, regression=Args['regression'],random=Args['random'],
+			pointview=Args['pointview'],contact_coef=contactCoef, rescale=rescale, log=Args['log_file']
 			)
 		elp = timeit.default_timer() - start_time
 		lf.printlog('\t...end randomize %s, %.2f' %(files[i],elp), Args['log_file'] )

@@ -8,9 +8,9 @@ print 'Step 1: Sites Reading...'
 start_time = timeit.default_timer()
 
 Args = {
-	'contact_path':'','mutant_contacts':'','wt_hic_pre1':'','wt_hic_pre2':'',
-	'chrom_path':'','chrom_sizes':'', 'resolution':'',
-	'out_path':'','out_name':'','path_to_juicer':'', 'format':'short'
+	'mutant_contacts':'','chosen_chroms':False,'wt1_contacts':False,'wt2_contacts':False,
+	'chrom_sizes':'', 'resolution':'','out_resolution':1,'pointview': False,'method':'summ',
+	'out_path':'','out_name':'','path_to_juicer':'', 'format':'hic'
 	}
 
 lines = sys.stdin.readlines()
@@ -19,19 +19,24 @@ for line in lines:
 	try:
 		key = parse[0].strip().split()[0]
 		args = parse[0].strip().split()[2:]
+		if (key in ['pointview','chosen_chroms']) == False: Args[key] = args[0]
+		else: Args[key] = args
+	except KeyError: pass
 	except IndexError: pass
-	else:
-		try: Args[key] = args[0]
-		except KeyError: pass
 
+Args['pointview'] = lf.boolean(Args['pointview'])
+Args['chosen_chroms'] = lf.boolean(Args['chosen_chroms'])
 for key in Args.keys(): print '\t%s =' % key, Args[key]
 command = "java -jar %s pre" % Args['path_to_juicer']
+command_norm = "java -jar %s addNorm" % Args['path_to_juicer']
 print '\tcommand', command
 
 RH = {
+	2000: "2048000,1024000,512000,256000,128000,64000,32000,16000,8000,4000,2000",
+	4000: "2048000,1024000,512000,256000,128000,64000,32000,16000,8000,4000",
 	5000: "1000000,500000,250000,100000,50000,25000,10000,5000",
 	10000: "1000000,500000,250000,100000,50000,20000,10000",
-	1: "1000000,500000,250000,100000,50000,20000,10000",
+	1: "1000000,500000,250000,100000,50000,25000,10000",
 	20000: "1000000,500000,250000,100000,40000,20000",
 	25000: "1000000,500000,250000,100000,50000,25000",
 	40000: "1000000,500000,250000,80000,40000",
@@ -40,23 +45,37 @@ RH = {
 elp = timeit.default_timer() - start_time
 print 'Step 2: Analyzing', elp
 
-mut_dirs = '%s/%s' % (Args['contact_path'],Args['mutant_contacts'])
 mut_hic_pre = '%s/%s' % (Args['out_path'],Args['out_name'])
-G = '%s/%s' % (Args['chrom_path'],Args['chrom_sizes'])
+method = Args['method']
+os.system('mkdir ' + Args['out_path'])
+os.system('chmod 775 ' + Args['out_path'])
+G = Args['chrom_sizes']
 Order = lf.ChromIndexing(G)
 resolution = int(Args['resolution'])
+out_resolution = int(Args['out_resolution'])
+if Args['pointview']: Args['pointview'] = Args['pointview'][0],int(Args['pointview'][1]),int(Args['pointview'][2])
 elp = timeit.default_timer() - start_time
-print '\tstart generate mutant pre %s, %.2f' % (mut_hic_pre, elp)
-lf.JuiceboxPre(mut_dirs,resolution,Args['out_path'],Args['out_name'])
-lf.SummingPre(mut_hic_pre,Args['wt_hic_pre1'],Args['wt_hic_pre2'],Args['out_path'],Args['out_name'],
-	order=Order,format=Args['format'])
+
+print '\tstart generate pre %s, %.2f' % (mut_hic_pre, elp)
+
+if Args['pointview']:
+	lf.SummingPointview(Args['mutant_contacts'],Args['wt1_contacts'],Args['wt2_contacts'],Args['pointview'],Args['out_path'],Args['out_name'],
+		out_res=out_resolution, order=Order,format=Args['format'])
+else:
+	lf.SummingPre(Args['mutant_contacts'],Args['wt1_contacts'],Args['wt2_contacts'],Args['out_path'],Args['out_name'],
+		out_res=out_resolution, order=Order,format=Args['format'])
+		
 os.system('rm -r %s/%s' % (Args['out_path'],Args['out_name'] ))
 os.system('rm -r %s/%s.summ' % (Args['out_path'],Args['out_name'] ))
 print '\tpre writing', elp
-R = RH[resolution]
-F = '%s/%s.summ.pre.short' % (Args['out_path'],Args['out_name'] )
-# O = '%s/%s.summ.hic' % (Args['out_path'],Args['out_name'] )
-# os.system( command + " " + F + " " + O + " " + G + " " + "-r" + " " + R + " "+ "-n")
+if out_resolution > resolution: R = RH[out_resolution ]
+else: R = RH[out_resolution ]
+if Args['format'] == 'hic': 
+	F = '%s/%s.%s.pre' % (Args['out_path'],Args['out_name'], method )
+	O = '%s/%s.%s.hic' % (Args['out_path'],Args['out_name'], method )
+	os.system( command + " " + F + " " + O + " " + G + " " + "-r" + " " + R)
+else: F = '%s/%s.pre.short' % (Args['out_path'],Args['out_name'] )
+os.system('rm ' + F + '.gz')
 os.system('gzip ' + F)
-os.system('chmod 755 ' + F + '.gz')
+os.system('chmod 775 ' + F + '.gz')
 print '\t%s end hic generation %.2f' % (file, elp)

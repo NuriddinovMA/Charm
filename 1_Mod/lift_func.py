@@ -352,19 +352,17 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 	y,r = -1,0
 	for k1 in mapH[c1,b1]:
 		for k2 in mapH[c2,b2]:
-			if k1[0] == k2[0] or nullc == False: real = True
-			else: real = False
-			if real:
-				r = 1
+			if k1[0] == k2[0] or nullc == False: real = 1
+			else: real = 0
+			if real == 1:
 				if (k1+k2) in contH:
 					lifted_c += _recalculateContact(contH[k1+k2], mapH[c1,b1][k1], mapH[c2,b2][k2])
 				elif (k2+k1) in contH:
 					lifted_c += _recalculateContact(contH[k2+k1], mapH[c1,b1][k1], mapH[c2,b2][k2])
-				else: real = False
-			if real == False and nullc:
-				r = 0
+				else: real = 0
+			if real == 0 and nullc:
 				pc,poe,mcov = _predictContacts(k1+k2, covH, meanH, res, params_ec[1:])# nullc, ab_cont, ab_cov, ab_res
-				lifted_c += _recalculateContact([pc,poe,mcov], mapH[c1,b1][k1],  mapH[c2,b2][k2])
+				lifted_c += _recalculateContact([pc,poe,mcov], mapH[c1,b1][k1], mapH[c2,b2][k2])
 			else: pass
 	data, norm, balance = 0, -1.,-1.
 	try: meanH[real_dist]
@@ -377,7 +375,7 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 		else: pass
 		cc = round(lifted_c[data]*norm/balance,8)
 	else: cc = 0
-	x = c1, b1, c2, b2, cc, cc/meanH[real_dist][0], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], r, meanH[real_dist][0], norm, balance
+	x = c1, b1, c2, b2, cc, cc/meanH[real_dist][0], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], real, meanH[real_dist][0], norm, balance
 	return x 
 
 def _predictContacts(coor_from, covH, meanH, res, params_pc):
@@ -474,7 +472,7 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 		scoring_coef = False
 		CoefObjCoorMP = False
 	try: coef_res = kwargs['coef_resolution']
-	except KeyError: c_res = 1
+	except KeyError: coef_res = 1
 	try: ab_cov = kwargs['coverage_ab']
 	except KeyError: ab_cov = False
 	try: ab_cont = kwargs['contact_ab']
@@ -487,16 +485,18 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	except KeyError: random = False
 	try: nullc = kwargs['null_contacts']
 	except KeyError: nullc = False
+	try: pointviews = kwargs['pointviews']
+	except KeyError: pointviews = False
 	
 	DifferContact = {}
 	start_time = timeit.default_timer()
 	printlog('\tstart liftovering', logname)
 	elp = timeit.default_timer() - start_time
 	printlog('\taccount number of interactions and contacts, %.2f' % elp, logname)
-	Keys = ObjCoorMP.keys()
-	Keys.sort()
-	lnk = len(Keys)
-	total,num = (lnk+1)*lnk/2,0,
+	aKeys = ObjCoorMP.keys()
+	aKeys.sort()
+	alnk = len(aKeys)
+	total,num,bKeys,blnk,type = (alnk+1)*alnk/2,0,aKeys,alnk,1
 	if CoefObjCoorMP:
 		CoefKeys = CoefObjCoorMP.keys()
 		CoefKeys.sort()
@@ -518,56 +518,61 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	
 	params_model = model, nullc, ab_cont, ab_cov, ab_res
 	params_random = regression, allCon, random
+	pKeys = set([])
+	if pointviews: 
+		s = ''
+		for p in pointviews: s += '%s %i %i ' % (p[0],p[1]*coef_res,(p[1]+1)*coef_res)
+		printlog('\tPointviews: %s'% s, logname) 
+	else: printlog('\tNo pointviews', logname) 
 	
 	if CoefObjCoorMP:
 		coef_cl = []
-		printlog('\tstart processing %i real and %i potential interaction by Scaled Simulation' % (len(contact_coef),total), logname)
+		printlog('\tstart processing %i real and %i potential interaction by model rescaling' % (len(contact_coef),total), logname)
 		for i in range(coef_lnk):
 			for j in range(i,coef_lnk):
 				num += 1
 				key1,key2 = CoefKeys[i],CoefKeys[j]
-				coef_cl.append( _enumerateContacts(key1+key2, contact_coef, cov_coef, scoring_coef, CoefObjCoorMP, coef_res, params_model ) )#, model, nullc, ab_cont, ab_cov, ab_res) )
-				if num % 2000000 == 0:
-					try: coef_cl = _randomizing(coef_cl, regression, allCon, random)
-					except IndexError: print 'iLOF-1, randomize, IndexError:', coef_cl
-					cl = _rescaleContacts(coef_cl, coef_res, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_random, params_model)#, model, nullc, ab_cont, ab_cov, ab_res, regression, random)
-					# hash = {}
-					# for c in range(len(cl)-1,-1,-1):
-						# try: hash[cl[c][0],cl[c][1],cl[c][2],cl[c][3]][0] += cl[c][4]
-						# except KeyError: hash[cl[c][0],cl[c][1],cl[c][2],cl[c][3]] = cl[c][4:]
-						# del cl[c]
-					# del cl
-					# for c in hash.keys():
-						# print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], hash[c][0], hash[c][1], hash[c][2], hash[c][3], hash[c][4], hash[c][5], hash[c][6], hash[c][7], hash[c][8], hash[c][9])
-					for c in cl:
-						print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
-					coef_cl,cl,hash = [],[],{}
-					elp = timeit.default_timer() - start_time
-					printlog('\t\t %.2f from %i interactions are processed, %.2fs.' % (100.*num/total,total,elp), logname)
+				if set(CoefObjCoorMP[key1].keys()) & set(pointviews): pKeys.add(key1)
+				elif set(CoefObjCoorMP[key2].keys()) & set(pointviews): pKeys.add(key2)
+				else:
+					coef_cl.append( _enumerateContacts(key1+key2, contact_coef, cov_coef, scoring_coef, CoefObjCoorMP, coef_res, params_model ) )#, model, nullc, ab_cont, ab_cov, ab_res) )
+					if num % 2000000 == 0:
+						try: coef_cl = _randomizing(coef_cl, regression, allCon, random)
+						except IndexError: print 'iLOF-1, randomize, IndexError:', coef_cl
+						cl = _rescaleContacts(coef_cl, coef_res, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_random, params_model)#, model, nullc, ab_cont, ab_cov, ab_res, regression, random)
+						for c in cl:
+							print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
+						coef_cl,cl,hash = [],[],{}
+						elp = timeit.default_timer() - start_time
+						printlog('\t\t %.2f from %i interactions are processed, %.2fs.' % (100.*num/total,total,elp), logname)
 		if len(coef_cl) != 0:
 			try: coef_cl = _randomizing(coef_cl, regression, allCon, random)
 			except IndexError: print 'iLOF-1, randomize, IndexError:', coef_cl
 			cl = _rescaleContacts(coef_cl, coef_res, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_random, params_model)#, model, nullc, ab_cont, ab_cov, ab_res, regression, random)
-			# hash = {}
-			# for c in range(len(cl)-1,-1,-1):
-				# try: hash[cl[c][0],cl[c][1],cl[c][2],cl[c][3]][0] += cl[c][4]
-				# except KeyError: hash[cl[c][0],cl[c][1],cl[c][2],cl[c][3]] = cl[c][4:]
-				# del cl[c]
-			# del cl
-			# for c in hash.keys():
-				# print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], hash[c][0], hash[c][1], hash[c][2], hash[c][3], hash[c][4], hash[c][5], hash[c][6], hash[c][7], hash[c][8], hash[c][9])
 			for c in cl:
 				print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
 			coef_cl,cl,hash = [],[],{}
 			elp = timeit.default_timer() - start_time
 			printlog('\t\t all %i interactions are processed, %.2fs.' % (total,elp), logname)
-	else:
+		bKeys = []
+		for key in pKeys:
+			for i in range(key[1]*coef_res//resolution,(key[1]+1)*coef_res//resolution): bKeys.append((key[0],i))
+		blnk,type = len(bKeys),0
+		bKeys.sort()
+		aKeys = list(set(aKeys) - set(bKeys))
+		aKeys.sort()
+		alnk = len(aKeys)
+		aKeys += bKeys
+	if CoefObjCoorMP == False or pKeys:
+		if pKeys: printlog('\tPointview edges modelling', logname)
+		else: printlog('\tModelling without rescaling', logname)
 		cl = []
 		printlog('\tstart processing %i real and %i potential interaction' % (len(ContactsHash),total), logname)
-		for i in range(lnk):
-			for j in range(i,lnk):
+		for i in range(alnk+blnk*(1-type)):
+			j0 = max((type*i),(i-alnk))
+			for j in range(j0,blnk):
 				num += 1
-				key1,key2 = Keys[i],Keys[j]
+				key1,key2 = aKeys[i],bKeys[j]
 				cl.append( _enumerateContacts(key1+key2, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_model) )#, model, nullc, ab_cont, ab_cov, ab_res))
 				if num % 2000000 == 0:
 					try: cl = _randomizing(cl, regression, allCon, random)
@@ -624,8 +629,9 @@ def _easyRescale(high_cl, high_res, covH, meanH, res, params_rand):
 					else: dist = abs(ri-rj)
 					try: mean_con = meanH[dist][0]
 					except KeyError: mean_con =  meanH[max(meanH.keys())][0]
-					_clh.append((c1,ri,c2,rj,1.,1.,covH[c1,ri]*covH[c2,rj],mean_con))
+					_clh.append((c1,ri,c2,rj,1.,1.,( covH[c1,ri]*covH[c2,rj]/(covH[c1,ri]+covH[c2,rj]) ),mean_con))
 				except KeyError: pass
+				except ZeroDivisionError: pass
 		try:
 			if random:
 				_clh = np.array(_clh)
@@ -638,12 +644,6 @@ def _easyRescale(high_cl, high_res, covH, meanH, res, params_rand):
 		_cl.extend(_clh)
 		_clh = []
 	del _clh
-	# hash = {}
-	# for c in range(len(_cl)-1,-1,-1):
-		# try: hash[_cl[c][0],_cl[c][1],_cl[c][2],_cl[c][3]] += _cl[c][4]
-		# except KeyError: hash[_cl[c][0],_cl[c][1],_cl[c][2],_cl[c][3]] = _cl[c][4]
-		# del _cl[c]
-	# del _cl
 	return _cl
 
 def iContactRegression(ContactHash,covHash,resolution,chroms,ChrIdxs,coef_ChrSizes,out_name,**kwargs):
@@ -740,7 +740,6 @@ def iContactRegression(ContactHash,covHash,resolution,chroms,ChrIdxs,coef_ChrSiz
 			elp = timeit.default_timer() - start_time
 			printlog('\t\tend regression %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)
 			out.close()
-			#os.system('sort -k 2n -k 4n %s -o %s' % (full_name, full_name))
 	elp = timeit.default_timer() - start_time
 	printlog('\t%i interactions are randomized, %.2fs.' % (total,elp), logname)
 
@@ -821,83 +820,6 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,out_path,out_name,**kwargs):
 	for file in files:
 		os.system( 'cat %s/%s.summ/%s >> %s/%s.summ.%s' % (out_path,out_name,file,out_path,out_name,end) )
 
-# def SummingPointview(dir_mut,dir_wt1,dir_wt2,pointview,out_path,out_name,**kwargs):
-	# try: order = kwargs['order']
-	# except KeyError: order = False
-	# try: format = kwargs['format']
-	# except KeyError: format = 'pre'
-	# try: res = kwargs['out_res']
-	# except KeyError: res = 1
-	# print pointview
-	# H,F = {},{}
-	# names = set([])
-	# files = os.listdir(dir_mut)
-	# for file in files: 
-		# parse = file.split('.')
-		# F[parse[-3],parse[-2]] = [dir_mut+'/'+file,]
-	# if dir_wt1:
-		# files = os.listdir(dir_wt1)
-		# for file in files: 
-			# parse = file.split('.')
-			# if (parse[-3],parse[-2]) in F: pass
-			# elif pointview[0] in (parse[-3],parse[-2]): F[parse[-3],parse[-2]] = [dir_wt1+'/'+file,]
-			# else: pass
-	# if dir_wt2:
-		# files = os.listdir(dir_wt2)
-		# for file in files: 
-			# parse = file.split('.')
-			# if (parse[-3],parse[-2]) in F: F[parse[-3],parse[-2]].append(dir_wt2+'/'+file)
-			# else: pass
-	# for key in F: print F[key]
-	# os.system('mkdir %s/%s.summ' % (out_path,out_name))
-	# print F
-	# for name in F.keys():
-		# print F[name]
-		# H = {}
-		# with open(F[name][0], 'r') as f: lines = f.readlines()
-		# for i in range(len(lines)-1,-1,-1):
-			# x1,c1,b1,y1,x2,c2,b2,y2,p = lines[i].split()
-			# b1,b2,p = int(b1),int(b2), float(p)
-			# if np.isnan(p): p = 0
-			# if ( c1 == pointview[0] and pointview[1] <= b1 < pointview[2] ) or ( c2 == pointview[0] and pointview[1] <= b2 < pointview[2] ):
-				# key = c1,b1//res*res,c2,b2//res*res
-				# try: H[key] += p
-				# except KeyError: H[key] = p
-			# del lines[i]
-		# if dir_wt2:
-			# with open(F[name][1], 'r') as f: lines = f.readlines()
-			# for i in range(len(lines)-1,-1,-1):
-				# x1,c1,b1,y1,x2,c2,b2,y2,p = lines[i].split()
-				# b1,b2,p = int(b1),int(b2), float(p)
-				# if np.isnan(p): p = 0
-				# if ( c1 == pointview[0] and pointview[1] <= b1 < pointview[2] ) or ( c2 == pointview[0] and pointview[1] <= b2 < pointview[2] ):
-					# key = c1,b1//res*res,c2,b2//res*res
-					# try: H[key] += p
-					# except KeyError: H[key] = p
-				# del lines[i]
-		# del F[name]
-		# Keys = H.keys()
-		# if order: 
-			# print 'order',name
-			# Keys.sort(key=lambda k:(order[k[0]],order[k[2]],k[1],k[3]))
-		# else: Keys.sort(key=lambda k:(k[0],k[2],k[1],k[3]))
-		# fname='%s/%s.summ/%s.summ.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
-		# f = open(fname,'w')
-		# if format == 'short':
-			# for key in Keys: print >> f, '%s\t%i\t%s\t%i\t%.4f' % (key[0],key[1],key[2],key[3],H[key])
-		# else:
-			# for key in Keys: print >> f, '0\t%s\t%i\t0\t1\t%s\t%i\t1\t%.4f' % (key[0],key[1],key[2],key[3],H[key])
-		# f.close()
-	# files = os.listdir('%s/%s.summ' % (out_path,out_name))
-	# if order: files.sort(key=lambda k: (order[k.split('.')[-3]],order[k.split('.')[-2]]))
-	# else: files.sort(key=lambda k: k.split('.')[-3:-1])
-	# if format == 'short': end = 'pre.short'
-	# else: end = 'pre'
-	# f = open('%s/%s.summ.%s' % (out_path,out_name,end),'w')
-	# f.close()
-	# for file in files:
-		# os.system( 'cat %s/%s.summ/%s >> %s/%s.summ.%s' % (out_path,out_name,file,out_path,out_name,end) )
-	
 def AddNormVector(path,Rlist,hic,norm):
 	parse = Rlist.split(',')
 	f = open(hic+'.norm','w')
@@ -1085,128 +1007,3 @@ def net2pre(parsedNet,out,**kwargs):
 
 	for i in markPoints: print >> f3,'%s\t%i\t%i\t%s\t%i\t%i\t%i\t%s' % (i[0],i[1],i[2],i[3],i[4],i[5],i[6],i[7])
 	f3.close()
-	
-'''
-def iPointviewContact(ContactsHash, covHash, ObjCoorMP, ChrIdxs, pointviews, out_name, **kwargs):
-	try: logname = kwargs['log']
-	except KeyError: logname = False
-	try: scoring = kwargs['scoring']
-	except KeyError: scoring = False
-	try: coef = kwargs['contact_coef']
-	except KeyError: 
-		coef = False
-		rescale = 1,1
-	try: rescale = kwargs['rescale']
-	except KeyError: 
-		rescale = 1,1
-		coef = False
-	try: model = kwargs['model']
-	except KeyError: model = 'easy'
-	try: random = kwargs['random']
-	except KeyError: random = False
-	try: predict = kwargs['predict']
-	except KeyError: predict = False
-
-	DifferContact = {}
-	start_time = timeit.default_timer()
-	printlog('\tstart liftovering', logname)
-	if model == 'oe': data = 1
-	else: data = 0
-	elp = timeit.default_timer() - start_time
-	printlog('\taccount number of interactions and contacts, %.2f' % elp, logname)
-	Keys = ObjCoorMP.keys()
-	Keys.sort()
-	lnk = len(Keys)
-	total,num,S,cl = (lnk+1)*lnk/2,0,covHash['all'],[]
-	x = int(total/2000000000+1)
-	step = int(total/(100*x))
-	if total <= 20000000: step = total
-	try: regression = kwargs['regression']
-	except KeyError: regression = S
-	if regression == 0: regression = S
-	elp = timeit.default_timer() - start_time
-	printlog('\tmodel %s' % model, logname)
-	printlog('\trandomize %s' % random, logname)
-	if coef: printlog('\tadditional coef reading with rescale %i %i' % (rescale[0],rescale[1]), logname)
-	else: printlog('\tno additional coef reading', logname)
-	if regression != S: printlog('\t%i contacts are regressed to %i, %.4f, %.2f' % (S,regression, 1.*regression/S,elp), logname)
-	else: printlog('\tno regression, %.2f' % (elp), logname)
-	printlog('\tstart processing %i real and %i potential interaction' % (len(ContactsHash),total), logname)
-	out = open(out_name,'w')
-	
-	keyj,skip = [],[]
-	for j in range(lnk):
-		key1 = Keys[j]
-		for pointview in pointviews:
-			if pointviews[0] == 'from':
-				for k1 in ObjCoorMP[key1]:
-					if k1[0] == pointview[0] and pointview[1]<=k1[1]<pointview[1]:
-						keyj.append(j)
-						# print 'from',j, k1, Keys[j]
-						break
-			else:
-				if key1[0] == pointview[0] and pointview[1]<=key1[1]<pointview[2]:
-					keyj.append(j)
-					# print 'to',j, key1, Keys[j]
-
-	keyj.sort()
-	for i in range(lnk):
-		for j in keyj:
-			if (i in keyj) and (j<i): pass
-			else:
-				num += 1
-				key1,key2 = Keys[i],Keys[j]
-				# print key1,key2
-				if (key1[0] != key2[0]): dk = -1000
-				else: dk = abs(key1[1]-key2[1])
-				c = np.array([0.,0.,0.,0.])
-				tst = 0
-				for k1 in ObjCoorMP[key1]:
-					for k2 in ObjCoorMP[key2]:
-						if k1[0] == k2[0] or predict == False: real = True
-						else: real = False
-						if real:
-							r = 1
-							if (k1+k2) in ContactsHash: 
-								tst += 1
-								c += iDuplicateContact(ContactsHash[k1+k2], ObjCoorMP[key1][k1], ObjCoorMP[key2][k2])
-							elif (k2+k1) in ContactsHash: 
-								tst += 1
-								c += iDuplicateContact(ContactsHash[k2+k1], ObjCoorMP[key1][k1], ObjCoorMP[key2][k2])
-							else: real = False
-							tst += 1
-						if real == False and predict == True:
-							r = 0
-							try:
-								pc,poe,mdk = ModelContacts(k1+k2, scoring, covHash, nullc, coef, cov_coef, rescale)
-								c += iDuplicateContact([pc,poe,mdk], ObjCoorMP[key1][k1], ObjCoorMP[key2][k2])
-							except KeyError: pass
-						else: pass 
-				if c[-1] > 0:
-					try: scoring[dk]
-					except KeyError: dk = max(scoring.keys())
-					if model == 'balanced': norm, balance = 1.,c[-1]
-					elif model == 'oe': norm, balance = scoring[dk], c[-1]
-					elif model == 'shifted': norm,balance,mult = 1.,1.,mult*c[-1]
-					elif model == 'easy':norm,balance = 1.,1.
-					else: norm,balance = 1.,1.
-					cc = round(c[data]*norm/balance,8)
-					cl.append([key1[0], key1[1], key2[0], key2[1], cc, cc/scoring[dk], dk, r, c[0], c[1], c[2], norm, balance])
-				else: pass
-				if num % step == 0:
-					try:
-						cl = _randomizing(cl,regression,S, random)
-						for c in cl: print >> out, '%s %i %s %i %.8f %.8f %i %i %.8f %.8f %.8f %.8f %.8f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12])
-					except IndexError: pass
-					cl = []
-					elp = timeit.default_timer() - start_time
-					printlog('\t\t %.2f from %i interactions are processed, %.2fs.' % (100.*num/total,total,elp), logname)
-	if len(cl) != 0:
-		cl = _randomizing(cl,regression,S, random)
-		for c in cl: print >> out, '%s %i %s %i %.8f %.8f %i %i %.8f %.8f %.8f %.8f %.8f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12])
-		elp = timeit.default_timer() - start_time
-		printlog('\t\t all %i interactions are processed, %.2fs.' % (total,elp), logname)
-	out.close()
-	elp = timeit.default_timer() - start_time
-	printlog('\t%i interactions are lifovered, %.2fs.' % (total,elp), logname)
-'''

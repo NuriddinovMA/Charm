@@ -8,21 +8,26 @@ Args = {
 	'chrom_orders_from':'','chrom_orders_to':'','chosen_chroms_from':False,'chosen_chroms_to':False,
 	'remap_files':'','out_path':'','out_name':'',
 	'resolution':10000, 'model':'easy','regression':0,'multiples':1.0,'coverage_alignment':False,
-	'random':False, 'pointview':False,'predict_null_contacts':False,
+	'random':False, 'pointviews':[],'predict_null_contacts':False,
 	'contact_ab':False,'coverage_ab':False,'resolution_ab':False,
 	'contact_coef':False,'coverage_coef':False,'distance_coef':False, 'coef_resolution':False,
 	'log_file':False
 }
 
 lines = sys.stdin.readlines()
+
 for line in lines:
 	parse = line.split('#')
 	try:
 		parse = parse[0].strip().split()
 		key = parse[0]
-		if key in ['chosen_chroms_from','chosen_chroms_to','pointview']: args = parse[2:]
+		if key in ['chosen_chroms_from','chosen_chroms_to']: args = parse[2:]
+		elif key == 'pointviews': 
+			try: args = parse[2:5]
+			except ValueError: args = False
 		else: args = parse[2]
-		Args[key] = args
+		if key == 'pointviews': Args[key].append(args)
+		else: Args[key] = args
 	except IndexError: pass
 
 Args['resolution'] = int(Args['resolution'])
@@ -32,7 +37,7 @@ Args['normalization'] = lf.boolean(Args['normalization'])
 random = lf.boolean(Args['random'])
 Args['chosen_chroms_to'] = lf.boolean(Args['chosen_chroms_to'])
 Args['chosen_chroms_from'] = lf.boolean(Args['chosen_chroms_from'])
-Args['pointview'] = lf.boolean(Args['pointview'])
+Args['pointviews'] = lf.boolean(Args['pointviews'])
 Args['predict_null_contacts'] = lf.boolean(Args['predict_null_contacts'])
 Args['contact_coef'] = lf.boolean(Args['contact_coef'])
 Args['coverage_coef'] = lf.boolean(Args['coverage_coef'])
@@ -87,9 +92,6 @@ contactHash = lf.iReadInitialContact(fname,l2i_from,chrms=Args['chosen_chroms_fr
 ln = len(contactHash)
 elp = timeit.default_timer() - start_time
 lf.printlog('\t...contact %i reading end time %.2fs' % (ln,elp), Args['log_file'])
-
-
-#if Args['pointview']: Args['pointview'] = Args['pointview'][0],l2i_from[Args['pointview'][1]],int(Args['pointview'][2])/Args['resolution'],int(Args['pointview'][3])/Args['resolution']
 
 if Args['contact_coef']:
 	if Args['contact_coef'] != Args['contact_files']: scale = 1
@@ -158,12 +160,17 @@ out_name = '%s/%s/%s' % (Args['out_path'],suffix,suffix)
 if Args['chosen_chroms_from'] == False: Args['chosen_chroms_from'] = l2i_from.keys()
 if Args['chosen_chroms_to'] == False: Args['chosen_chroms_to'] = l2i_to.keys()
 
-# if Args['pointview']:
-	# lf.iPointviewContact(contactHash, covHash, MarkPoints, l2i_to, Args['pointview'], out_name+'.temp',
-		# model=Args['model'], scoring=psList, random=random, regression=Args['regression'], predict=Args['predict'],
-		# contact_coef=contactCoef,rescale=rescale,log=Args['log_file'])
-# else:
-lf.iLiftOverContact(contactHash, covHash, MarkPoints, Args['resolution'], l2i_to, out_name+'.temp',
+if Args['pointviews'] and MarkPointsCoef:
+	for pv in Args['pointviews']:
+		try: 
+			chrm,st,end = l2i_from(pv[0]),int(pv[1])/Args['coef_resolution'],int(pv[2])/Args['coef_resolution']
+			if (end - st) < 5:
+				for i in range(st,end+1): pointviews.append( ( l2i_from(pv[0]),i ) )
+			else: pointviews.extend( [(chrm,st),(chrm,st+1),(chrm,end-1),(chrm,end)] )
+		except TypeError: pass
+		except ValueError: pass
+
+lf.iLiftOverContact(contactHash, covHash, MarkPoints, Args['resolution'], l2i_to, out_name+'.temp',pointviews=pointviews,
 	model=Args['model'], scoring=psList, random=random, regression=Args['regression'],null_contacts=Args['predict_null_contacts'],
 	contact_coef=contactCoef, coverage_coef=covCoef, scoring_coef=psListCoef, markpoints_coef=MarkPointsCoef, coef_resolution=Args['coef_resolution'],
 	contact_ab=contactAB, coverage_ab=covAB, resolution_ab=Args['resolution_ab'],

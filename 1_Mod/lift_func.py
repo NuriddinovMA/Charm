@@ -68,7 +68,7 @@ def mutation(G,b1,b2,**kwargs):
 	if cnv1: pass
 	else: 
 		print b1,b2
-		if b1[0] == b2[0] and b2[1] < b1[1]: del G[b1[0]][(b1[1]+ln):(b1[1]+2*ln)]
+		if b1[0] == b2[0] and b2[1] <= b1[1]: del G[b1[0]][(b1[1]+ln):(b1[1]+2*ln)]
 		else: del G[b1[0]][b1[1]:(b1[1]+ln)]
 	return G
 
@@ -521,7 +521,7 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	pKeys = set([])
 	if pointviews: 
 		s = ''
-		for p in pointviews: s += '%s %i %i ' % (p[0],p[1]*coef_res,(p[1]+1)*coef_res)
+		for p in pointviews: s += ('%s %i %i ' % (p[0],p[1]*coef_res,(p[1]+1)*coef_res))
 		printlog('\tPointviews: %s'% s, logname) 
 	else: printlog('\tNo pointviews', logname) 
 	
@@ -629,7 +629,7 @@ def _easyRescale(high_cl, high_res, covH, meanH, res, params_rand):
 					else: dist = abs(ri-rj)
 					try: mean_con = meanH[dist][0]
 					except KeyError: mean_con =  meanH[max(meanH.keys())][0]
-					_clh.append((c1,ri,c2,rj,1.,1.,( covH[c1,ri]*covH[c2,rj]/(covH[c1,ri]+covH[c2,rj]) ),mean_con))
+					_clh.append((c1,ri,c2,rj,1.,1.,( covH[c1,ri]*covH[c2,rj] ),mean_con))
 				except KeyError: pass
 				except ZeroDivisionError: pass
 		try:

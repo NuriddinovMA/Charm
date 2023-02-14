@@ -160,15 +160,16 @@ out_name = '%s/%s/%s' % (Args['out_path'],suffix,suffix)
 if Args['chosen_chroms_from'] == False: Args['chosen_chroms_from'] = l2i_from.keys()
 if Args['chosen_chroms_to'] == False: Args['chosen_chroms_to'] = l2i_to.keys()
 
+pointviews = []
 if Args['pointviews'] and MarkPointsCoef:
 	for pv in Args['pointviews']:
-		try: 
-			chrm,st,end = l2i_from(pv[0]),int(pv[1])/Args['coef_resolution'],int(pv[2])/Args['coef_resolution']
+		chrm,st = l2i_from[pv[0]],int(pv[1])/Args['coef_resolution']
+		if pv[2] == '+': pointviews.append( ( chrm,st ) )
+		else:
+			end = int(pv[2])/Args['coef_resolution']
 			if (end - st) < 5:
-				for i in range(st,end+1): pointviews.append( ( l2i_from(pv[0]),i ) )
+				for i in range(st,end+1): pointviews.append( ( chrm,i ) )
 			else: pointviews.extend( [(chrm,st),(chrm,st+1),(chrm,end-1),(chrm,end)] )
-		except TypeError: pass
-		except ValueError: pass
 
 lf.iLiftOverContact(contactHash, covHash, MarkPoints, Args['resolution'], l2i_to, out_name+'.temp',pointviews=pointviews,
 	model=Args['model'], scoring=psList, random=random, regression=Args['regression'],null_contacts=Args['predict_null_contacts'],

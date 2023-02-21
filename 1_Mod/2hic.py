@@ -2,9 +2,10 @@ import os
 import sys
 import timeit
 import lift_func as lf
-reload(lf)
+import importlib as imp
+imp.reload(lf)
 
-print 'Step 1: Sites Reading...'
+print( 'Step 1: Sites Reading...' )
 start_time = timeit.default_timer()
 
 Args = {
@@ -26,10 +27,10 @@ for line in lines:
 
 Args['pointview'] = lf.boolean(Args['pointview'])
 Args['chosen_chroms'] = lf.boolean(Args['chosen_chroms'])
-for key in Args.keys(): print '\t%s =' % key, Args[key]
+for key in Args: print( '\t%s = %s' % (key, Args[key]) )
 command = "java -jar %s pre" % Args['path_to_juicer']
 command_norm = "java -jar %s addNorm" % Args['path_to_juicer']
-print '\tcommand', command
+print( '\tcommand', command )
 
 RH = {
 	2000: "2048000,1024000,512000,256000,128000,64000,32000,16000,8000,4000,2000",
@@ -43,10 +44,9 @@ RH = {
 	50000: "1000000,500000,250000,100000,50000"
 }
 elp = timeit.default_timer() - start_time
-print 'Step 2: Analyzing', elp
+print( 'Step 2: Analyzing', elp )
 
 mut_hic_pre = '%s/%s' % (Args['out_path'],Args['out_name'])
-method = Args['method']
 os.system('mkdir ' + Args['out_path'])
 os.system('chmod 775 ' + Args['out_path'])
 G = Args['chrom_sizes']
@@ -56,26 +56,24 @@ out_resolution = int(Args['out_resolution'])
 if Args['pointview']: Args['pointview'] = Args['pointview'][0],int(Args['pointview'][1]),int(Args['pointview'][2])
 elp = timeit.default_timer() - start_time
 
-print '\tstart generate pre %s, %.2f' % (mut_hic_pre, elp)
+print( '\tstart generate pre %s, %.2f' % (mut_hic_pre, elp) )
 
-if Args['pointview']:
-	lf.SummingPointview(Args['mutant_contacts'],Args['wt1_contacts'],Args['wt2_contacts'],Args['pointview'],Args['out_path'],Args['out_name'],
-		out_res=out_resolution, order=Order,format=Args['format'])
-else:
-	lf.SummingPre(Args['mutant_contacts'],Args['wt1_contacts'],Args['wt2_contacts'],Args['out_path'],Args['out_name'],
-		out_res=out_resolution, order=Order,format=Args['format'])
-		
+lf.SummingPre(
+	Args['mutant_contacts'],Args['wt1_contacts'],Args['wt2_contacts'],Args['out_path'],Args['out_name'],
+	out_res=out_resolution, order=Order,format=Args['format']
+	)
+
 os.system('rm -r %s/%s' % (Args['out_path'],Args['out_name'] ))
-os.system('rm -r %s/%s.summ' % (Args['out_path'],Args['out_name'] ))
-print '\tpre writing', elp
+print( '\tpre writing', elp )
 if out_resolution > resolution: R = RH[out_resolution ]
 else: R = RH[out_resolution ]
 if Args['format'] == 'hic': 
-	F = '%s/%s.%s.pre' % (Args['out_path'],Args['out_name'], method )
-	O = '%s/%s.%s.hic' % (Args['out_path'],Args['out_name'], method )
+	F = '%s/%s.pre' % (Args['out_path'],Args['out_name'] )
+	O = '%s/%s.hic' % (Args['out_path'],Args['out_name'] )
 	os.system( command + " " + F + " " + O + " " + G + " " + "-r" + " " + R)
 else: F = '%s/%s.pre.short' % (Args['out_path'],Args['out_name'] )
 os.system('rm ' + F + '.gz')
 os.system('gzip ' + F)
-os.system('chmod 775 ' + F + '.gz')
-print '\t%s end hic generation %.2f' % (file, elp)
+os.system('chmod 755 ' + F + '.gz')
+os.system('chmod 755 ' + F[:-4] + '.hic')
+print( '\tend hic generation %.2f' % elp )

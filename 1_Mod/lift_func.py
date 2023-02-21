@@ -7,10 +7,10 @@ import os
 def printlog(str, logname):
 	
 	if logname:
-		print str
+		print(str)
 		if logname == 'stdout': pass
 		else:
-			with open(logname, 'a') as log: print >> log, str
+			with open(logname, 'a') as log: log.write(str+'\n')
 
 def colorList():
 	color = []
@@ -32,7 +32,7 @@ def FindKey(Hash, key):
 				Hash[k]
 				return k
 			except KeyError: pass
- 	else: return key
+	else: return key
 
 def boolean(x):
 	
@@ -57,7 +57,7 @@ def mutation(G,b1,b2,**kwargs):
 	except KeyError: cnv2 = False
 	ln = b1[2]-b1[1]
 	reg = G[b1[0]][b1[1]:(b1[1]+ln)]
-	print b1, len(reg)
+	#print(b1, len(reg))
 	if cnv2 < 0: reg.reverse()
 	else: pass
 	if cnv2:
@@ -67,36 +67,32 @@ def mutation(G,b1,b2,**kwargs):
 	else: pass
 	if cnv1: pass
 	else: 
-		print b1,b2
+		#print(print b1,b2)
 		if b1[0] == b2[0] and b2[1] <= b1[1]: del G[b1[0]][(b1[1]+ln):(b1[1]+2*ln)]
 		else: del G[b1[0]][b1[1]:(b1[1]+ln)]
 	return G
 
 def markgenerate(M,c1,output_dir,resolution,name, header):
-	print 'resolution',resolution
+	#print('resolution',resolution)
 	f1 = open('%s/%s.%s.%i.mark' % (output_dir, name[0],name[1],resolution), 'a')
 	f2 = open('%s/%s.%s.%i.mark' % (output_dir, name[1],name[0],resolution), 'a')
 	if header == 0:
-		print >> f1, 'chrm_ref\tpos_ref_1\tpos_ref_2\tchrm_mut\tpos_mut_1\tpos_mut_2\tpoint number'
-		print >> f2, 'chrm_mut\tpos_mut_1\tpos_mut_2\tchrm_ref\tpos_ref_1\tpos_ref_2\tpoint number'
+		f1.write('chrm_ref\tpos_ref_1\tpos_ref_2\tchrm_mut\tpos_mut_1\tpos_mut_2\tpoint number\n')
+		f2.write('chrm_mut\tpos_mut_1\tpos_mut_2\tchrm_ref\tpos_ref_1\tpos_ref_2\tpoint number\n')
 	k = 0
-	r = resolution/2
+	r = resolution//2
 	for i in range(len(M[c1])):
 		k += 1
-		print >> f1, '%s\t%i\t%i\t%s\t%i\t%i\t%i' % (M[c1][i][0], M[c1][i][1]*resolution+r-50,M[c1][i][1]*resolution+r+50, c1, i*resolution+r-50,i*resolution+r+50, k)
-		print >> f2, '%s\t%i\t%i\t%s\t%i\t%i\t%i' % (c1, i*resolution+r-50,i*resolution+r+50, M[c1][i][0], M[c1][i][1]*resolution+r-50,M[c1][i][1]*resolution+r+50, k)
+		f1.write('%s\t%i\t%i\t%s\t%i\t%i\t%i\n' % (M[c1][i][0], M[c1][i][1]*resolution+r-50,M[c1][i][1]*resolution+r+50, c1, i*resolution+r-50,i*resolution+r+50, k) )
+		f2.write('%s\t%i\t%i\t%s\t%i\t%i\t%i\n' % (c1, i*resolution+r-50,i*resolution+r+50, M[c1][i][0], M[c1][i][1]*resolution+r-50,M[c1][i][1]*resolution+r+50, k) )
 	f1.close()
 	f2.close()
-	#with open('%s/%s.%s.chr.sizes' % (output_dir, name[0],name[1]), of) as f: print >> f, c1,len(M[c1])*resolution
+	#with open('%s/%s.%s.chr.sizes' % (output_dir, name[0],name[1]), of) as f: print( c1,len(M[c1])*resolution, file=f)
 
 def hashgenerate(M):
 	markHash = {}
-	f = open('test.txt','w')
 	for c in M:
-		#print(M[c])
-		for i in range(len(M[c])):
-			markHash[M[c][i][0],M[c][i][1]] = c, i
-			print >> f, M[c][i][0], M[c][i][1], c, i
+		for i in range(len(M[c])): markHash[M[c][i][0],M[c][i][1]] = c, i
 		try: markHash[M[c][i][0],M[c][i][1]+1] = c, i
 		except IndexError: print('!!!',c,len(M[c]), i)
 	f.close()
@@ -109,7 +105,7 @@ def readBedGraph(fname, resolution,ChrIdxs):
 	f.close()
 	for i in range(len(lines)-1,-1,-1):
 		parse = lines[i].split()
-		key = ChrIdxs[parse[0]], int ((int(parse[1])+int(parse[2])) / (2*resolution))
+		key = ChrIdxs[parse[0]], (int(parse[1])+int(parse[2]))//(2*resolution)
 		bG[key] = float(parse[3])
 		del lines[i]
 	return bG
@@ -135,7 +131,7 @@ def ChromSizes(path,resolution):
 	f.close()
 	for i in range(len(lines)):
 		parse = lines[i].split()
-		try: ChrSzs[parse[0]] = int(parse[1])/resolution
+		try: ChrSzs[parse[0]] = int(parse[1])//resolution
 		except IndexError: break
 	del lines
 	return ChrSzs
@@ -195,7 +191,7 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 	try: norm = kwargs['norm']
 	except KeyError: norm = {}
 	try: chrms = kwargs['chrms']
-	except KeyError: chrms = ChrIdxs.keys()
+	except KeyError: chrms = sorted(ChrIdxs)
 	try: scale = kwargs['scale']
 	except KeyError: scale = 1
 	try: totality = kwargs['totality']
@@ -237,8 +233,8 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 						contactHash[c1,b1,c2,b2][2] += mult_cov
 					except KeyError: contactHash[c1,b1,c2,b2] = [p*k,[oe*k,],mult_cov]
 					lc +=1
-				except IndexError: print 'iReadInitialContact IndexError', j, parse
-				except ValueError: print 'iReadInitialContact ValueError', j, parse
+				except IndexError: print( 'iReadInitialContact IndexError', j, parse )
+				except ValueError: print( 'iReadInitialContact ValueError', j, parse )
 				if (ln-j) % 1000000 == 0:
 					elpf = timeit.default_timer() - stf
 					printlog('\t\t\tcontact reading: %i, time elapsed: %.2fs' % (ln-j,elpf), logname)
@@ -254,15 +250,14 @@ def iReadingMarkPoints(fname, resolution, **kwargs):
 	except KeyError: logname = False
 	try: ChrIdxs_from = kwargs['chrm_index_from']
 	except KeyError:
-		print 'ERROR!!! Dont exist control chromosome order (chrom_order_from)'
-		lf.printlog('ERROR!!! Dont exist control chromosome order (chrom_order_from)', logname)
-		return False
+		lf.printlog('iReadingMarkPoints Error! Dont exist control chromosome order (chrom_order_from)', logname)
+		exit()
 	try: ChrIdxs_to = kwargs['chrm_index_to']
 	except KeyError: ChrIdxs_to = ChrIdxs_from
 	try: chrms_from = kwargs['chrms_from']
-	except KeyError: chrms = ChrIdxs_from.keys()
+	except KeyError: chrms = sorted(ChrIdxs_from)
 	try: chrms_to = kwargs['chrms_to']
-	except KeyError: chrms = ChrIdxs_to.keys()
+	except KeyError: chrms = sorted(ChrIdxs_to)
 	ObjCoorMPH = {},{},{}
 	ObjCoorMP = {}
 	printlog('\tstart reading markpoints '+fname, logname)
@@ -271,16 +266,16 @@ def iReadingMarkPoints(fname, resolution, **kwargs):
 	lines = f.readlines()
 	f.close()
 	ln = len(lines)
-	step = int(ln/10)
+	step = ln//10
 	for i in range(ln-1,-1,-1):
 		parse = lines[i].split()
 		c1,p11,p12,c2,p21,p22 = parse[:6]
 		if c1 in chrms_from and c2 in chrms_to:
 			c1,c2 = ChrIdxs_from[c1], ChrIdxs_to[c2]
 			p11,p12,p21,p22 = int(p11),int(p12),int(p21),int(p22)
-			p1,p2 = (p11+p12)/2,(p21+p22)/2 
-			b1 = c1,p1/resolution
-			b2 = c2,p2/resolution
+			p1,p2 = (p11+p12)//2,(p21+p22)//2 
+			b1 = c1,p1//resolution
+			b2 = c2,p2//resolution
 			try: ObjCoorMPH[0][b1].add(p1)
 			except KeyError:ObjCoorMPH[0][b1] = set([p1])
 			try: ObjCoorMPH[1][b2].add(p2)
@@ -293,7 +288,7 @@ def iReadingMarkPoints(fname, resolution, **kwargs):
 		del lines[i]
 	elp = timeit.default_timer() - start_time
 	printlog('\t...end reading markpoints %.2fs' % elp, logname)
-	Keys = ObjCoorMPH[2].keys()
+	Keys = sorted(ObjCoorMPH[2])
 	printlog('\tstart remapping coefficient calculating from %i markpoints' % len(Keys), logname)
 	for key in Keys:
 		c0,c1,cx = len(ObjCoorMPH[0][key[:2]]),len(ObjCoorMPH[1][key[2:]]),ObjCoorMPH[2][key]
@@ -389,8 +384,8 @@ def _predictContacts(coor_from, covH, meanH, res, params_pc):
 	if meanH: score = meanH[modeled_dist]
 	else: score = 1.0,1.0,1.0
 	if ab_cont:
-		rb1 = (b1*res+ab_res/2)/ab_res
-		rb2 = (b2*res+ab_res/2)/ab_res
+		rb1 = (b1*res+ab_res//2)//ab_res
+		rb2 = (b2*res+ab_res//2)//ab_res
 		if (c1,rb1,c2,rb2) in ab_cont: cont_AB,mult_AB = ab_cont[c1,rb1,c2,rb2][:2]
 		elif (c2,rb2,c1,rb1) in ab_cont: cont_AB,mult_AB = ab_cont[c2,rb2,c1,rb1][:2]
 		else: cont_AB,mult_AB = 1,0
@@ -450,7 +445,7 @@ def _rescaleContacts(high_cl, high_res, contH, covH, meanH, mapH, res, params_ra
 			else: _clh = _randomizing(_clh, regression,allCon,random)
 			_clh.sort()
 			_cl.extend(_clh)
-		except IndexError: pass#print 'PRCC IndexError:' #_cl, _counts, _sum_count, high_cl[:10], high_cl[-10:]
+		except IndexError: pass
 		except ValueError: pass
 	return _cl
 
@@ -493,15 +488,13 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	printlog('\tstart liftovering', logname)
 	elp = timeit.default_timer() - start_time
 	printlog('\taccount number of interactions and contacts, %.2f' % elp, logname)
-	aKeys = ObjCoorMP.keys()
-	aKeys.sort()
+	aKeys = sorted(ObjCoorMP)
 	alnk = len(aKeys)
-	total,num,bKeys,blnk,type = (alnk+1)*alnk/2,0,aKeys,alnk,1
+	total,num,bKeys,blnk,type = (alnk+1)*alnk//2,0,aKeys,alnk,1
 	if CoefObjCoorMP:
-		CoefKeys = CoefObjCoorMP.keys()
-		CoefKeys.sort()
+		CoefKeys = sorted(CoefObjCoorMP)
 		coef_lnk = len(CoefKeys)
-		total = (coef_lnk+1)*coef_lnk/2
+		total = (coef_lnk+1)*coef_lnk//2
 	allCon,meanMCov = covHash['all'],covHash['mult_mean']
 	try: regression = kwargs['regression']
 	except KeyError: regression = allCon
@@ -538,19 +531,19 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 					coef_cl.append( _enumerateContacts(key1+key2, contact_coef, cov_coef, scoring_coef, CoefObjCoorMP, coef_res, params_model ) )#, model, nullc, ab_cont, ab_cov, ab_res) )
 					if num % 2000000 == 0:
 						try: coef_cl = _randomizing(coef_cl, regression, allCon, random)
-						except IndexError: print 'iLOF-1, randomize, IndexError:', coef_cl
+						except IndexError: pass
 						cl = _rescaleContacts(coef_cl, coef_res, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_random, params_model)#, model, nullc, ab_cont, ab_cov, ab_res, regression, random)
 						for c in cl:
-							print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
+							out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13]) )
 						coef_cl,cl,hash = [],[],{}
 						elp = timeit.default_timer() - start_time
 						printlog('\t\t %.2f from %i interactions are processed, %.2fs.' % (100.*num/total,total,elp), logname)
 		if len(coef_cl) != 0:
 			try: coef_cl = _randomizing(coef_cl, regression, allCon, random)
-			except IndexError: print 'iLOF-1, randomize, IndexError:', coef_cl
+			except IndexError: pass
 			cl = _rescaleContacts(coef_cl, coef_res, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_random, params_model)#, model, nullc, ab_cont, ab_cov, ab_res, regression, random)
 			for c in cl:
-				print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
+				out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13]) )
 			coef_cl,cl,hash = [],[],{}
 			elp = timeit.default_timer() - start_time
 			printlog('\t\t all %i interactions are processed, %.2fs.' % (total,elp), logname)
@@ -576,16 +569,16 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 				cl.append( _enumerateContacts(key1+key2, ContactsHash, covHash, scoring, ObjCoorMP, resolution, params_model) )#, model, nullc, ab_cont, ab_cov, ab_res))
 				if num % 2000000 == 0:
 					try: cl = _randomizing(cl, regression, allCon, random)
-					except IndexError: print 'iLOF-3, randomize, IndexError:',cl
+					except IndexError: pass
 					for c in cl:
-						print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
+						out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13]) )
 					cl = []
 					elp = timeit.default_timer() - start_time
 					printlog('\t\t %.2f from %i interactions are processed, %.2fs.' % (100.*num/total,total,elp), logname)
 		if len(cl) != 0:
 			cl = _randomizing(cl, regression, allCon, random)
 			for c in cl: 
-				print >> out, '%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13])
+				out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13]) )
 			cl = []
 			elp = timeit.default_timer() - start_time
 			printlog('\t\t all %i interactions are processed, %.2fs.' % (total,elp), logname)
@@ -693,13 +686,12 @@ def iContactRegression(ContactHash,covHash,resolution,chroms,ChrIdxs,coef_ChrSiz
 	for ci in range(len(chroms)):
 		for cj in range((ci+1),len(chroms)):
 			chrm1,chrm2 = chroms[ci],chroms[cj]
-			if chrm1 == chrm2: total += (coef_ChrSizes[chrm1]+1)*coef_ChrSizes[chrm1]/2
+			if chrm1 == chrm2: total += (coef_ChrSizes[chrm1]+1)*coef_ChrSizes[chrm1]//2
 			else: total += coef_ChrSizes[chrm1]*coef_ChrSizes[chrm2]
 	num,H,cl = 0, [], []
 	start_time = timeit.default_timer()
 	elp = timeit.default_timer() - start_time
 	printlog('\t%i contacts are regressed to %i, %.2fs.' % (allCon,regression,elp), logname)
-	print chroms,coef_ChrSizes
 	for ci in range(len(chroms)):
 		for cj in range((ci+1),len(chroms)):
 			chrm1,chrm2 = chroms[ci],chroms[cj]
@@ -723,8 +715,8 @@ def iContactRegression(ContactHash,covHash,resolution,chroms,ChrIdxs,coef_ChrSiz
 						elp = timeit.default_timer() - start_time
 						printlog('\t\twriting, %.2fs.' % (elp), logname)
 						for c in H:
-							try: print >> out, '%s\t%i\t%s\t%i\t%.4f' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4])
-							except IndexError: print 'IndexError', c
+							try: out.write('%s\t%i\t%s\t%i\t%.4f\n' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4]))
+							except IndexError: pass
 						elp = timeit.default_timer() - start_time
 						printlog('\t\t%i interactions from %i are processed, %.2fs.' % (num,total,elp), logname)
 						H = []
@@ -734,8 +726,8 @@ def iContactRegression(ContactHash,covHash,resolution,chroms,ChrIdxs,coef_ChrSiz
 				elp = timeit.default_timer() - start_time
 				printlog('\t\twriting, %.2fs.' % (elp), logname)
 				for c in H:
-					try: print >> out, '%s\t%i\t%s\t%i\t%.4f' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4])
-					except IndexError:print 'IndexError', c
+					try: out.write('%s\t%i\t%s\t%i\t%.4f\n' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4]))
+					except IndexError: pass
 			del H
 			elp = timeit.default_timer() - start_time
 			printlog('\t\tend regression %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)
@@ -750,7 +742,6 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,out_path,out_name,**kwargs):
 	except KeyError: format = 'pre'
 	try: res = kwargs['out_res']
 	except KeyError: res = 1
-	print 'order',order
 	H,F = {},{}
 	names = set([])
 	if dir_mut:
@@ -770,9 +761,8 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,out_path,out_name,**kwargs):
 			parse = file.split('.')
 			try: F[parse[-3],parse[-2]][1] = dir_wt2+'/'+file
 			except KeyError: pass
-	os.system('mkdir %s/%s.summ' % (out_path,out_name))
-	for name in F.keys():
-		print F[name]
+	os.system('mkdir %s/%s' % (out_path,out_name))
+	for name in sorted(F):
 		H = {}
 		with open(F[name][0], 'r') as f: lines = f.readlines()
 		for i in range(len(lines)-1,-1,-1):
@@ -788,7 +778,6 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,out_path,out_name,**kwargs):
 			except ValueError:pass
 		if dir_wt2:
 			with open(F[name][1], 'r') as f: lines = f.readlines()
-			print F[name][1]
 			for i in range(len(lines)-1,-1,-1):
 				try:
 					c1,b1,c2,b2,p = lines[i].split()[:5]
@@ -800,25 +789,24 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,out_path,out_name,**kwargs):
 					del lines[i]
 				except ValueError:pass
 		del F[name]
-		Keys = H.keys()
-		if order: Keys.sort(key=lambda k:(order[k[0]],order[k[2]],k[1],k[3]))
-		else: Keys.sort(key=lambda k:(k[0],k[2],k[1],k[3]))
-		fname='%s/%s.summ/%s.summ.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
+		if order: Keys = sorted(H,key=lambda k:(order[k[0]],order[k[2]],k[1],k[3]))
+		else: Keys = sorted(H,key=lambda k:(k[0],k[2],k[1],k[3]))
+		fname='%s/%s/%s.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
 		f = open(fname,'w')
 		if format == 'short':
-			for key in Keys: print >> f, '%s\t%i\t%s\t%i\t%.8f' % (key[0],key[1],key[2],key[3],H[key])
+			for key in Keys: f.write('%s\t%i\t%s\t%i\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
 		else:
-			for key in Keys: print >> f, '0\t%s\t%i\t0\t1\t%s\t%i\t1\t%.8f' % (key[0],key[1],key[2],key[3],H[key])
+			for key in Keys: f.write('0\t%s\t%i\t0\t1\t%s\t%i\t1\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
 		f.close()
-	files = os.listdir('%s/%s.summ' % (out_path,out_name))
+	files = os.listdir('%s/%s' % (out_path,out_name))
 	if order: files.sort(key=lambda k: (order[k.split('.')[-3]],order[k.split('.')[-2]]))
 	else: files.sort(key=lambda k: k.split('.')[-3:-1])
 	if format == 'short': end = 'pre.short'
 	else: end = 'pre'
-	f = open('%s/%s.summ.%s' % (out_path,out_name,end),'w')
+	f = open('%s/%s.%s' % (out_path,out_name,end),'w')
 	f.close()
 	for file in files:
-		os.system( 'cat %s/%s.summ/%s >> %s/%s.summ.%s' % (out_path,out_name,file,out_path,out_name,end) )
+		os.system( 'cat %s/%s/%s >> %s/%s.%s' % (out_path,out_name,file,out_path,out_name,end) )
 
 def AddNormVector(path,Rlist,hic,norm):
 	parse = Rlist.split(',')
@@ -826,12 +814,11 @@ def AddNormVector(path,Rlist,hic,norm):
 	for r in parse:
 		resolution = int(r)
 		chrSizes = ChromSizes(path,resolution)
-		Keys = chrSizes.keys()
-		Keys.sort()
+		Keys = sorted(chrSizes)
 		for key in Keys:
 			try:
-				print >> f, 'vector ' + norm + ' ' + key + ' ' + r + ' BP'
-				for i in range(chrSizes[key]): print >> f, '1.0'
+				f.write( 'vector ' + norm + ' ' + key + ' ' + r + ' BP\n' )
+				for i in range(chrSizes[key]): f.write( '1.0\n' )
 			except TypeError: pass
 			
 
@@ -866,9 +853,8 @@ def netParser(name,**kwargs):
 				data = chrm,start1,fi1,parse[3],start2,fi2,dir,id
 				parsedNet[chrm].append( data )
 	del lines
-	print 'lines readed'
 	chrms = parsedNet.keys()
-	f = open('test.csv','w')
+	#f = open('test.csv','w')
 	for chrm in chrms:
 		list(set(parsedNet[chrm]))
 		parsedNet[chrm].sort()
@@ -878,16 +864,16 @@ def netParser(name,**kwargs):
 			nid = id0
 			try:
 				parsedId[nid]
-				print >> f, 'repeat', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0
+				print( 'repeat', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0, file=f)
 			except KeyError:
-				print >> f, 'start', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0
+				print( 'start', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0, file=f)
 				parsedId[nid] = set([parsedNet[chrm][i],])
 				for j in range(i+1,ln):
 					chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1 = parsedNet[chrm][j]
 					if start_from1 - fi_from0 > gap_length or dir1 != dir0:
 						break
-						print >> f, 'break_0', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0
-						print >> f, 'break', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1
+						print( 'break_0', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0, file=f)
+						print( 'break', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1, file=f)
 					elif chrm_to1 == chrm_to0:
 						gap = start_from1 - fi_from0
 						if dir1 == dir0 == 1 and start_to1 >= fi_to0 and 1000 < (start_to1 - fi_to0) < gap_length:
@@ -895,31 +881,30 @@ def netParser(name,**kwargs):
 							parsedId[nid].add(data)
 							parsedNet[chrm][j] = parsedNet[chrm][j][:-1] + (nid,)
 							parsedId[nid].add(parsedNet[chrm][j])
-							print >> f, 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1
+							print( 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1, file=f)
 							chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0 = parsedNet[chrm][j]
 						elif dir1 == dir0 == 1 and start_to1 >= fi_to0 and (start_to1 - fi_to0) < gap_length:
 							parsedNet[chrm][j] = parsedNet[chrm][j][:-1] + (nid,)
 							parsedId[nid].add(parsedNet[chrm][j])
-							print >> f, 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1
+							print( 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1, file=f)
 							chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0 = parsedNet[chrm][j]
 						elif dir1 == dir0 == -1 and start_to1 <= fi_to0 and 1000 < (start_to0 - fi_to1) < gap_length:
 							data = chrm_from1,(fi_from0+250),(start_from1-250),chrm_to1,(fi_to1+250),(start_to0-250),dir1,-nid
 							parsedId[nid].add(data)
 							parsedNet[chrm][j] = parsedNet[chrm][j][:-1] + (nid,)
 							parsedId[nid].add(parsedNet[chrm][j])
-							print >> f, 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1
+							print( 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1, file=f)
 							chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0 = parsedNet[chrm][j]
 						elif dir1 == dir0 == -1 and start_to1 <= fi_to0 and (start_to0 - fi_to1) < gap_length:
 							parsedNet[chrm][j] = parsedNet[chrm][j][:-1] + (nid,)
 							parsedId[nid].add(parsedNet[chrm][j])
-							print >> f, 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1
+							print( 'grow', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1, file=f)
 							chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0 = parsedNet[chrm][j]
 						else:
-							print >> f, 'pass_0', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0
-							print >> f, 'pass', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1
+							print( 'pass_0', chrm_from0,start_from0,fi_from0,chrm_to0,start_to0,fi_to0,dir0,id0, file=f)
+							print( 'pass', chrm_from1,start_from1,fi_from1,chrm_to1,start_to1,fi_to1,dir1,id1, file=f)
 					else: pass
 	f.close()
-	
 	pN = []
 	Keys = parsedId.keys()
 	for key in Keys:
@@ -940,19 +925,19 @@ def net2pre(parsedNet,out,**kwargs):
 	f1 = open(out+'.pre.mark', 'w')
 	f2 = open(out+'.2D.ann', 'w')
 	
-	print >> f1, 'chr1\tstart1\tend1\tchr2\tstart2\tend2\tid'
-	print >> f2, 'chr1\tstart1\tend1\tchr2\tstart2\tend2\tcolor\tcomment'
+	f1.write('chr1\tstart1\tend1\tchr2\tstart2\tend2\tid\n')
+	f2.write('chr1\tstart1\tend1\tchr2\tstart2\tend2\tcolor\tcomment\n')
 	for i in parsedNet:
 		a = 0
 		if i[0][6] > 1: st,fi = i[0][4],i[-1][5]
 		else: st,fi = i[-1][4],i[0][5]
-		print >> f2, '%s\t%i\t%i\t%s\t%i\t%i\t%s\t%s:%i-%i:%i' % (i[0][0],i[0][1],i[-1][2],i[0][0],i[0][1],i[-1][2],'0,255,0',i[0][3],st,fi,i[0][6])
+		f2.write('%s\t%i\t%i\t%s\t%i\t%i\t%s\t%s:%i-%i:%i\n' % (i[0][0],i[0][1],i[-1][2],i[0][0],i[0][1],i[-1][2],'0,255,0',i[0][3],st,fi,i[0][6]) )
 		for j in i:
 			try:
-				if j[6] > 0: print >> f1, '%s\t%i\t%i\t%s\t%i\t%i\t%i\t%i' % (j[0],j[1],j[2],j[3],j[4],j[5],j[6],j[7])
-				else: print >> f1, '%s\t%i\t%i\t%s\t%i\t%i\t%i\t%i' % (j[0],j[1],j[2],j[3],j[5],j[4],j[6],j[7])
+				if j[6] > 0: f1.write('%s\t%i\t%i\t%s\t%i\t%i\t%i\t%i\n' % (j[0],j[1],j[2],j[3],j[4],j[5],j[6],j[7]) )
+				else: f1.write('%s\t%i\t%i\t%s\t%i\t%i\t%i\t%i\n' % (j[0],j[1],j[2],j[3],j[5],j[4],j[6],j[7]) )
 			except TypeError: a = 1
-		if a == 1: print i
+		if a == 1: print('TypeError')
 	f1.close()
 	f2.close()
 	
@@ -964,7 +949,7 @@ def net2pre(parsedNet,out,**kwargs):
 				ln1,ln2 = i[j][2]-i[j][1],i[j][5]-i[j][4]
 				if ln1 > 300: 
 					k = ln1/150.0
-					sp1,sp2 = ln1/k,ln2/k
+					sp1,sp2 = ln1//k,ln2//k
 					h = []
 					for n in range(int(k)): h.append((i[j][1]+sp1*n,i[j][4]+sp2*n))
 					h.append( (i[j][2],i[j][5] ) )
@@ -979,7 +964,7 @@ def net2pre(parsedNet,out,**kwargs):
 						for n in range(int(k)): h.append( (i[j][2]+sp1*(n+.5),i[j][5]+sp2*(n+.5)) )
 						for n in range(int(k)): markPoints.append( (i[j][0],int(h[n][0]-100),int(h[n][0]+100),i[j][3],int(h[n][1]-100),int(h[n][1]+100),i[j][6],str(i[j][7])+'_gap') )
 					elif gap1 < 500: pass
-					else: markPoints.append( (i[j][0],i[j][2]+gap1/2-100,i[j][2]+gap1/2+100,i[j][3],i[j][5]+gap2/2-100,i[j][5]+gap2/2+100,i[j][6],str(i[j][7])+'_gap') )
+					else: markPoints.append( (i[j][0],i[j][2]+gap1//2-100,i[j][2]+gap1//2+100,i[j][3],i[j][5]+gap2//2-100,i[j][5]+gap2//2+100,i[j][6],str(i[j][7])+'_gap') )
 				except IndexError: pass
 		else:
 			for j in range(len(i)):
@@ -1002,8 +987,8 @@ def net2pre(parsedNet,out,**kwargs):
 						h.append( (i[j+1][1],i[j+1][5] ) )
 						for n in range(int(k)): markPoints.append( (i[j][0],int(h[n][0]-100),int(h[n][0]+100),i[j][3],int(h[n][1]-100),int(h[n][1]+100),i[j][6],str(i[j][7])+'_gap') )
 					elif gap1 < 500: pass
-					else: markPoints.append( (i[j][0],i[j][2]+gap1/2-100,i[j][1]+gap1/2+100,i[j][3],i[j][4]-gap1/2-100,i[j][4]-gap1/2+100,i[j][6],str(i[j][7])+'_gap') )
+					else: markPoints.append( (i[j][0],i[j][2]+gap1//2-100,i[j][1]+gap1//2+100,i[j][3],i[j][4]-gap1//2-100,i[j][4]-gap1//2+100,i[j][6],str(i[j][7])+'_gap') )
 				except IndexError: pass
 
-	for i in markPoints: print >> f3,'%s\t%i\t%i\t%s\t%i\t%i\t%i\t%s' % (i[0],i[1],i[2],i[3],i[4],i[5],i[6],i[7])
+	for i in markPoints: f3.write('%s\t%i\t%i\t%s\t%i\t%i\t%i\t%s\n' % (i[0],i[1],i[2],i[3],i[4],i[5],i[6],i[7]))
 	f3.close()

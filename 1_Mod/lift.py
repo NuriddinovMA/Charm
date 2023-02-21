@@ -52,7 +52,7 @@ try: Args['resolution_ab'] = int(Args['resolution_ab'])/2
 except ValueError: Args['resolution_ab'] = False
 start_time = timeit.default_timer()
 
-for key in Args: print key, ' = ', Args[key]
+for key in Args: lf.printlog('%s = %s' % (key,Args[key]), Args['log_file'])
 
 try: os.makedirs(Args['out_path'])
 except OSError: pass
@@ -60,7 +60,7 @@ except OSError: pass
 lf.printlog('log of lift.py script',Args['log_file'])
 lf.printlog('Step 0: chromosome indexing...',Args['log_file'])
 l2i_from = lf.ChromIndexing(Args['chrom_orders_from'])
-print l2i_from
+print( l2i_from )
 elp = timeit.default_timer() - start_time
 lf.printlog('...chromosome indexied, %.2fs' % elp, Args['log_file'])
 if Args['chrom_orders_to']:
@@ -144,7 +144,6 @@ else: MarkPointsCoef = False
 
 if MarkPoints: pass
 else: 
-	print 'ERROR!!! No Markpoints!'
 	lf.printlog('ERROR!!! No Markpoints!', Args['log_file'])
 	exit()
 ln = len(MarkPoints)
@@ -163,10 +162,10 @@ if Args['chosen_chroms_to'] == False: Args['chosen_chroms_to'] = l2i_to.keys()
 pointviews = []
 if Args['pointviews'] and MarkPointsCoef:
 	for pv in Args['pointviews']:
-		chrm,st = l2i_from[pv[0]],int(pv[1])/Args['coef_resolution']
+		chrm,st = l2i_from[pv[0]],int(int(pv[1])//Args['coef_resolution'])
 		if pv[2] == '+': pointviews.append( ( chrm,st ) )
 		else:
-			end = int(pv[2])/Args['coef_resolution']
+			end = int(int(pv[2])//Args['coef_resolution'])
 			if (end - st) < 5:
 				for i in range(st,end+1): pointviews.append( ( chrm,i ) )
 			else: pointviews.extend( [(chrm,st),(chrm,st+1),(chrm,end-1),(chrm,end)] )
@@ -179,7 +178,7 @@ lf.iLiftOverContact(contactHash, covHash, MarkPoints, Args['resolution'], l2i_to
 
 os.system('rm %s/%s/*.liftCon' % (Args['out_path'],suffix))
 chrms = list(set(Args['chosen_chroms_to']))
-header = "chr1 bin1 chr2 bin2 contact oe mult_cov prev_contact prev_oe prev_mult_cov reality expected normolize_coef balance_coef"
+header = "chr1 bin1 chr2 bin2 contact oe mult_cov prev_contact prev_oe prev_mult_cov reality expected normolize_coef balance_coef\n"
 for ci in range(len(chrms)):
 	i = chrms[ci]
 	for cj in range(len(chrms)):
@@ -189,14 +188,14 @@ for ci in range(len(chrms)):
 				f = open("%s.%s.%s.liftCon" % (out_name,i,j),'r')
 				f.close()
 			except IOError:
-				with open("%s.%s.%s.liftCon" % (out_name,i,j),'w') as f: print >> f, header
+				with open("%s.%s.%s.liftCon" % (out_name,i,j),'w') as f: f.write(header)
 			os.system('grep -E "^%s .* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,i,j))
 		else:
 			try: 
 				f = open("%s.%s.%s.liftCon" % (out_name,j,i),'r')
 				f.close()
 			except IOError:
-				with open("%s.%s.%s.liftCon" % (out_name,j,i),'w') as f: print >> f, header
+				with open("%s.%s.%s.liftCon" % (out_name,j,i),'w') as f: f.write(header)
 			os.system('grep -E "^%s .* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,j,i))
 os.system('rm %s.temp' % out_name)
 elp = timeit.default_timer() - start_time

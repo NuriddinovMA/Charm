@@ -21,6 +21,9 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	l2i = gf.ChromIndexing(chrom_sizes)
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
 	chosen_chroms = chosen_chroms.split(',')
+	svs_contacts = gf.boolean(svs_contacts)
+	wt1_contacts = gf.boolean(wt1_contacts)
+	wt2_contacts = gf.boolean(wt2_contacts)
 	
 	elp = timeit.default_timer() - start_time
 	gf.printlog( '\t Step 1: summing muntant and wild type contacts, %.2f' % (elp), log_file)

@@ -17,7 +17,7 @@ charm [-i ini_file] [-S stage]
   - Use "lift+" when the contacts of mutant genome are simulated, but this contacts are not yet lifted on the reference genome
   - Use "wt+" when the simulation is fully processed, but wild-type replicas are not done
   - Use "hic" when the all previously stages are successfully conplited, but .hic-file is not created
-  advanced settings:
+* advanced settings for [stage]:
   - Use "pre" to creation the database with contact statistics only
   - Use "SVs" to creation the rearrangment description files only; in this mode Charm can process the file containing any number of independent SVs 
   - Use "sim" to only simulate contacts within *mutanted* genome based on handly defined database

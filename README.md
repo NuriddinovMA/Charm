@@ -2,11 +2,11 @@
 *Ch*romosome re*ar*rangement *m*odeler.
 There ara python the based tool to simulate of Hi-C-map with the predetermened chromosomal rearrangments. This tools allow simulate such structural variations as CNVs, inversions, translocation and the extra-chromosome creation.
 
-# Requirements
+## Requirements
 1) Python >= 3.7 with numpy module
 2) Jucier Tools https://github.com/aidenlab/juicer (for dumping the contacts from the .hic-files and creation the new .hic-files)
 
-# Quick Start
+## Quick Start
 
 charm [-i ini_file] [-S stage] 
 * [ini_file]: the path to ini-file contains all needed paramaters to simulate SVs: path to work directory, hic-file, uniq SV id, model paramaters and others, the ini-file description see in test.ini
@@ -24,7 +24,18 @@ charm [-i ini_file] [-S stage]
   - Use "lift" to lifover contacts from handly defined mutant genome
   - Use "wt" to simulated wild-type replicas
 
-# The SVs description 
+## Test dataset
+1) dowload testdataset
+2) write to ini-file the path to you work directory in the [global] section, on the "work_dir" key
+3) write to ini-file the path to juicer tools .jar-file in the [global] section, on the "path_to_juicertools" key  
+2\*) optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 
+4)  write to ini-file the path to test.hic file in the [global] section, on the "chrom_sizes" key 
+5) write to ini-file the path to test.hic file in the [prerpoceesing] section, on the "path_to_hic" key
+6) write to ini-file the path to test_rear.txt in the [SVs] section, on the "path_to_svs_list" key
+7) don't change other paramaters
+8) run charm
+
+## The SVs description 
 To simulated SVs, Charm requers the description of rearrangment given in the correct format
 File format (see example "test_rear.txt" in the testdataset folder)
 ```

@@ -23,7 +23,7 @@ charm [-i ini_file] [-S stage]
   - Use "sim" to only simulate contacts within *mutanted* genome based on handly defined database
   - Use "lift" to lifover contacts from handly defined mutant genome
   - Use "wt" to simulated wild-type replicas
-### win
+### others OS
 python3 scripts/charm_manager.py [-S stage] -i [ini_file]
 
 ## Test dataset

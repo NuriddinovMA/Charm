@@ -28,7 +28,7 @@ charm [-i ini_file] [-S stage]
 1) dowload testdataset folder
 2) write to ini-file the path to you work directory in the [global] section, on the "work_dir" key
 3) write to ini-file the path to juicer tools .jar-file in the [global] section, on the "path_to_juicertools" key  
-2\*) optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 
+3.5) optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 
 4)  write to ini-file the path to test.hic file in the [global] section, on the "chrom_sizes" key 
 5) write to ini-file the path to test.hic file in the [prerpoceesing] section, on the "path_to_hic" key
 6) write to ini-file the path to test_rear.txt in the [SVs] section, on the "path_to_svs_list" key

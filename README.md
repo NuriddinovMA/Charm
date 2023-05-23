@@ -7,7 +7,7 @@ There ara python the based tool to simulate of Hi-C-map with the predetermened c
 2) Jucier Tools https://github.com/aidenlab/juicer (for dumping the contacts from the .hic-files and creation the new .hic-files)
 
 ## Quick Start
-###Unix
+### Unix
 charm [-i ini_file] [-S stage] 
 * [ini_file]: the path to ini-file contains all needed paramaters to simulate SVs: path to work directory, hic-file, uniq SV id, model paramaters and others, the ini-file description see in test.ini
 * [stage]: optitional, must be one from "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")

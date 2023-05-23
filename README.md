@@ -25,7 +25,7 @@ charm [-i ini_file] [-S stage]
   - Use "wt" to simulated wild-type replicas
 
 ## Test dataset
-1) dowload testdataset
+1) dowload testdataset folder
 2) write to ini-file the path to you work directory in the [global] section, on the "work_dir" key
 3) write to ini-file the path to juicer tools .jar-file in the [global] section, on the "path_to_juicertools" key  
 2\*) optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 

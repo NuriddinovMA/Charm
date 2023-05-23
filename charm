@@ -6,4 +6,4 @@ do
     esac
 done
 
-python3 scripts/one_script.py -S $stage -i $ini
+python3 scripts/charm_manager.py -S $stage -i $ini

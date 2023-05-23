@@ -27,10 +27,10 @@ if args.stage in ['pre','pre+']:
 	
 	import pre
 	
-	try: sim_name = config['preprocessing']['simulation_name']
+	try: sim_id = config['preprocessing']['simulation_id']
 	except KeyError: 
-		sim_name = config['global']['simulation_name']
-		config['preprocessing']['simulation_name'] = sim_name
+		sim_id = config['global']['simulation_id']
+		config['preprocessing']['simulation_id'] = sim_id
 	try: work_dir = config['preprocessing']['work_dir']
 	except KeyError:
 		work_dir = config['global']['work_dir']
@@ -69,7 +69,7 @@ if args.stage in ['pre','pre+']:
 		log_file = config['global']['log_file']
 		config['preprocessing']['log_file'] = log_file
 	gf.printlog('Stage "pre" - data preprocessing...', log_file)
-	name_res, name_low, name_pab = pre.preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
+	name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
 		capture, work_dir, path_to_hic, normalization, path_to_hic_dump, path_to_java_dir, path_to_juicer, log_file)
 	elp = timeit.default_timer() - start_time
 	
@@ -83,7 +83,7 @@ if args.stage in ['pre','pre+']:
 		config['simulation']['contact_pab'] = name_pab
 		config['simulation']['coverage_pab'] = name_pab + '.binCov'
 		config['simulation']['distance_pab'] = name_pab + '.stat'
-		config['preprocessing']['simulation_name'] = sim_name
+		config['preprocessing']['simulation_id'] = sim_id
 		#config['hic']['capture'] = capture
 	gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
 
@@ -100,9 +100,9 @@ if args.stage in ['pre+','SVs','SVs+']:
 	except KeyError: resolution = config['global']['resolution']
 	try: work_dir = config['SVs']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
-	rearrangement_list = config['SVs']['rearrangement_list']
+	path_to_svs_list = config['SVs']['path_to_svs_list']
 	
-	Map_data = sm.generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, stand_alone)
+	Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, stand_alone)
 	if args.stage in ['pre+','SVs+']:
 		map_SV_from_ref,chosen_chroms_from,pointviews,map_SV_to_ref,chosen_chroms_to,chrom_sizes_SV = Map_data
 		config['simulation']['chosen_chroms_from'] = chosen_chroms_from.strip()
@@ -116,8 +116,8 @@ import sim
 
 if args.stage in ['pre+','SVs+','sim','sim+']:
 	
-	try: sim_name = 'in_mut.' + config['simulation']['simulation_name']
-	except KeyError: sim_name = 'in_mut.' + config['global']['simulation_name']
+	try: sim_id = 'in_mut.' + config['simulation']['simulation_id']
+	except KeyError: sim_id = 'in_mut.' + config['global']['simulation_id']
 	try: work_dir = config['simulation']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 	contact_dir = config['simulation']['contact_dir']
@@ -177,7 +177,7 @@ if args.stage in ['pre+','SVs+','sim','sim+']:
 		contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
 		l2i_from, chosen_chroms_from, l2i_to, chosen_chroms_to, pointviews,
 		model, contact_count, random, predict_null_contacts,
-		sim_name, work_dir, log_file
+		sim_id, work_dir, log_file
 		)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('The end of contact simulation %.2fs'% elp, log_file)
@@ -197,8 +197,8 @@ if args.stage in ['pre+','SVs+','sim','sim+']:
 
 if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 	
-	try: sim_name = 'to_ref.' + config['liftover']['simulation_name']
-	except KeyError: sim_name = 'to_ref.' + config['global']['simulation_name']
+	try: sim_id = 'to_ref.' + config['liftover']['simulation_id']
+	except KeyError: sim_id = 'to_ref.' + config['global']['simulation_id']
 	try: work_dir = config['liftover']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 	contact_dir = config['liftover']['contact_dir']
@@ -257,7 +257,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 		contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
 		l2i_from, chosen_chroms_from, l2i_to, chosen_chroms_to, pointviews,
 		model, contact_count, random, predict_null_contacts,
-		sim_name, work_dir, log_file
+		sim_id, work_dir, log_file
 		)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('The end of contact liftover %.2fs'% elp, log_file)
@@ -268,8 +268,8 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 		
 if args.stage in ['pre+','sim+','lift','lift+','wt']:
 
-	try: sim_name = config['wild_type']['simulation_name']
-	except KeyError: sim_name = config['global']['simulation_name']
+	try: sim_id = config['wild_type']['simulation_id']
+	except KeyError: sim_id = config['global']['simulation_id']
 	try: replica_ids = config['wild_type']['replica_ids']
 	except KeyError: replica_ids = '0,1'
 	try: work_dir = config['wild_type']['work_dir']
@@ -285,7 +285,7 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 	try: contact_low = config['wild_type']['contact_low']
 	except KeyError: contact_low = config['simulation']['contact_low']
 	try: coverage_low = config['wild_type']['coverage_low']
-	except KeyError: coverage_low = config['simulation']['coverage_low']
+	except KeyError: config['simulation']['coverage_low']
 	try: distance_low = config['wild_type']['distance_low']
 	except KeyError: distance_low = config['simulation']['distance_low']
 	try: resolution_low = config['wild_type']['resolution_low']
@@ -326,11 +326,9 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 		contact_pab, coverage_pab, chosen_chroms,
 		l2i, work_dir, log_file
 	)
-
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\tStep 2: replicas simulation...', log_file)
 	wt_path = []
-	print(contactData[4])
 	if replica_ids:
 		for replica_id in replica_ids.split(','):
 			wt_path.append( 
@@ -338,7 +336,7 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 				contactData, resolution, resolution_low, resolution_pab,
 				chosen_chroms, c2s_low, l2i,
 				model, contact_count, random, predict_null_contacts,
-				sim_name, replica_id, work_dir, log_file
+				sim_id, replica_id, work_dir, log_file
 				)
 			)
 		elp = timeit.default_timer() - start_time
@@ -355,8 +353,8 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 
 if args.stage in ['pre+','SVs+','sim+','lift','lifover+','hic']:
 	import contact2hic as c2h
-	try: sim_name = config['hic']['simulation_name']
-	except KeyError: sim_name = config['global']['simulation_name']
+	try: sim_id = config['hic']['simulation_id']
+	except KeyError: sim_id = config['global']['simulation_id']
 	try: work_dir = config['hic']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 	try: resolution = config['hic']['resolution']
@@ -364,20 +362,20 @@ if args.stage in ['pre+','SVs+','sim+','lift','lifover+','hic']:
 	svs_contacts = config['hic']['svs_contacts']
 	wt1_contacts = config['hic']['wt1_contacts']
 	wt2_contacts = config['hic']['wt2_contacts']
-	format = config['hic']['format']
+	chosen_chroms = config['hic']['resolution']
 	try: chrom_sizes = config['hic']['chrom_sizes']
 	except KeyError: chrom_sizes = config['global']['chrom_sizes']
-	try: path_to_java_dir = config['hic']['path_to_java_dir']
-	except KeyError: path_to_java_dir = config['global']['path_to_java_dir']
-	try: path_to_juicertools = config['hic']['path_to_juicertools']
-	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
+	#capture =
+	format = config['hic']['resolution']
+	path_to_java_dir = config['hic']['resolution']
+	path_to_juicertools = config['hic']['resolution']
 	hic_resolutions = config['hic']['hic_resolutions'] 
 	try: log_file = config['hic']['log_file']
 	except KeyError: log_file = config['global']['log_file']
 	gf.printlog('Stage "hic" - hic map generation - start', log_file)
 	c2h.hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		chosen_chroms, chrom_sizes, resolution, #capture,
-		format, path_to_java_dir, path_to_juicertools, hic_resolutions,sim_name,work_dir,log_file
+		format, path_to_java_dir, path_to_juicertools, hic_resolutions,sim_id,work_dir,log_file
 		)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('... end "hic" stage, %.2f' % elp, log_file)

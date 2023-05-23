@@ -14,9 +14,9 @@ charm [-i ini_file] [-S stage]
   - "pre+" is default parameter, from hic-file with wild_type to hic-file with SVs.
   - Use "SVs+" when database with contact statistics are done, but the file with rearrangment description has not yet been created 
   - Use "sim+" when the rearrangment description and database are done, but the contacts of mutant genome are not yet been simulated
-  - Use "lift+" when the contacts of mutant genome are simulated, but this contacts are not yet lifted on the reference genome
-  - Use "wt+" when the simulation is fully processed, but wild-type replicas are not done
-  - Use "hic" when the all previously stages are successfully conplited, but .hic-file is not created
+  - Use "lift+" when the contacts of mutant genome are simulated ("in_mut.[simulation_id]" files created), but this contacts are not yet lifted on the reference genome
+  - Use "wt+" when the simulation is fully processed ("in_mut.[simulation_id]" created), but wild-type replicas are not done
+  - Use "hic" when the all previously stages are successfully complited, but .hic-file is not created
 * advanced settings for [stage]:
   - Use "pre" to creation the database with contact statistics only
   - Use "SVs" to creation the rearrangment description files only; in this mode Charm can process the file containing any number of independent SVs 

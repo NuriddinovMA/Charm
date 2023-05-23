@@ -8,14 +8,21 @@ There ara python the based tool to simulate of Hi-C-map with the predetermened c
 
 # Quick Start
 
-charm [-S stage] [-i ini_file] 
-* [stage]: must be one from "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
+charm [-i ini_file] [-S stage] 
+* [ini_file]: the path to ini-file contains all needed paramaters to simulate SVs, the ini-file description see in test.ini
+* [stage]: optitional, must be one from "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
   - "pre+" is default parameter, from hic-file with wild_type to hic-file with SVs.
   - Use "SVs+" when database with contact statistics are done, but the file with rearrangment description has not yet been created 
   - Use "sim+" when the rearrangment description and database are done, but the contacts of mutant genome are not yet been simulated
   - Use "lift+" when the contacts of mutant genome are simulated, but this contacts are not yet lifted on the reference genome
   - Use "wt+" when the simulation is fully processed, but wild-type replicas are not done
-  - Use "hic" when the all previously stages are successfully conplited, but .hic-file is not created 
+  - Use "hic" when the all previously stages are successfully conplited, but .hic-file is not created
+  advanced settings:
+  - Use "pre" to creation the database with contact statistics only
+  - Use "SVs" to creation the rearrangment description files only; in this mode Charm can process the file containing any number of independent SVs 
+  - Use "sim" to only simulate contacts within *mutanted* genome based on handly defined database
+  - Use "lift" to lifover contacts from handly defined mutant genome
+  - Use "wt" to simulated wild-type replicas
 
 # The SVs description 
 To simulated SVs, Charm requers the description of rearrangment given in the correct format
@@ -58,7 +65,7 @@ Examples:
   ```
   hg19 my_translocation2 chr1 1000000 2000000 -> chr1 + 1 10
   ```
-  7) the complicated rearrangment: the independent translocation and inversion
+  7) the complicated rearrangment: the translocation and inversion within one genome
   ```
   hg19 my_complicated2 chr1 1000000 2000000 !> chr1 7000000 0 1
   hg19 my_complicated2 chr1 6500000 7500000 >! chr1 6500000 0 -1

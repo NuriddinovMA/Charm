@@ -7,7 +7,6 @@ There ara python the based tool to simulate of Hi-C-map with the predetermened c
 2) Jucier Tools https://github.com/aidenlab/juicer (for dumping the contacts from the .hic-files and creation the new .hic-files)
 
 ## Quick Start
-
 charm [-i ini_file] [-S stage] 
 * [ini_file]: the path to ini-file contains all needed paramaters to simulate SVs: path to work directory, hic-file, uniq SV id, model paramaters and others, the ini-file description see in test.ini
 * [stage]: optitional, must be one from "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
@@ -26,7 +25,7 @@ charm [-i ini_file] [-S stage]
 
 ## Test dataset
 1) dowload testdataset folder
-2) open TEST_EXAMPLE.ini
+2) open **TEST_EXAMPLE.ini**
 3) write to ini-file the path to you work directory in the [global] section, on the "work_dir" key
 4) write to ini-file the path to juicer tools .jar-file in the [global] section, on the "path_to_juicertools" key  
 4.5 optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 
@@ -37,16 +36,16 @@ charm [-i ini_file] [-S stage]
 9) run Charm
 
 ## First run
-1) open TEST_EXAMPLE.ini 
+1) open **TEST_EXAMPLE.ini**
 2) write to ini-file the path to you work directory in the [global] section, on the "work_dir" key
 3) write to ini-file the unique simulation ID in the [global] section, on the "simulation_id" key
 4) write to ini-file the path to juicer tools .jar-file in the [global] section, on the "path_to_juicertools" key  
-5.5 optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 
-6) write to ini-file the path to **you_chromosome_sizes_file** file in the [global] section, on the "chrom_sizes" key; the file format see below 
-7) write to ini-file the path to **you_hic_map.hic** file in the [prerpoceesing] section, on the "path_to_hic" key
-8) write to ini-file the path to **you_SVs_list_file** in the [SVs] section, on the "path_to_svs_list" key; the file format see below
-9) change other parameters as you wish
-11) run Charm
+4.5 optitional, if path to java not defined, write to ini-file the path to java directory in the [global] section, on the "path_to_java_dir" key 
+5) write to ini-file the path to **you_chromosome_sizes_file** file in the [global] section, on the "chrom_sizes" key; the file format see below 
+6) write to ini-file the path to **you_hic_map.hic** file in the [prerpoceesing] section, on the "path_to_hic" key
+7) write to ini-file the path to **you_SVs_list_file** in the [SVs] section, on the "path_to_svs_list" key; the file format see below
+8) change other parameters as you wish
+9) run Charm
 
 ### The chromosome sizes file
 This file contains chromosome sizes (see https://github.com/aidenlab/juicer/wiki/Pre). The chromosome names and chromosome sizes must be correspondent to the chromosome sizes and chromosome names in .hic-file. 

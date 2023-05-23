@@ -22,7 +22,7 @@ To simulated SVs, Charm requers the description of rearrangment given in the cor
 File format (see example "test_rear.txt" in the testdataset folder)
 '''
 <reference genome id> <uniq sample id> <chromosome> <coordinate of rearrangmnet locus start> <coordinate of rearrangmnet locus end> <the indicator> <new chromosome> <coordinate of new position of locus> <copy number of locus on OLD position> <copy number of locus on NEW position>
-'''
+ '''
 Examples:
   1) the general translocation; the moving of locus chr1:1,000,000-2,000,000 to chr1:7,000,000 position: 
   '''

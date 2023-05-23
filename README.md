@@ -7,6 +7,7 @@ There ara python the based tool to simulate of Hi-C-map with the predetermened c
 2) Jucier Tools https://github.com/aidenlab/juicer (for dumping the contacts from the .hic-files and creation the new .hic-files)
 
 ## Quick Start
+###Unix
 charm [-i ini_file] [-S stage] 
 * [ini_file]: the path to ini-file contains all needed paramaters to simulate SVs: path to work directory, hic-file, uniq SV id, model paramaters and others, the ini-file description see in test.ini
 * [stage]: optitional, must be one from "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
@@ -22,6 +23,8 @@ charm [-i ini_file] [-S stage]
   - Use "sim" to only simulate contacts within *mutanted* genome based on handly defined database
   - Use "lift" to lifover contacts from handly defined mutant genome
   - Use "wt" to simulated wild-type replicas
+### win
+python3 scripts/charm_manager.py [-S stage] -i [ini_file]
 
 ## Test dataset
 1) dowload testdataset folder

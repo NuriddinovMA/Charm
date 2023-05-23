@@ -33,7 +33,7 @@ charm [-i ini_file] [-S stage]
 6) write to ini-file the path to test.hic file in the [prerpoceesing] section, on the "path_to_hic" key
 7) write to ini-file the path to test.svs_list.txt in the [SVs] section, on the "path_to_svs_list" key
 8) don't change other paramaters
-9) run Charm
+9) run Charm with the "-S pre+" parameter
 
 ## First run
 1) open **TEST_EXAMPLE.ini**

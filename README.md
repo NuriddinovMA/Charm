@@ -8,7 +8,7 @@ There ara python the based tool to simulate of Hi-C-map with the predetermened c
 
 ## Quick Start
 ### Unix
-charm [-i ini_file] [-S stage] 
+charm.sh [-i ini_file] [-S stage] 
 * [ini_file]: the path to ini-file contains all needed paramaters to simulate SVs: path to work directory, hic-file, uniq SV id, model paramaters and others, the ini-file description see in test.ini
 * [stage]: optitional, must be one from "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
   - "pre+" is default parameter, from hic-file with wild_type to hic-file with SVs.

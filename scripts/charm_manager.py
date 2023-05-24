@@ -22,6 +22,8 @@ Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ hic''')
 try: os.remove(config['global']['log_file'])
 except OSError: pass
 
+skip_stages = config['global']['skip_stages'].split(',')
+
 start_time = timeit.default_timer()
 if args.stage in ['pre','pre+']:
 	
@@ -68,24 +70,26 @@ if args.stage in ['pre','pre+']:
 	except KeyError:
 		log_file = config['global']['log_file']
 		config['preprocessing']['log_file'] = log_file
-	gf.printlog('Stage "pre" - data preprocessing...', log_file)
-	name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
-		capture, work_dir, path_to_hic, normalization, path_to_hic_dump, path_to_java_dir, path_to_juicer, log_file)
-	elp = timeit.default_timer() - start_time
 	
-	if args.stage == 'pre+':
-		config['simulation']['contact_dir'] = name_res
-		config['simulation']['coverage_file'] = name_res + '.binCov'
-		config['simulation']['distance_file'] = name_res + '.stat'
-		config['simulation']['contact_low'] = name_low
-		config['simulation']['coverage_low'] = name_low + '.binCov'
-		config['simulation']['distance_low'] = name_low + '.stat'
-		config['simulation']['contact_pab'] = name_pab
-		config['simulation']['coverage_pab'] = name_pab + '.binCov'
-		config['simulation']['distance_pab'] = name_pab + '.stat'
-		config['preprocessing']['simulation_id'] = sim_id
-		#config['hic']['capture'] = capture
-	gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
+	if 'pre' in skip.stages: gf.printlog('Stage "pre" skipped', log_file)
+	else:
+		gf.printlog('Stage "pre" - data preprocessing...', log_file)
+		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
+			capture, work_dir, path_to_hic, normalization, path_to_hic_dump, path_to_java_dir, path_to_juicer, log_file)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
+		if args.stage == 'pre+':
+			config['simulation']['contact_dir'] = name_res
+			config['simulation']['coverage_file'] = name_res + '.binCov'
+			config['simulation']['distance_file'] = name_res + '.stat'
+			config['simulation']['contact_low'] = name_low
+			config['simulation']['coverage_low'] = name_low + '.binCov'
+			config['simulation']['distance_low'] = name_low + '.stat'
+			config['simulation']['contact_pab'] = name_pab
+			config['simulation']['coverage_pab'] = name_pab + '.binCov'
+			config['simulation']['distance_pab'] = name_pab + '.stat'
+			config['preprocessing']['simulation_id'] = sim_id
+			#config['hic']['capture'] = capture
 
 if args.stage in ['pre+','SVs','SVs+']:
 
@@ -102,15 +106,20 @@ if args.stage in ['pre+','SVs','SVs+']:
 	except KeyError: work_dir = config['global']['work_dir']
 	path_to_svs_list = config['SVs']['path_to_svs_list']
 	
-	Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, stand_alone)
-	if args.stage in ['pre+','SVs+']:
-		map_SV_from_ref,chosen_chroms_from,pointviews,map_SV_to_ref,chosen_chroms_to,chrom_sizes_SV = Map_data
-		config['simulation']['chosen_chroms_from'] = chosen_chroms_from.strip()
-		config['simulation']['pointviews'] = pointviews
-		config['simulation']['chrom_sizes_to'] = chrom_sizes_SV
-		config['simulation']['chosen_chroms_to'] = chosen_chroms_to.strip()
-		config['simulation']['map_file'] = map_SV_from_ref
-		config['liftover']['map_file'] = map_SV_to_ref
+	if 'SVs' in skip.stages: gf.printlog('Stage "SVs" skipped', log_file)
+	else:
+		gf.printlog('Stage "SVs" - SV descriptions preparing...', log_file)
+		Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, stand_alone)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('... end of stage "SVs" %.2f' % elp, log_file)
+		if args.stage in ['pre+','SVs+']:
+			map_SV_from_ref,chosen_chroms_from,pointviews,map_SV_to_ref,chosen_chroms_to,chrom_sizes_SV = Map_data
+			config['simulation']['chosen_chroms_from'] = chosen_chroms_from.strip()
+			config['simulation']['pointviews'] = pointviews
+			config['simulation']['chrom_sizes_to'] = chrom_sizes_SV
+			config['simulation']['chosen_chroms_to'] = chosen_chroms_to.strip()
+			config['simulation']['map_file'] = map_SV_from_ref
+			config['liftover']['map_file'] = map_SV_to_ref
 
 import sim
 
@@ -151,49 +160,52 @@ if args.stage in ['pre+','SVs+','sim','sim+']:
 	except KeyError: log_file = config['global']['log_file']
 
 	elp = timeit.default_timer() - start_time
-	gf.printlog('Step 0: chromosome indexing...',log_file)
-	l2i_from = gf.ChromIndexing(chrom_sizes_from)
-	if chrom_sizes_to: l2i_to = gf.ChromIndexing(chrom_sizes_to)
-	else: l2i_to = l2i_from
-	elp = timeit.default_timer() - start_time
-	gf.printlog('...chromosome indexed, %.2fs' % elp, log_file)
+	if 'sim' in skip.stages: gf.printlog('Stage "sim" skipped', log_file)
+	else:
+		gf.printlog('Stage "sim" - the simulation of contacts in mutant genome...', log_file)
+		gf.printlog('\tStep 0: chromosome indexing...',log_file)
+		l2i_from = gf.ChromIndexing(chrom_sizes_from)
+		if chrom_sizes_to: l2i_to = gf.ChromIndexing(chrom_sizes_to)
+		else: l2i_to = l2i_from
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...chromosome indexed, %.2fs' % elp, log_file)
 
-	gf.printlog('Step 1: data reading...', log_file)
-	contactData = sim.read_Contact_Data(
-		contact_dir, coverage_file, distance_file, resolution,
-		contact_low, coverage_low, distance_low, resolution_low,
-		contact_pab, coverage_pab, chosen_chroms_from,
-		l2i_from, work_dir, log_file
-		)
-	
-	gf.printlog('\nStep 2: Reading mark points...', log_file)
-	MarkPoints,MarkPointsLow = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,chosen_chroms_from,l2i_to,chosen_chroms_to,log_file)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('...%i mark point red for %.2f sec' % (len(MarkPoints), elp), log_file)
-	
-	gf.printlog('\nStep 3: The starting of contact simulation...', log_file)
-	
-	sim_dir = sim.sv_Simulation(
-		contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
-		l2i_from, chosen_chroms_from, l2i_to, chosen_chroms_to, pointviews,
-		model, contact_count, random, predict_null_contacts,
-		sim_id, work_dir, log_file
-		)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('The end of contact simulation %.2fs'% elp, log_file)
-	
-	if args.stage in ['pre+','sim+']:
-		config['liftover']['contact_dir'] = sim_dir
-		config['liftover']['coverage_file'] = name_res + '.binCov'
-		config['liftover']['distance_file'] = name_res + '.stat'
-		config['liftover']['resolution'] = resolution
-		config['liftover']['contact_low'] = sim_dir
-		config['liftover']['distance_low'] = name_low + '.stat'
-		config['liftover']['resolution_low'] = resolution_low
-		config['liftover']['chrom_sizes_from'] = chrom_sizes_to
-		config['liftover']['chosen_chroms_from'] = chosen_chroms_to
-		config['liftover']['chrom_sizes_to'] = chrom_sizes_from
-		config['liftover']['chosen_chroms_to'] = chosen_chroms_from
+		gf.printlog('\tStep 1: data reading...', log_file)
+		contactData = sim.read_Contact_Data(
+			contact_dir, coverage_file, distance_file, resolution,
+			contact_low, coverage_low, distance_low, resolution_low,
+			contact_pab, coverage_pab, chosen_chroms_from,
+			l2i_from, work_dir, log_file
+			)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t... end data reading %.2fs'% elp, log_file)
+		gf.printlog('\tStep 2: Reading mark points...', log_file)
+		MarkPoints,MarkPointsLow = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,chosen_chroms_from,l2i_to,chosen_chroms_to,log_file)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...%i mark point red for %.2f sec' % (len(MarkPoints), elp), log_file)
+		
+		gf.printlog('\tStep 3: The starting of contact simulation...', log_file)
+		sim_dir = sim.sv_Simulation(
+			contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
+			l2i_from, chosen_chroms_from, l2i_to, chosen_chroms_to, pointviews,
+			model, contact_count, random, predict_null_contacts,
+			sim_id, work_dir, log_file
+			)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t... end of contact simulation %.2fs'% elp, log_file)
+		
+		if args.stage in ['pre+','sim+']:
+			config['liftover']['contact_dir'] = sim_dir
+			config['liftover']['coverage_file'] = name_res + '.binCov'
+			config['liftover']['distance_file'] = name_res + '.stat'
+			config['liftover']['resolution'] = resolution
+			config['liftover']['contact_low'] = sim_dir
+			config['liftover']['distance_low'] = name_low + '.stat'
+			config['liftover']['resolution_low'] = resolution_low
+			config['liftover']['chrom_sizes_from'] = chrom_sizes_to
+			config['liftover']['chosen_chroms_from'] = chosen_chroms_to
+			config['liftover']['chrom_sizes_to'] = chrom_sizes_from
+			config['liftover']['chosen_chroms_to'] = chosen_chroms_from
 
 if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 	
@@ -229,44 +241,46 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 	try: log_file = config['liftover']['log_file']
 	except KeyError: log_file = config['global']['log_file']
 	
-	elp = timeit.default_timer() - start_time
-	
-	gf.printlog('Step 0: chromosome indexing...',log_file)
-	l2i_from = gf.ChromIndexing(chrom_sizes_from)
-	if chrom_sizes_to: l2i_to = gf.ChromIndexing(chrom_sizes_to)
-	else: l2i_to = l2i_from
+	if 'lift' in skip.stages: gf.printlog('Stage "lift" skipped', log_file)
+	else:
+		gf.printlog('Stage "lift" - the contact liftovering to the reference genome...', log_file)
+		gf.printlog('\tStep 0: chromosome indexing...',log_file)
+		l2i_from = gf.ChromIndexing(chrom_sizes_from)
+		if chrom_sizes_to: l2i_to = gf.ChromIndexing(chrom_sizes_to)
+		else: l2i_to = l2i_from
 
-	elp = timeit.default_timer() - start_time
-	gf.printlog('...chromosome indexed, %.2fs' % elp, log_file)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...chromosome indexed, %.2fs' % elp, log_file)
 
-	gf.printlog('Step 1: data reading...', log_file)
-	contactData = sim.read_Contact_Data(
-		contact_dir, coverage_file, distance_file, resolution,
-		contact_low, coverage_low, distance_low, resolution_low,
-		contact_pab, coverage_pab, chosen_chroms_from,
-		l2i_from, work_dir, log_file
-	)
-	
-	gf.printlog('\nStep 2: Reading mark points...', log_file)
-	MarkPoints,MarkPointsLow = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,chosen_chroms_from,l2i_to,chosen_chroms_to,log_file)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('...%i mark point readed for %.2f sec' % (len(MarkPoints), elp), log_file)
-	
-	gf.printlog('\nStep 3: The starting of contact liftovering...', log_file)
-	sim_dir = sim.sv_Simulation(
-		contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
-		l2i_from, chosen_chroms_from, l2i_to, chosen_chroms_to, pointviews,
-		model, contact_count, random, predict_null_contacts,
-		sim_id, work_dir, log_file
+		gf.printlog('\tStep 1: data reading...', log_file)
+		contactData = sim.read_Contact_Data(
+			contact_dir, coverage_file, distance_file, resolution,
+			contact_low, coverage_low, distance_low, resolution_low,
+			contact_pab, coverage_pab, chosen_chroms_from,
+			l2i_from, work_dir, log_file
 		)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('The end of contact liftover %.2fs'% elp, log_file)
-	if args.stage in ['pre+','sim+','lift+']: 
-		config['hic']['svs_contacts'] = sim_dir
-		config['hic']['chosen_chroms'] = chosen_chroms_to
-		config['hic']['resolution'] = resolution
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t... end data reading %.2fs'% elp, log_file)
+		gf.printlog('\tStep 2: Reading mark points...', log_file)
+		MarkPoints,MarkPointsLow = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,chosen_chroms_from,l2i_to,chosen_chroms_to,log_file)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...%i mark point readed for %.2f sec' % (len(MarkPoints), elp), log_file)
 		
-if args.stage in ['pre+','sim+','lift','lift+','wt']:
+		gf.printlog('\tStep 3: The starting of contact liftovering...', log_file)
+		sim_dir = sim.sv_Simulation(
+			contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
+			l2i_from, chosen_chroms_from, l2i_to, chosen_chroms_to, pointviews,
+			model, contact_count, random, predict_null_contacts,
+			sim_id, work_dir, log_file
+			)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...end of contact liftover and simulation %.2fs'% elp, log_file)
+		if args.stage in ['pre+','sim+','lift+']: 
+			config['hic']['svs_contacts'] = sim_dir
+			config['hic']['chosen_chroms'] = chosen_chroms_to
+			config['hic']['resolution'] = resolution
+			
+	if args.stage in ['pre+','sim+','lift','lift+','wt']:
 
 	try: sim_id = config['wild_type']['simulation_id']
 	except KeyError: sim_id = config['global']['simulation_id']
@@ -312,44 +326,47 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 	except KeyError: log_file = config['global']['log_file']
 	
 	resolution,resolution_low,resolution_pab = int(resolution),int(resolution_low),int(resolution_pab)
-	gf.printlog('Stage "wt" - wild-type replica generation - start...',log_file)
-	gf.printlog('\tStep 0: chromosome indexing...',log_file)
-	l2i = gf.ChromIndexing(chrom_sizes)
-	c2s_low = gf.ChromSizes(chrom_sizes,resolution_low)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('\t...chromosome indexed, %.2fs' % elp, log_file)
-	
-	gf.printlog('\tStep 1: data reading...', log_file)
-	contactData = sim.read_Contact_Data(
-		contact_dir, coverage_file, distance_file, resolution,
-		contact_low, coverage_low, distance_low, resolution_low,
-		contact_pab, coverage_pab, chosen_chroms,
-		l2i, work_dir, log_file
-	)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('\tStep 2: replicas simulation...', log_file)
-	wt_path = []
-	if replica_ids:
-		for replica_id in replica_ids.split(','):
-			wt_path.append( 
-				sim.wt_Simulation(
-				contactData, resolution, resolution_low, resolution_pab,
-				chosen_chroms, c2s_low, l2i,
-				model, contact_count, random, predict_null_contacts,
-				sim_id, replica_id, work_dir, log_file
-				)
-			)
+	if 'wt' in skip.stages: gf.printlog('Stage "wt" skipped', log_file)
+	else:
+		gf.printlog('Stage "wt" - wild-type replica generation - start...',log_file)
+		gf.printlog('\tStep 0: chromosome indexing...',log_file)
+		l2i = gf.ChromIndexing(chrom_sizes)
+		c2s_low = gf.ChromSizes(chrom_sizes,resolution_low)
 		elp = timeit.default_timer() - start_time
-		gf.printlog('end %s replica simulation %.2fs' % (replica_id, elp), log_file)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('\t...end replicas simulation %.2fs'% elp, log_file)
-	if args.stage in ['pre+','SVs+','sim+','lifover+']:
-		config['hic']['wt1_contacts'] = 'no'
-		config['hic']['wt2_contacts'] = 'no'
+		gf.printlog('\t...chromosome indexed, %.2fs' % elp, log_file)
+		
+		gf.printlog('\tStep 1: data reading...', log_file)
+		contactData = sim.read_Contact_Data(
+			contact_dir, coverage_file, distance_file, resolution,
+			contact_low, coverage_low, distance_low, resolution_low,
+			contact_pab, coverage_pab, chosen_chroms,
+			l2i, work_dir, log_file
+		)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...end data reading, %.2fs' % elp, log_file)
+		gf.printlog('\tStep 2: replicas simulation...', log_file)
+		wt_path = []
 		if replica_ids:
-			config['hic']['wt1_contacts'] = wt_path[0]
-			try: config['hic']['wt2_contacts'] = wt_path[1]
-			except IndexError: pass
+			for replica_id in replica_ids.split(','):
+				wt_path.append( 
+					sim.wt_Simulation(
+					contactData, resolution, resolution_low, resolution_pab,
+					chosen_chroms, c2s_low, l2i,
+					model, contact_count, random, predict_null_contacts,
+					sim_id, replica_id, work_dir, log_file
+					)
+				)
+			elp = timeit.default_timer() - start_time
+			gf.printlog('end %s replica simulation %.2fs' % (replica_id, elp), log_file)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t...end replicas simulation %.2fs'% elp, log_file)
+		if args.stage in ['pre+','SVs+','sim+','lifover+']:
+			config['hic']['wt1_contacts'] = 'NO'
+			config['hic']['wt2_contacts'] = 'NO'
+			if replica_ids:
+				config['hic']['wt1_contacts'] = wt_path[0]
+				try: config['hic']['wt2_contacts'] = wt_path[1]
+				except IndexError: pass
 
 if args.stage in ['pre+','SVs+','sim+','lift','lifover+','hic']:
 	import contact2hic as c2h
@@ -359,23 +376,34 @@ if args.stage in ['pre+','SVs+','sim+','lift','lifover+','hic']:
 	except KeyError: work_dir = config['global']['work_dir']
 	try: resolution = config['hic']['resolution']
 	except KeyError: resolution = config['global']['resolution']
-	svs_contacts = config['hic']['svs_contacts']
-	wt1_contacts = config['hic']['wt1_contacts']
-	wt2_contacts = config['hic']['wt2_contacts']
-	chosen_chroms = config['hic']['resolution']
+	try: svs_contacts = config['hic']['svs_contacts']
+	except KeyError: svs_contacts = False
+	try: wt1_contacts = config['hic']['wt1_contacts']
+	except KeyError: wt1_contacts = False
+	try: wt2_contacts = config['hic']['wt2_contacts']
+	except KeyError: wt2_contacts = False
+	chosen_chroms = config['hic']['chosen_chroms']
 	try: chrom_sizes = config['hic']['chrom_sizes']
 	except KeyError: chrom_sizes = config['global']['chrom_sizes']
 	#capture =
-	format = config['hic']['resolution']
-	path_to_java_dir = config['hic']['resolution']
-	path_to_juicertools = config['hic']['resolution']
+	format = config['hic']['format']
+	try: path_to_java_dir = config['hic']['path_to_java_dir']
+	except KeyError: path_to_java_dir = config['global']['path_to_java_dir']
+	try: path_to_juicertools = config['hic']['path_to_juicertools']
+	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
 	hic_resolutions = config['hic']['hic_resolutions'] 
 	try: log_file = config['hic']['log_file']
 	except KeyError: log_file = config['global']['log_file']
-	gf.printlog('Stage "hic" - hic map generation - start', log_file)
-	c2h.hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
-		chosen_chroms, chrom_sizes, resolution, #capture,
-		format, path_to_java_dir, path_to_juicertools, hic_resolutions,sim_id,work_dir,log_file
-		)
-	elp = timeit.default_timer() - start_time
-	gf.printlog('... end "hic" stage, %.2f' % elp, log_file)
+	if 'hic' in skip.stages: gf.printlog('Stage "hic" skipped', log_file)
+	else:
+		gf.printlog('Stage "hic" - hic map generation - start', log_file)
+		gf.printlog('\tStep 1: the generation of pre/hic files',log_file)
+		c2h.hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
+			chosen_chroms, chrom_sizes, resolution, #capture,
+			format, path_to_java_dir, path_to_juicertools, hic_resolutions,sim_id,work_dir,log_file
+			)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('... end "hic" stage, %.2f' % elp, log_file)
+
+elp = timeit.default_timer() - start_time
+gf.printlog('The End, %.2f' % elp, log_file)

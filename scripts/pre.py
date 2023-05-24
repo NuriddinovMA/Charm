@@ -15,7 +15,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		resolution = int(resolution)
 		gf.printlog('\nStatistic for %sbp resolution' % resolution, log_file)
 		if capture: locus = capture[0],int(capture[1])/resolution,int(capture[2])/resolution
-		suffixH = '%s.%ikb' % (sim_name,resolution/1000)
+		suffixH = '%s.%i' % (sim_name,resolution)
 		try: os.makedirs(work_dir+'/pre/'+suffixH)
 		except OSError: pass
 		
@@ -67,7 +67,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		resolution_low = int(resolution_low)
 		gf.printlog('\nStatistic for %sbp resoluion' % resolution_low, log_file)
 		if capture: locus = capture[0],int(capture[1])/resolution_low,int(capture[2])/resolution_low
-		suffixH = '%s.%ikb' % (sim_name,resolution_low/1000)
+		suffixH = '%s.%i' % (sim_name,resolution_low)
 		try: os.makedirs(work_dir+'/pre/'+suffixH)
 		except OSError: pass
 		
@@ -106,7 +106,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		resolution_pab = int(resolution_pab)
 		gf.printlog('\nStatistic for pseudo AB-compartment %sbp resoluion' % resolution_pab, log_file)
 		if capture: locus = capture[0],int(capture[1])/resolution_pab,int(capture[2])/resolution_pab
-		suffixL = '/pab.%s.%ikb' % (sim_name,resolution_pab/1000)
+		suffixL = '/pab.%s.%i' % (sim_name,resolution_pab)
 		resolution_pab = resolution_pab//2
 		try: os.makedirs(work_dir+'/pre/'+suffixL)
 		except OSError: pass

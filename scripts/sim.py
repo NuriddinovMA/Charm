@@ -96,7 +96,7 @@ def sv_Simulation(
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
 	resolution, resolution_low,resolution_pab = int(resolution),int(resolution_low),int(resolution_pab)//2
 	
-	suffix = '%s.%ikb.%s.%s' % (sim_name,resolution/1000,model,random)
+	suffix = '%s.%i' % (sim_name,resolution)
 	out_dir = '%s/mdl/%s' % (work_dir,suffix)
 	out_name = '%s/mdl/%s/%s' % (work_dir,suffix,suffix)
 	
@@ -171,7 +171,7 @@ def wt_Simulation(
 	predict_null_contacts = gf.boolean(predict_null_contacts)
 	log_file = gf.boolean(log_file)
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
-	suffix = '%s.%ikb.%s.%s' % (sim_name,resolution/1000,model,random)
+	suffix = '%s.%i' % (sim_name,resolution)
 	out_dir = '%s/wt/%s/%s' % (work_dir,suffix,replica_id)
 	try: os.makedirs(out_dir)
 	except OSError: pass

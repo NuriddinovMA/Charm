@@ -83,7 +83,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, stand
 			chrms.sort()
 			for c1 in range(len(chrms)): svf.markgenerate(MT,chrms[c1],outdir,resolution,(cnt,mut),c1)
 		if a in ['->','>!']:
-			with open('%s/%s.%s.chr.sizes' % (outdir, cnt,mut), 'w') as f: 
+			with open('%s/%s.%s.chr.sizes' % (outdir, mut, cnt), 'w') as f: 
 				Keys = sorted(MT)
 				for key in Keys: print( key, (mutChrmSzs[key]+1)*resolution, file=f)
 				map_SV_from_ref ='%s/%s.%s.%i.mark' % (outdir, cnt, mut, resolution)

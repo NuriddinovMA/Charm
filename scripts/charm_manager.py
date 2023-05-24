@@ -280,7 +280,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 			config['hic']['chosen_chroms'] = chosen_chroms_to
 			config['hic']['resolution'] = resolution
 			
-	if args.stage in ['pre+','sim+','lift','lift+','wt']:
+if args.stage in ['pre+','sim+','lift','lift+','wt']:
 
 	try: sim_id = config['wild_type']['simulation_id']
 	except KeyError: sim_id = config['global']['simulation_id']

@@ -15,8 +15,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		resolution = int(resolution)
 		gf.printlog('\tStatistic for %sbp resolution' % resolution, log_file)
 		if capture: locus = capture[0],int(capture[1])/resolution,int(capture[2])/resolution
-		suffixH = '%s.%i' % (sim_name,resolution)
-		try: os.makedirs(work_dir+'/pre/'+suffixH)
+		sim_name = '%s.%i' % (sim_name,resolution)
+		try: os.makedirs(work_dir+'/pre/'+sim_name)
 		except OSError: pass
 		
 		gf.printlog('\tStep 0: data preparing...', log_file)
@@ -24,7 +24,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		if path_to_hic and path_to_juicertools and path_to_hic_dump == False:
 			gf.printlog('\t\tDump contactcs from hic-map', log_file)
 			chr_num = len(c2s)
-			path_to_hic_dump = '%s/bcm/%s' % (work_dir,suffixH)
+			path_to_hic_dump = '%s/bcm/%s' % (work_dir,sim_name)
 			try: os.makedirs(path_to_hic_dump)
 			except OSError: pass
 			command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
@@ -41,8 +41,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...end genome analysing %.2fs' % elp, log_file)
 
-		out_name = work_dir+'/pre/'+suffixH
-		out_name_res = work_dir+'/pre/'+suffixH
+		out_name = work_dir+'/pre/'+sim_name
+		out_name_res = work_dir+'/pre/'+sim_name
 		gf.printlog('\tStep 1: Calculating bin coverage...', log_file)
 		binCov=prf.iBinCoverage(path_to_hic_dump,c2s,resolution,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
 		elp = timeit.default_timer() - start_time
@@ -54,7 +54,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		del contactDistanceHash
 		elp = timeit.default_timer() - start_time
 		gf.printlog('...distance analyzed for %.2fs' % elp, log_file)
-		out_name = work_dir+'/pre/'+suffixH+'/'+suffixH
+		out_name = work_dir+'/pre/'+sim_name+'/'+sim_name
 		
 		gf.printlog('\tStep 3: Contact transforming by mean statistic...', log_file)
 		prf.iTotalContactListing(meanHash,binCov,resolution,out_name,capture=capture,path=path_to_hic_dump,log=log_file)
@@ -67,8 +67,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		resolution_low = int(resolution_low)
 		gf.printlog('\tStatistic for %sbp resoluion' % resolution_low, log_file)
 		if capture: locus = capture[0],int(capture[1])/resolution_low,int(capture[2])/resolution_low
-		suffixH = '%s.%i' % (sim_name,resolution_low)
-		try: os.makedirs(work_dir+'/pre/'+suffixH)
+		sim_name = '%s.%i' % (sim_name,resolution_low)
+		try: os.makedirs(work_dir+'/pre/'+sim_name)
 		except OSError: pass
 		
 		gf.printlog('\tStep 0.1: data preparing...', log_file)
@@ -80,8 +80,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...end genome analysing %.2fs' % elp, log_file)
 
-		out_name = work_dir+'/pre/'+suffixH
-		out_name_low = work_dir+'/pre/'+suffixH
+		out_name = work_dir+'/pre/'+sim_name
+		out_name_low = work_dir+'/pre/'+sim_name
 		gf.printlog('\tStep 1.1: Calculating bin coverage...', log_file)
 		binCov=prf.iBinCoverage(path_to_hic_dump,c2s,resolution_low,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
 		elp = timeit.default_timer() - start_time
@@ -94,7 +94,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		elp = timeit.default_timer() - start_time
 		
 		gf.printlog('\t...distance analyzed for %.2fs' % elp, log_file)
-		out_name = work_dir+'/pre/'+suffixH+'/'+suffixH
+		out_name = work_dir+'/pre/'+sim_name+'/'+sim_name
 		gf.printlog('\tStep 3.1: Contact transforming by mean statistic...', log_file)
 		prf.iTotalContactListing(meanHash,binCov,resolution_low,out_name,capture=capture,path=path_to_hic_dump,log=log_file)
 		del meanHash

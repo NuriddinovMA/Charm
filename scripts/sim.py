@@ -96,9 +96,8 @@ def sv_Simulation(
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
 	resolution, resolution_low,resolution_pab = int(resolution),int(resolution_low),int(resolution_pab)//2
 	
-	suffix = '%s.%i' % (sim_name,resolution)
-	out_dir = '%s/mdl/%s' % (work_dir,suffix)
-	out_name = '%s/mdl/%s/%s' % (work_dir,suffix,suffix)
+	out_dir = '%s/mdl/%s' % (work_dir,sim_name)
+	out_name = '%s/mdl/%s/%s' % (work_dir,sim_name,sim_name)
 	
 	try:
 		files = os.listdir(out_dir)
@@ -171,11 +170,10 @@ def wt_Simulation(
 	predict_null_contacts = gf.boolean(predict_null_contacts)
 	log_file = gf.boolean(log_file)
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
-	suffix = '%s.%i' % (sim_name,resolution)
-	out_dir = '%s/wt/%s/%s' % (work_dir,suffix,replica_id)
+	out_dir = '%s/wt/%s/%s' % (work_dir,sim_name,replica_id)
 	try: os.makedirs(out_dir)
 	except OSError: pass
-	out_name = '%s/wt/%s/%s/%s.%s' % (work_dir,suffix,replica_id,suffix,replica_id)
+	out_name = '%s/wt/%s/%s/%s.%s' % (work_dir,sim_name,replica_id,sim_name,replica_id)
 	sf.iContactRegression( covHash, resolution, chosen_chroms, l2i, c2s_low, out_name,
 		model=model, scoring=psList, random=random, contact_count=contact_count,
 		contact_low=contactLow, coverage_low=covLow, scoring_low=psListLow, resolution_low=resolution_low,

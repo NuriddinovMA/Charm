@@ -63,10 +63,10 @@ if args.stage in ['pre','pre+']:
 	except KeyError: normalization = 'NONE'
 	try: path_to_hic_dump = config['preprocessing']['path_to_hic_dump']
 	except KeyError: path_to_hic_dump = False
-	try: path_to_juicer = config['preprocessing']['path_to_juicer']
-	except KeyError: path_to_juicer = False
-	try: path_to_java_dir = config['global']['path_to_java_dir']
-	except KeyError: path_to_java_dir = False
+	try: path_to_juicertools = config['preprocessing']['path_to_juicertools']
+	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
+	try: path_to_java_dir = config['preprocessing']['path_to_java_dir']
+	except KeyError: path_to_java_dir = config['global']['path_to_java_dir']
 	try: log_file = config['preprocessing']['log_file']
 	except KeyError:
 		log_file = config['global']['log_file']
@@ -76,7 +76,7 @@ if args.stage in ['pre','pre+']:
 	else:
 		gf.printlog('Stage "pre" - data preprocessing...', log_file)
 		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
-			capture, work_dir, path_to_hic, normalization, path_to_hic_dump, path_to_java_dir, path_to_juicer, log_file)
+			capture, work_dir, path_to_hic, normalization, path_to_hic_dump, path_to_java_dir, path_to_juicertools, log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
 		if args.stage == 'pre+':

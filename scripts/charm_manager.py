@@ -300,7 +300,7 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 	try: contact_low = config['wild_type']['contact_low']
 	except KeyError: contact_low = config['simulation']['contact_low']
 	try: coverage_low = config['wild_type']['coverage_low']
-	except KeyError: config['simulation']['coverage_low']
+	except KeyError: coverage_low =config['simulation']['coverage_low']
 	try: distance_low = config['wild_type']['distance_low']
 	except KeyError: distance_low = config['simulation']['distance_low']
 	try: resolution_low = config['wild_type']['resolution_low']

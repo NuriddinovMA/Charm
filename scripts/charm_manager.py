@@ -22,7 +22,8 @@ Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ hic''')
 try: os.remove(config['global']['log_file'])
 except OSError: pass
 
-skip_stages = config['global']['skip_stages'].split(',')
+try: skip_stages = config['global']['skip_stages'].split(',')
+except KeyError: kip_stages = []
 
 start_time = timeit.default_timer()
 if args.stage in ['pre','pre+']:

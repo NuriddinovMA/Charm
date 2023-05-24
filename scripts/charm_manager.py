@@ -12,11 +12,11 @@ args = parser.parse_args()
 config = ConfigParser(interpolation=ExtendedInterpolation())
 config.read(args.ini)
 
-if args.stage in ['pre','pre+','SVs','SVs+','sim','sim+','lift','lift+','hic']: pass
+if args.stage in ['pre','pre+','SVs','SVs+','sim','sim+','lift','lift+','wt','wt+','hic']: pass
 else:
 	print(args.stage,
 '''is the incorrect stage id!
-Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ hic''')
+Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
 	exit()
 
 try: os.remove(config['global']['log_file'])
@@ -281,7 +281,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 			config['hic']['chosen_chroms'] = chosen_chroms_to
 			config['hic']['resolution'] = resolution
 			
-if args.stage in ['pre+','sim+','lift','lift+','wt']:
+if args.stage in ['pre+','sim+','lift','lift+','wt','wt+']:
 
 	try: sim_id = config['wild_type']['simulation_id']
 	except KeyError: sim_id = config['global']['simulation_id']
@@ -369,7 +369,7 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 				try: config['hic']['wt2_contacts'] = wt_path[1]
 				except IndexError: pass
 
-if args.stage in ['pre+','SVs+','sim+','lift','lifover+','hic']:
+if args.stage in ['pre+','SVs+','sim+','lift','lifover+','wt+','hic']:
 	import contact2hic as c2h
 	try: sim_id = config['hic']['simulation_id']
 	except KeyError: sim_id = config['global']['simulation_id']

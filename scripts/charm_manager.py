@@ -23,7 +23,7 @@ try: os.remove(config['global']['log_file'])
 except OSError: pass
 
 try: skip_stages = config['global']['skip_stages'].split(',')
-except KeyError: kip_stages = []
+except KeyError: skip_stages = []
 
 start_time = timeit.default_timer()
 if args.stage in ['pre','pre+']:
@@ -72,7 +72,7 @@ if args.stage in ['pre','pre+']:
 		log_file = config['global']['log_file']
 		config['preprocessing']['log_file'] = log_file
 	
-	if 'pre' in skip.stages: gf.printlog('Stage "pre" skipped', log_file)
+	if 'pre' in skip_stages: gf.printlog('Stage "pre" skipped', log_file)
 	else:
 		gf.printlog('Stage "pre" - data preprocessing...', log_file)
 		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
@@ -107,7 +107,7 @@ if args.stage in ['pre+','SVs','SVs+']:
 	except KeyError: work_dir = config['global']['work_dir']
 	path_to_svs_list = config['SVs']['path_to_svs_list']
 	
-	if 'SVs' in skip.stages: gf.printlog('Stage "SVs" skipped', log_file)
+	if 'SVs' in skip_stages: gf.printlog('Stage "SVs" skipped', log_file)
 	else:
 		gf.printlog('Stage "SVs" - SV descriptions preparing...', log_file)
 		Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, stand_alone)
@@ -161,7 +161,7 @@ if args.stage in ['pre+','SVs+','sim','sim+']:
 	except KeyError: log_file = config['global']['log_file']
 
 	elp = timeit.default_timer() - start_time
-	if 'sim' in skip.stages: gf.printlog('Stage "sim" skipped', log_file)
+	if 'sim' in skip_stages: gf.printlog('Stage "sim" skipped', log_file)
 	else:
 		gf.printlog('Stage "sim" - the simulation of contacts in mutant genome...', log_file)
 		gf.printlog('\tStep 0: chromosome indexing...',log_file)
@@ -242,7 +242,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 	try: log_file = config['liftover']['log_file']
 	except KeyError: log_file = config['global']['log_file']
 	
-	if 'lift' in skip.stages: gf.printlog('Stage "lift" skipped', log_file)
+	if 'lift' in skip_stages: gf.printlog('Stage "lift" skipped', log_file)
 	else:
 		gf.printlog('Stage "lift" - the contact liftovering to the reference genome...', log_file)
 		gf.printlog('\tStep 0: chromosome indexing...',log_file)
@@ -327,7 +327,7 @@ if args.stage in ['pre+','sim+','lift','lift+','wt']:
 	except KeyError: log_file = config['global']['log_file']
 	
 	resolution,resolution_low,resolution_pab = int(resolution),int(resolution_low),int(resolution_pab)
-	if 'wt' in skip.stages: gf.printlog('Stage "wt" skipped', log_file)
+	if 'wt' in skip_stages: gf.printlog('Stage "wt" skipped', log_file)
 	else:
 		gf.printlog('Stage "wt" - wild-type replica generation - start...',log_file)
 		gf.printlog('\tStep 0: chromosome indexing...',log_file)
@@ -395,7 +395,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lifover+','hic']:
 	hic_resolutions = config['hic']['hic_resolutions'] 
 	try: log_file = config['hic']['log_file']
 	except KeyError: log_file = config['global']['log_file']
-	if 'hic' in skip.stages: gf.printlog('Stage "hic" skipped', log_file)
+	if 'hic' in skip_stages: gf.printlog('Stage "hic" skipped', log_file)
 	else:
 		gf.printlog('Stage "hic" - hic map generation - start', log_file)
 		gf.printlog('\tStep 1: the generation of pre/hic files',log_file)

@@ -88,7 +88,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, stand
 				for key in Keys: print( key, (mutChrmSzs[key]+1)*resolution, file=f)
 				map_SV_from_ref ='%s/%s.%s.%i.mark' % (outdir, cnt, mut, resolution)
 				map_SV_to_ref ='%s/%s.%s.%i.mark' % (outdir, mut, cnt, resolution)
-				chrom_sizes_SV = '%s/%s.%s.chr.sizes' % (outdir, cnt,mut)
+				chrom_sizes_SV = '%s/%s.%s.chr.sizes' % (outdir, mut,cnt)
 			print('end')
 			
 			if stand_alone == False:

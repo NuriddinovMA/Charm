@@ -14,14 +14,14 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, stand
 	ChrmIdx = gf.ChromIndexing(chrom_sizes)
 	mutChrmSzs = {}
 	WT = { ChrmIdx[i+1]:[(ChrmIdx[i+1],j) for j in range(ChrmSzs[ChrmIdx[i+1]])] for i in range(len(ChrmSzs)) }
-	cc_f, cc_t, pointviews = set([]),set([]),''
+	cc, pointviews = set([]),''
 	with open(rearrangement_list, 'r') as f: lines = f.readlines()
 	for line in lines:
 		print( line )
 		cnt,mut,c1,p11,p12,a,c2,p2,cnv1,cnv2 = line.split()[:10]
 		cnv1,cnv2 = int(cnv1),int(cnv2)
-		cc_f.add(c1)
-		cc_t.add(c2)
+		cc.add(c1)
+		cc.add(c2)
 		pointviews += '%s %s %s\n' % (c1,p11,p12)
 		if cnv2 < 0: invert = True
 		else: invert = False
@@ -92,10 +92,9 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, stand
 			print('end')
 			
 			if stand_alone == False:
-				chosen_chroms_from, chosen_chroms_to = '',''
-				for c in cc_f: chosen_chroms_from += '%s,' % c
-				for c in cc_t: chosen_chroms_to += '%s,' % c
-				return map_SV_from_ref,chosen_chroms_from[:-1],pointviews,map_SV_to_ref,chosen_chroms_to[:-1],chrom_sizes_SV
+				chosen_chroms = ''
+				for c in cc: chosen_chroms += '%s,' % c
+				return chosen_chroms[:-1],map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
 				exit()
 
 

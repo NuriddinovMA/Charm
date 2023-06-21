@@ -6,6 +6,7 @@ import os
 import global_func as gf
 
 def readBedGraph(fname, resolution,ChrIdxs):
+
 	bG = {}
 	f = open(fname,'r')
 	lines = f.readlines()
@@ -80,40 +81,44 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 	files = os.listdir(path)
 	lf,lc = len(files),0
 	for i in range(lf):
-		stf = timeit.default_timer()
 		parse = files[i].split('.')
-		gf.printlog('\t\topen %s, %s/%i' % (files[i],i,lf), logname)
-		start_time2 = timeit.default_timer()
-		f = open(path + '/' +files[i],'r')
-		lines = f.readlines()
-		f.close()
-		elpf = timeit.default_timer() - stf
-		gf.printlog('\t\t...close, %.2f' % (elpf) , logname)
-		ln = len(lines)
-		Keys = []
-		for j in range(ln-1,0,-1):
-			parse = lines[j].split()
-			del lines[j]
-			try:
-				c1,b1,c2,b2 = ChrIdxs[parse[0]], int(parse[1])//scale, ChrIdxs[parse[2]], int(parse[3])//scale
-				p,oe,mult_cov = float(parse[4]),float(parse[5]),float(parse[6])
-				Keys.append((c1,b1,c2,b2))
-				try: 
-					contactHash[c1,b1,c2,b2][0] += p 
-					contactHash[c1,b1,c2,b2][1].append(oe)
-					contactHash[c1,b1,c2,b2][2] += mult_cov
-				except KeyError: contactHash[c1,b1,c2,b2] = [p,[oe,],mult_cov]
-				lc +=1
-			except IndexError: print( 'iReadInitialContact IndexError', j, parse )
-			except ValueError: print( 'iReadInitialContact ValueError', j, parse )
-			if (ln-j) % 1000000 == 0:
-				elpf = timeit.default_timer() - stf
-				gf.printlog('\t\t\tcontact reading: %i, time elapsed: %.2fs' % (ln-j,elpf), logname)
-		for key in Keys: contactHash[key][1] = np.mean(contactHash[key][1])
-		del Keys
-		elpf = timeit.default_timer() - stf
-		elp = timeit.default_timer() - start_time
-		gf.printlog('\t\tfile is readed, %.2fs (%.2fs)' % (elpf,elp), logname)
+		if parse[-2] in chrms and parse[-3] in chrms:
+			stf = timeit.default_timer()
+			gf.printlog('\t\topen %s, %s/%i' % (files[i],i,lf), logname)
+			f = open(path + '/' +files[i],'r')
+			lines = f.readlines()
+			f.close()
+			elpf = timeit.default_timer() - stf
+			gf.printlog('\t\t...close, %.2f' % (elpf) , logname)
+			ln = len(lines)
+			Keys = []
+			for j in range(ln-1,0,-1):
+				parse = lines[j].split()
+				del lines[j]
+				try:
+					c1,b1,c2,b2 = ChrIdxs[parse[0]], int(parse[1])//scale, ChrIdxs[parse[2]], int(parse[3])//scale
+					p,oe,mult_cov = float(parse[4]),float(parse[5]),float(parse[6])
+					Keys.append((c1,b1,c2,b2))
+					try: 
+						contactHash[c1,b1,c2,b2][0] += p 
+						contactHash[c1,b1,c2,b2][1].append(oe)
+						contactHash[c1,b1,c2,b2][2] += mult_cov
+					except KeyError: contactHash[c1,b1,c2,b2] = [p,[oe,],mult_cov]
+					except AttributeError: print(parse, c1,b1,c2,b2, contactHash[c1,b1,c2,b2])
+					lc +=1
+				except IndexError: print( 'iReadInitialContact IndexError', j, parse )
+				except ValueError: print( 'iReadInitialContact ValueError', j, parse )
+				if (ln-j) % 1000000 == 0:
+					elpf = timeit.default_timer() - stf
+					gf.printlog('\t\t\tcontact reading: %i, time elapsed: %.2fs' % (ln-j,elpf), logname)
+			elpf = timeit.default_timer() - stf
+			elp = timeit.default_timer() - start_time
+			gf.printlog('\t\tfile is readed, %.2fs (%.2fs)' % (elpf,elp), logname)
+		for key in contactHash: contactHash[key][1] = np.mean(contactHash[key][1])
+			# if key[0] != key[2] and scale == 10: print(key,contactHash[key])
+		#del Keys
+
+		
 	return contactHash
 
 def iReadingMarkPoints(fname, resolution, **kwargs):
@@ -183,6 +188,7 @@ def _recalculateContact(ContactsHash_L, relation1, relation2):
 def _randomizing(h, new_counts, old_counts, random):
 	np.random.seed()
 	h = np.array(h)
+	#print('r1',np.sum(h[:,4]))
 	if random == 'binomial': h[:,4] = np.random.binomial(new_counts,h[:,4]/old_counts)
 	elif random == 'normal': 
 		loc = np.sqrt(h[:,4]/S)
@@ -205,6 +211,7 @@ def _randomizing(h, new_counts, old_counts, random):
 		h[:,4] = h[:,4]*h_c
 	else: pass
 	h = h[h[:,4] > 0]
+	#print('r2',np.sum(h[:,4]))
 	h = h.tolist()
 	return h
 
@@ -216,6 +223,7 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 	if (c1 != c2): real_dist = -1000
 	else: real_dist = abs(b2-b1)
 	real = 0
+	#print(c1,b1,c2,b2,mapH[c1,b1],mapH[c2,b2])
 	try:
 		for k1 in mapH[c1,b1]:
 			for k2 in mapH[c2,b2]:
@@ -224,9 +232,13 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 				if real == 1:
 					if (k1+k2) in contH:
 						lifted_c += _recalculateContact(contH[k1+k2], mapH[c1,b1][k1], mapH[c2,b2][k2])
+						#if (c1 != c2): print('_enum1',k1,k2,contH[k1+k2])
 					elif (k2+k1) in contH:
 						lifted_c += _recalculateContact(contH[k2+k1], mapH[c1,b1][k1], mapH[c2,b2][k2])
-					else: real = 0
+						#if (c1 != c2): print('_enum2',k1,k2,contH[k2+k1])
+					else:
+						real = 0
+						#if (c1 != c2): print('_enum3',k1,k2)
 				if real == 0 and nullc:
 					pc,poe,mcov = _predictContacts(k1+k2, covH, meanH, res, params_ec[1:])# nullc, pab_cont, pab_cov, pab_res
 					lifted_c += _recalculateContact([pc,poe,mcov], mapH[c1,b1][k1], mapH[c2,b2][k2])
@@ -235,6 +247,7 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 	data, norm, balance = 0, -1.,-1.
 	try: meanH[real_dist]
 	except KeyError: real_dist = max(meanH.keys())
+	#print('_enum3', lifted_c)
 	if lifted_c[-1] > 0:
 		if model == 'balanced': data,norm, balance = 1, meanH[real_dist][0], lifted_c[-1]
 		elif model == 'align_sensitive': data,norm, balance = 1, meanH[real_dist][0], 1.
@@ -243,6 +256,7 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 		else: pass
 		cc = round(lifted_c[data]*norm/balance,8)
 	else: cc = 0
+	#print('_enum4',cc)
 	x = c1, b1, c2, b2, cc, cc/meanH[real_dist][0], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], real, meanH[real_dist][0], norm, balance
 	return x 
 
@@ -263,6 +277,7 @@ def _predictContacts(coor_from, covH, meanH, res, params_pc):
 		elif (c2,rb2,c1,rb1) in pab_cont: cont_AB,mult_AB = pab_cont[c2,rb2,c1,rb1][:2]
 		else: cont_AB,mult_AB = 1,0
 	if nullc == 'mixed':
+		#print(modeled_dist)
 		if modeled_dist == -1000:
 			poe = (covH[c1,b1]*covH[c2,b2])/meanMCov
 			pc = mult_AB*poe*score[0]
@@ -297,29 +312,38 @@ def _predictContacts(coor_from, covH, meanH, res, params_pc):
 def _rescaleContacts(high_cl, high_res, contH, covH, meanH, mapH, res, params_rand, params_rc): # params_rC: model, nullc, pab_cont, pab_cov, pab_res
 	_cl = []
 	contact_count,allCon,random = params_rand
+	print('rescale0')
+	#for key in sorted(contH.keys()): print(key, contH[key])
 	for hi in high_cl:
 		c1,b1,c2,b2,count = hi[:5]
 		ri1,ri2,rj1,rj2 = int(b1*high_res/res),int((b1+1)*high_res/res),int(b2*high_res/res),int((b2+1)*high_res/res)
+		#if c1!=c2: print('rescale1',c1,b1,c2,b2,count)
 		_s,_clh = [],[]
 		for ri in range(ri1,ri2):
 			if (c1,b1) == (c2,b2): rj1 = ri
 			for rj in range(rj1,rj2):
 				try:
-					mapH[c1,ri],mapH[c2,rj],
+					mapH[c1,ri],mapH[c2,rj]
 					y = _enumerateContacts((c1,ri,c2,rj), contH, covH, meanH, mapH, res, params_rc)
+					#if c1!=c2: print('rescale2',y[4])
 					_clh.append(y)
-				except KeyError: pass
+				except KeyError: pass #print('rescale KeyError',c1,ri,c2,rj)#
 		_clh = np.array(_clh)
 		try:
 			if random:
+				#print('1',random)
 				p = 1.*_clh[:,9]*_clh[:,11]
 				p = p/np.sum(p)
 				_clh = _randomizing(_clh, count, p, 'choice')
-			else: _clh = _randomizing(_clh, contact_count,allCon,random)
+			else:
+				#print('2',random)
+				_clh = _randomizing(_clh, contact_count,allCon,random)
 			_clh.sort()
 			_cl.extend(_clh)
 		except IndexError: pass
 		except ValueError: pass
+		#if c1!=c2:
+	#print('rescale3')
 	return _cl
 
 def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_name, **kwargs):
@@ -387,10 +411,10 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	pKeys = set([])
 	if pointviews: 
 		s = ''
-		for p in pointviews: s += ('%s %i %i ' % (p[0],p[1]*low_res,(p[1]+1)*low_res))
+		for p in pointviews: s += ('%s %i %i ' % (p[0],p[1],(p[1]+1)))
 		gf.printlog('\tPointviews: %s'% s, logname) 
 	else: gf.printlog('\tNo pointviews', logname) 
-	
+
 	if LowObjCoorMP:
 		low_cl = []
 		gf.printlog('\tstart processing %i real and %i potential interaction by model rescaling' % (len(contact_low),total), logname)
@@ -398,6 +422,7 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 			for j in range(i,low_lnk):
 				num += 1
 				key1,key2 = LowKeys[i],LowKeys[j]
+				#print(key1,key2)
 				if set(LowObjCoorMP[key1].keys()) & set(pointviews): pKeys.add(key1)
 				elif set(LowObjCoorMP[key2].keys()) & set(pointviews): pKeys.add(key2)
 				else:
@@ -429,7 +454,7 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 		aKeys.sort()
 		alnk = len(aKeys)
 		aKeys += bKeys
-
+	#print(pKeys)
 	if LowObjCoorMP == False or pKeys:
 		if pKeys: gf.printlog('\tPointview edges modelling', logname)
 		else: gf.printlog('\tModelling without rescaling', logname)
@@ -513,7 +538,7 @@ def _easyRescale(high_cl, high_res, covH, meanH, res, params_rand):
 	del _clh
 	return _cl
 
-def iContactRegression(covHash,resolution,chosen_chroms,ChrIdxs,low_ChrSizes,out_name,**kwargs):
+def iContactRegression(covHash,resolution,c1_c2,ChrIdxs,low_ChrSizes,out_name,**kwargs):
 	try: logname = kwargs['log']
 	except KeyError: logname = False
 	try: scoring = kwargs['scoring']
@@ -555,46 +580,32 @@ def iContactRegression(covHash,resolution,chosen_chroms,ChrIdxs,low_ChrSizes,out
 	total = 0
 	params_model = nullc, pab_cont, pab_cov, pab_res
 	params_random = contact_count, allCon, random
-	chroms = chosen_chroms.split(',')
-	if len(chroms) == 1: chroms *= 2
-	for ci in range(len(chroms)):
-		for cj in range((ci+1),len(chroms)):
-			chrm1,chrm2 = chroms[ci],chroms[cj]
+	for ci in range(len(c1_c2)):
+		for cj in range((ci+1),len(c1_c2)):
+			chrm1,chrm2 = c1_c2[ci],c1_c2[cj]
 			if chrm1 == chrm2: total += (low_ChrSizes[chrm1]+1)*low_ChrSizes[chrm1]//2
 			else: total += low_ChrSizes[chrm1]*low_ChrSizes[chrm2]
 	num,H,cl = 0, [], []
 	start_time = timeit.default_timer()
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t%i contacts are regressed to %i, %.2fs.' % (allCon,contact_count,elp), logname)
-	for ci in range(len(chroms)):
-		for cj in range((ci+1),len(chroms)):
-			chrm1,chrm2 = chroms[ci],chroms[cj]
-			full_name = '%s.%s.%s.allCon'% (out_name,chrm1,chrm2)
-			out = open( full_name,'w')
-			elp = timeit.default_timer() - start_time
-			gf.printlog('\t\tcontact_count %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)
-			if chrm1 == chrm2: k = 1
-			else: k = 0
-			for i in range(low_ChrSizes[chrm1]):
-				j1 = i*k
-				for j in range(j1,low_ChrSizes[chrm2]):
-					num += 1.
-					c1,b1,c2,b2 = ChrIdxs[chrm1],i,ChrIdxs[chrm2],j
-					H.append(_listing((c1,b1,c2,b2), contact_low, cov_low, scoring_low, low_res, params_model))
-					if num % 200000 == 0:
-						elp = timeit.default_timer() - start_time
-						gf.printlog('\t\t%s randomization, %.2fs.' % (random,elp), logname)
-						H = _randomizing(H, contact_count, allCon, random)
-						H = _easyRescale(H, low_res, covHash, scoring, resolution, params_random)
-						elp = timeit.default_timer() - start_time
-						gf.printlog('\t\twriting, %.2fs.' % (elp), logname)
-						for c in H:
-							try: out.write('%s\t%i\t%s\t%i\t%.4f\n' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4]))
-							except IndexError: pass
-						elp = timeit.default_timer() - start_time
-						gf.printlog('\t\t%i interactions from %i are processed, %.2fs.' % (num,total,elp), logname)
-						H = []
-			if len(H) > 0:
+	
+	chrm1,chrm2 = c1_c2
+	full_name = '%s.%s.%s.allCon'% (out_name,chrm1,chrm2)
+	out = open( full_name,'w')
+	elp = timeit.default_timer() - start_time
+	gf.printlog('\t\tcontact_count %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)
+	if chrm1 == chrm2: k = 1
+	else: k = 0
+	for i in range(low_ChrSizes[chrm1]):
+		j1 = i*k
+		for j in range(j1,low_ChrSizes[chrm2]):
+			num += 1.
+			c1,b1,c2,b2 = ChrIdxs[chrm1],i,ChrIdxs[chrm2],j
+			H.append(_listing((c1,b1,c2,b2), contact_low, cov_low, scoring_low, low_res, params_model))
+			if num % 200000 == 0:
+				elp = timeit.default_timer() - start_time
+				gf.printlog('\t\t%s randomization, %.2fs.' % (random,elp), logname)
 				H = _randomizing(H, contact_count, allCon, random)
 				H = _easyRescale(H, low_res, covHash, scoring, resolution, params_random)
 				elp = timeit.default_timer() - start_time
@@ -602,10 +613,22 @@ def iContactRegression(covHash,resolution,chosen_chroms,ChrIdxs,low_ChrSizes,out
 				for c in H:
 					try: out.write('%s\t%i\t%s\t%i\t%.4f\n' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4]))
 					except IndexError: pass
-			del H
-			elp = timeit.default_timer() - start_time
-			gf.printlog('\t\tend contact_count %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)
-			out.close()
+				elp = timeit.default_timer() - start_time
+				gf.printlog('\t\t%i interactions from %i are processed, %.2fs.' % (num,total,elp), logname)
+				H = []
+	if len(H) > 0:
+		H = _randomizing(H, contact_count, allCon, random)
+		H = _easyRescale(H, low_res, covHash, scoring, resolution, params_random)
+		elp = timeit.default_timer() - start_time
+		gf.printlog('\t\twriting, %.2fs.' % (elp), logname)
+		for c in H:
+			try: out.write('%s\t%i\t%s\t%i\t%.4f\n' % (ChrIdxs[c[0]], c[1]*resolution, ChrIdxs[c[2]], c[3]*resolution, c[4]))
+			except IndexError: pass
+	del H
+	elp = timeit.default_timer() - start_time
+	gf.printlog('\t\tend contact_count %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)
+	out.close()
+	H = []
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t%i interactions are randomized, %.2fs.' % (total,elp), logname)
 

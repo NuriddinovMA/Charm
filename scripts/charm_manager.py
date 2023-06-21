@@ -66,7 +66,9 @@ if args.stage in ['pre','pre+']:
 	try: path_to_juicertools = config['preprocessing']['path_to_juicertools']
 	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
 	try: path_to_java_dir = config['preprocessing']['path_to_java_dir']
-	except KeyError: path_to_java_dir = config['global']['path_to_java_dir']
+	except KeyError:
+		try: path_to_java_dir = config['global']['path_to_java_dir']
+		except KeyError: path_to_java_dir = ''
 	try: log_file = config['preprocessing']['log_file']
 	except KeyError:
 		log_file = config['global']['log_file']
@@ -106,6 +108,9 @@ if args.stage in ['pre+','SVs','SVs+']:
 	try: work_dir = config['SVs']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 	path_to_svs_list = config['SVs']['path_to_svs_list']
+	try: log_file = config['SVs']['log_file']
+	except KeyError: log_file = config['global']['log_file']
+	
 	
 	if 'SVs' in skip_stages: gf.printlog('Stage "SVs" skipped', log_file)
 	else:
@@ -114,11 +119,11 @@ if args.stage in ['pre+','SVs','SVs+']:
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end of stage "SVs" %.2f' % elp, log_file)
 		if args.stage in ['pre+','SVs+']:
-			map_SV_from_ref,chosen_chroms_from,pointviews,map_SV_to_ref,chosen_chroms_to,chrom_sizes_SV = Map_data
-			config['simulation']['chosen_chroms_from'] = chosen_chroms_from.strip()
+			chosen_chroms,map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV = Map_data
+			config['simulation']['chosen_chroms_from'] = chosen_chroms.strip()
 			config['simulation']['pointviews'] = pointviews
 			config['simulation']['chrom_sizes_to'] = chrom_sizes_SV
-			config['simulation']['chosen_chroms_to'] = chosen_chroms_to.strip()
+			config['simulation']['chosen_chroms_to'] = chosen_chroms.strip()
 			config['simulation']['map_file'] = map_SV_from_ref
 			config['liftover']['map_file'] = map_SV_to_ref
 
@@ -197,8 +202,8 @@ if args.stage in ['pre+','SVs+','sim','sim+']:
 		
 		if args.stage in ['pre+','sim+']:
 			config['liftover']['contact_dir'] = sim_dir
-			config['liftover']['coverage_file'] = name_res + '.binCov'
-			config['liftover']['distance_file'] = name_res + '.stat'
+			config['liftover']['coverage_file'] = sim_dir + '.binCov'
+			config['liftover']['distance_file'] = sim_dir + '.stat'
 			config['liftover']['resolution'] = resolution
 			config['liftover']['contact_low'] = sim_dir
 			config['liftover']['distance_low'] = name_low + '.stat'
@@ -236,7 +241,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 	map_file = config['liftover']['map_file']
 	pointviews = False
 	model = 'easy'
-	random = 'norandom'
+	random = 'no'
 	contact_count = False
 	predict_null_contacts = False
 	try: log_file = config['liftover']['log_file']
@@ -369,7 +374,7 @@ if args.stage in ['pre+','sim+','lift','lift+','wt','wt+']:
 				try: config['hic']['wt2_contacts'] = wt_path[1]
 				except IndexError: pass
 
-if args.stage in ['pre+','SVs+','sim+','lift','lifover+','wt+','hic']:
+if args.stage in ['pre+','SVs+','sim+','lift','lift+','wt+','hic']:
 	import contact2hic as c2h
 	try: sim_id = config['hic']['simulation_id']
 	except KeyError: sim_id = config['global']['simulation_id']
@@ -386,10 +391,12 @@ if args.stage in ['pre+','SVs+','sim+','lift','lifover+','wt+','hic']:
 	chosen_chroms = config['hic']['chosen_chroms']
 	try: chrom_sizes = config['hic']['chrom_sizes']
 	except KeyError: chrom_sizes = config['global']['chrom_sizes']
-	#capture =
+
 	format = config['hic']['format']
 	try: path_to_java_dir = config['hic']['path_to_java_dir']
-	except KeyError: path_to_java_dir = config['global']['path_to_java_dir']
+	except KeyError:
+		try: path_to_java_dir = config['global']['path_to_java_dir']
+		except KeyError: path_to_java_dir = ''
 	try: path_to_juicertools = config['hic']['path_to_juicertools']
 	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
 	hic_resolutions = config['hic']['hic_resolutions'] 

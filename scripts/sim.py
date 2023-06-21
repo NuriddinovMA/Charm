@@ -32,6 +32,7 @@ def read_Contact_Data(
 	if contact_low:
 		if contact_low == contact_dir: scale = resolution_low//resolution
 		else: scale = 1
+		print(scale)
 		contactLow = sf.iReadInitialContact(contact_low, l2i_from, chrms=chosen_chroms_from, scale=scale,log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t... multiple coef reading end time %.2fs' % elp, log_file)
@@ -89,7 +90,6 @@ def sv_Simulation(
 	model, contact_count, random, predict_null_contacts,
 	sim_name, work_dir, log_file
 	):
-
 	contact_count = int(contact_count)
 	predict_null_contacts = gf.boolean(predict_null_contacts)
 	log_file = gf.boolean(log_file)
@@ -108,7 +108,8 @@ def sv_Simulation(
 		except OSError: pass
 	except OSError: pass
 	os.makedirs( out_dir )
-
+	
+	random=gf.boolean(random)
 	if chosen_chroms_from == False: chosen_chroms_from = l2i_from.keys()
 	else: chosen_chroms_from = chosen_chroms_from.split(',')
 	if chosen_chroms_to == False: chosen_chroms_to = l2i_to.keys()
@@ -135,28 +136,26 @@ def sv_Simulation(
 		contact_pab=contactPAB, coverage_pab=covPAB, resolution_pab=resolution_pab,
 		log=log_file)
 
-	chrms = list(set(chosen_chroms_to) & set(l2i_to.keys()))
+	chroms = list(set(chosen_chroms_to) & set(l2i_to.keys()))
 	header = "chr1 bin1 chr2 bin2 contact oe mult_cov prev_contact prev_oe prev_mult_cov reality expected normolize_coef balance_coef\n"
 	
-	for ci in range(len(chrms)):
-		i = chrms[ci]
-		for cj in range(len(chrms)):
-			j = chrms[cj]
-			if l2i_to[i] <= l2i_to[j]:
-				try: 
-					f = open("%s.%s.%s.liftCon" % (out_name,i,j),'r')
-					f.close()
-				except IOError:
-					with open("%s.%s.%s.liftCon" % (out_name,i,j),'w') as f: f.write(header)
-				os.system('grep -E "^%s .* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,i,j))
+	print(chosen_chroms_to)
+	for ci in range(len(chroms)):
+		i = chroms[ci]
+		for cj in range(ci,len(chroms)):
+			j = chroms[cj]
+			if l2i_to[i] == l2i_to[j]:
+				with open("%s.%s.%s.liftCon" % (out_name,i,j),'a') as f: f.write(header)
+				os.system('grep -E "^%s [0-9]* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,i,j))
+			elif l2i_to[i] < l2i_to[j]:
+				with open("%s.%s.%s.liftCon" % (out_name,i,j),'a') as f: f.write(header)
+				os.system('grep -E "^%s [0-9]* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,i,j))
+				os.system('grep -E "^%s [0-9]* %s " %s.temp >> %s.%s.%s.liftCon' % (j,i,out_name,out_name,i,j))
 			else:
-				try: 
-					f = open("%s.%s.%s.liftCon" % (out_name,j,i),'r')
-					f.close()
-				except IOError:
-					with open("%s.%s.%s.liftCon" % (out_name,j,i),'w') as f: f.write(header)
-				os.system('grep -E "^%s .* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,j,i))
-	os.system('rm %s.temp' % out_name)
+				with open("%s.%s.%s.liftCon" % (out_name,j,i),'a') as f: f.write(header)
+				os.system('grep -E "^%s [0-9]* %s " %s.temp >> %s.%s.%s.liftCon' % (i,j,out_name,out_name,j,i))
+				os.system('grep -E "^%s [0-9]* %s " %s.temp >> %s.%s.%s.liftCon' % (j,i,out_name,out_name,j,i))
+	os.remove( '%s.temp' % out_name )
 	return out_dir
 
 def wt_Simulation(
@@ -171,13 +170,30 @@ def wt_Simulation(
 	log_file = gf.boolean(log_file)
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
 	out_dir = '%s/wt/%s/%s' % (work_dir,sim_name,replica_id)
-	try: os.makedirs(out_dir)
+	
+	try:
+		files = os.listdir(out_dir)
+		for file in files:
+			try: os.remove( out_dir+'/'+file )
+			except OSError: pass
+		try: os.rmdir(out_dir)
+		except OSError: pass
 	except OSError: pass
-	out_name = '%s/wt/%s/%s/%s.%s' % (work_dir,sim_name,replica_id,sim_name,replica_id)
-	sf.iContactRegression( covHash, resolution, chosen_chroms, l2i, c2s_low, out_name,
-		model=model, scoring=psList, random=random, contact_count=contact_count,
-		contact_low=contactLow, coverage_low=covLow, scoring_low=psListLow, resolution_low=resolution_low,
-		contact_pab=contactPAB, coverage_pab=covPAB, resolution_pab=resolution_pab,
-		null_contacts=predict_null_contacts, log=log_file
-		)
+	os.makedirs( out_dir )
+	
+	chroms = chosen_chroms.split(',')
+	print(chroms)
+	for ci in range(len(chroms)):
+		i = chroms[ci]
+		for cj in range(ci,len(chroms)):
+			j = chroms[cj]
+			if l2i[i] <= l2i[j]: c1_c2 = chroms[ci],chroms[cj]
+			else: c1_c2 = chroms[cj],chroms[ci]
+			out_name = '%s/wt/%s/%s/%s.%s' % (work_dir,sim_name,replica_id,sim_name,replica_id)
+			sf.iContactRegression( covHash, resolution, c1_c2, l2i, c2s_low, out_name,
+				model=model, scoring=psList, random=random, contact_count=contact_count,
+				contact_low=contactLow, coverage_low=covLow, scoring_low=psListLow, resolution_low=resolution_low,
+				contact_pab=contactPAB, coverage_pab=covPAB, resolution_pab=resolution_pab,
+				null_contacts=predict_null_contacts, log=log_file
+				)
 	return out_dir

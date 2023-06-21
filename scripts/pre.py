@@ -31,11 +31,18 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 			path_to_hic_dump = '%s/bcm/%s' % (work_dir,suffix)
 			try: os.makedirs(path_to_hic_dump)
 			except OSError: pass
-			command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
+			
+			else: command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
 			for i in range(1,chr_num+1):
 				for j in range(i,chr_num+1):
-					gf.printlog(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
-					os.system(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
+					if path_to_java_dir: 
+						command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
+						gf.printlog(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
+						os.system(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
+					else: 
+						command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
+						gf.printlog(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
+						os.system(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\t...end dumping %.2fs' % elp, log_file)
 		

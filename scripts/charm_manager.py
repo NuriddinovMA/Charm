@@ -202,11 +202,11 @@ if args.stage in ['pre+','SVs+','sim','sim+']:
 		
 		if args.stage in ['pre+','sim+']:
 			config['liftover']['contact_dir'] = sim_dir
-			config['liftover']['coverage_file'] = sim_dir + '.binCov'
-			config['liftover']['distance_file'] = sim_dir + '.stat'
+			config['liftover']['coverage_file'] = coverage_file
+			config['liftover']['distance_file'] = distance_file
 			config['liftover']['resolution'] = resolution
 			config['liftover']['contact_low'] = sim_dir
-			config['liftover']['distance_low'] = name_low + '.stat'
+			config['liftover']['distance_low'] = distance_low
 			config['liftover']['resolution_low'] = resolution_low
 			config['liftover']['chrom_sizes_from'] = chrom_sizes_to
 			config['liftover']['chosen_chroms_from'] = chosen_chroms_to

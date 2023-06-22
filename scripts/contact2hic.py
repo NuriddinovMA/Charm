@@ -13,8 +13,17 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	
 	out_dir = '%s/out' % work_dir
 	mut_hic_pre = '%s/out/%s' % (work_dir,sim_name)
-	try: os.makedirs(out_dir)
+
+	try:
+		files = os.listdir(out_dir)
+		for file in files:
+			try: os.remove( out_dir+'/'+file )
+			except OSError: pass
+		try: os.rmdir(out_dir)
+		except OSError: pass
 	except OSError: pass
+	os.makedirs( out_dir )
+	
 	resolution = int(resolution)
 	path_to_java_dir = gf.boolean(path_to_java_dir)
 	hic_resolutions = gf.boolean(hic_resolutions)
@@ -48,7 +57,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		os.system( command + params + resolution_list)
 	elif format == 'pre': 
 		F = '%s/%s.pre' % ( out_dir, sim_name )
-	elif format == 'pre.gz': 
+	elif format == 'pre.gz':
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass

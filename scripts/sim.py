@@ -181,7 +181,10 @@ def wt_Simulation(
 	except OSError: pass
 	os.makedirs( out_dir )
 	
-	chroms = chosen_chroms.split(',')
+	chroms = []
+	if chosen_chroms == 'all': chroms = sorted(c2s_low.keys())
+	else: chroms = sorted( set(c2s_low.keys())& set(chosen_chroms.split(',')) )
+	
 	print(chroms)
 	for ci in range(len(chroms)):
 		i = chroms[ci]

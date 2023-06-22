@@ -114,11 +114,8 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 			elpf = timeit.default_timer() - stf
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\tfile is readed, %.2fs (%.2fs)' % (elpf,elp), logname)
-		for key in contactHash: contactHash[key][1] = np.mean(contactHash[key][1])
-			# if key[0] != key[2] and scale == 10: print(key,contactHash[key])
-		#del Keys
-
-		
+			for key in Keys: contactHash[key][1] = np.mean(contactHash[key][1])
+			del Keys
 	return contactHash
 
 def iReadingMarkPoints(fname, resolution, **kwargs):

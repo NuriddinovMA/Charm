@@ -32,7 +32,6 @@ def read_Contact_Data(
 	if contact_low:
 		if contact_low == contact_dir: scale = resolution_low//resolution
 		else: scale = 1
-		print(scale)
 		contactLow = sf.iReadInitialContact(contact_low, l2i_from, chrms=chosen_chroms_from, scale=scale,log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t... multiple coef reading end time %.2fs' % elp, log_file)
@@ -99,14 +98,7 @@ def sv_Simulation(
 	out_dir = '%s/mdl/%s' % (work_dir,sim_name)
 	out_name = '%s/mdl/%s/%s' % (work_dir,sim_name,sim_name)
 	
-	try:
-		files = os.listdir(out_dir)
-		for file in files:
-			try: os.remove( out_dir+'/'+file )
-			except OSError: pass
-		try: os.rmdir(out_dir)
-		except OSError: pass
-	except OSError: pass
+	os.system('rm -r %s' % out_dir)
 	os.makedirs( out_dir )
 	
 	random=gf.boolean(random)
@@ -127,8 +119,6 @@ def sv_Simulation(
 				if (end - st) < 5:
 					for i in range(st,end+1): pviews.append( ( chrm,i ) )
 				else: pviews.extend( [(chrm,st),(chrm,st+1),(chrm,end-1),(chrm,end)] )
-	#print(pviews)
-
 	
 	sf.iLiftOverContact(contactHash, covHash, MarkPoints, resolution, l2i_to, out_name+'.temp',pointviews=pviews,
 		model=model, scoring=psList, random=random, contact_count=contact_count, null_contacts=predict_null_contacts,
@@ -139,7 +129,6 @@ def sv_Simulation(
 	chroms = list(set(chosen_chroms_to) & set(l2i_to.keys()))
 	header = "chr1 bin1 chr2 bin2 contact oe mult_cov prev_contact prev_oe prev_mult_cov reality expected normolize_coef balance_coef\n"
 	
-	print(chosen_chroms_to)
 	for ci in range(len(chroms)):
 		i = chroms[ci]
 		for cj in range(ci,len(chroms)):
@@ -171,21 +160,13 @@ def wt_Simulation(
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
 	out_dir = '%s/wt/%s/%s' % (work_dir,sim_name,replica_id)
 	
-	try:
-		files = os.listdir(out_dir)
-		for file in files:
-			try: os.remove( out_dir+'/'+file )
-			except OSError: pass
-		try: os.rmdir(out_dir)
-		except OSError: pass
-	except OSError: pass
+	os.system('rm -r %s' % out_dir)
 	os.makedirs( out_dir )
 	
 	chroms = []
 	if chosen_chroms == 'all': chroms = sorted(c2s_low.keys())
 	else: chroms = sorted( set(c2s_low.keys())& set(chosen_chroms.split(',')) )
 	
-	print(chroms)
 	for ci in range(len(chroms)):
 		i = chroms[ci]
 		for cj in range(ci,len(chroms)):

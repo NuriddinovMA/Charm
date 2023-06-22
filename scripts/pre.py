@@ -5,7 +5,8 @@ import pre_func as prf
 import global_func as gf
 
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
-	capture, work_dir, path_to_hic, norm, path_to_hic_dump, path_to_java_dir, path_to_juicertools, log_file
+	capture, work_dir, path_to_hic, norm, path_to_hic_dump,
+	path_to_java_dir, path_to_juicertools, log_file, cleaning
 	):
 	
 	start_time = timeit.default_timer()
@@ -153,7 +154,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		del abContacts
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...Pseudocompartments transformed time %.2fs' % elp, log_file)
-
+	
+	if cleaning: os.system('rm -r %s' % path_to_hic_dump)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\tFull processing for %.2fs' % elp, log_file)
 	return out_name_res,out_name_low,out_name_pab

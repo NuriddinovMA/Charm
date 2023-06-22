@@ -14,8 +14,7 @@ config.read(args.ini)
 
 if args.stage in ['pre','pre+','SVs','SVs+','sim','sim+','lift','lift+','wt','wt+','hic']: pass
 else:
-	print(args.stage,
-'''is the incorrect stage id!
+	print(args.stage,'''is the incorrect stage id!
 Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
 	exit()
 
@@ -24,6 +23,9 @@ except OSError: pass
 
 try: skip_stages = config['global']['skip_stages'].split(',')
 except KeyError: skip_stages = []
+try: cleaning = config['global']['cleaning']
+except KeyError: cleaning = True
+
 
 start_time = timeit.default_timer()
 if args.stage in ['pre','pre+']:
@@ -78,7 +80,8 @@ if args.stage in ['pre','pre+']:
 	else:
 		gf.printlog('Stage "pre" - data preprocessing...', log_file)
 		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
-			capture, work_dir, path_to_hic, normalization, path_to_hic_dump, path_to_java_dir, path_to_juicertools, log_file)
+			capture, work_dir, path_to_hic, normalization, path_to_hic_dump,
+			path_to_java_dir, path_to_juicertools, log_file, cleaning)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
 		if args.stage == 'pre+':
@@ -265,6 +268,9 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 			contact_pab, coverage_pab, chosen_chroms_from,
 			l2i_from, work_dir, log_file
 		)
+		
+		os.system('rm -r %s' % contact_dir)
+		
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t... end data reading %.2fs'% elp, log_file)
 		gf.printlog('\tStep 2: Reading mark points...', log_file)
@@ -285,7 +291,7 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+']:
 			config['hic']['svs_contacts'] = sim_dir
 			config['hic']['chosen_chroms'] = chosen_chroms_to
 			config['hic']['resolution'] = resolution
-			
+		
 if args.stage in ['pre+','sim+','lift','lift+','wt','wt+']:
 
 	try: sim_id = config['wild_type']['simulation_id']
@@ -408,7 +414,8 @@ if args.stage in ['pre+','SVs+','sim+','lift','lift+','wt+','hic']:
 		gf.printlog('\tStep 1: the generation of pre/hic files',log_file)
 		c2h.hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 			chosen_chroms, chrom_sizes, resolution, #capture,
-			format, path_to_java_dir, path_to_juicertools, hic_resolutions,sim_id,work_dir,log_file
+			format, path_to_java_dir, path_to_juicertools, hic_resolutions,
+			sim_id,work_dir,log_file,cleaning
 			)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end "hic" stage, %.2f' % elp, log_file)

@@ -1,3 +1,5 @@
+import os
+
 def boolean(x):
 	if x in ['False', 'false','NO','no'] : return False
 	elif x in ['True', 'true','YES','yes']: return True

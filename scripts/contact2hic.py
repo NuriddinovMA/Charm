@@ -6,23 +6,15 @@ import global_func as gf
 
 def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	chosen_chroms, chrom_sizes, resolution,
-	format, path_to_java_dir, path_to_juicertools, hic_resolutions,sim_name,work_dir,log_file
+	format, path_to_java_dir, path_to_juicertools, hic_resolutions,
+	sim_name,work_dir,log_file, cleaning
 	):
 	
 	start_time = timeit.default_timer()
 	
 	out_dir = '%s/out' % work_dir
-	mut_hic_pre = '%s/out/%s' % (work_dir,sim_name)
-
-	try:
-		files = os.listdir(out_dir)
-		for file in files:
-			try: os.remove( out_dir+'/'+file )
-			except OSError: pass
-		try: os.rmdir(out_dir)
-		except OSError: pass
-	except OSError: pass
-	os.makedirs( out_dir )
+	try: os.makedirs( out_dir )
+	except FileExistsError: os.system('rm -r %s/%s' % (out_dir,sim_name))
 	
 	resolution = int(resolution)
 	path_to_java_dir = gf.boolean(path_to_java_dir)
@@ -43,8 +35,10 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 
 	elp = timeit.default_timer() - start_time
 	gf.printlog( '\tpre writing %.2f' % elp, log_file)
-	
-	print(format)
+	if cleaning:
+		os.system('rm -r %s' % (svs_contacts))
+		os.system('rm -r %s/%s' % (out_dir,sim_name))
+
 	if format == 'hic':
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 		O = '%s/%s.hic' % ( out_dir, sim_name )
@@ -53,8 +47,11 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		params = "%s %s %s" % (F,O,chrom_sizes)
 		if hic_resolutions: resolution_list = ' -r %s' % hic_resolutions
 		else: resolution_list= ''
-		print(command + params + resolution_list)
+		gf.printlog('\texecuted command: %s %s %s ' %( command, params, resolution_list),log_file)
 		os.system( command + params + resolution_list)
+		try: os.remove(F + '.gz')
+		except FileNotFoundError: pass
+		os.system('gzip ' + F + '.gz')
 	elif format == 'pre': 
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 	elif format == 'pre.gz':
@@ -63,9 +60,13 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		except FileNotFoundError: pass
 		os.system('gzip ' + F + '.gz')
 	else:
-		print(format)
-		print('Error! Unsupported format, use "hic" or "pre", or "pre.gz" ')
+		gl.printlog('Error! Unsupported format, use "hic" or "pre", or "pre.gz" ',log_file)
 		exit()
+	if cleaning and format == 'hic':
+		try: os.remove(F)
+		except FileNotFoundError: pass
+		try: os.remove(F + '.gz')
+		except FileNotFoundError: pass
 
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\tpath to resulted files: %s' % out_dir, log_file)

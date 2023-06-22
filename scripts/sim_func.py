@@ -104,7 +104,7 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 						contactHash[c1,b1,c2,b2][1].append(oe)
 						contactHash[c1,b1,c2,b2][2] += mult_cov
 					except KeyError: contactHash[c1,b1,c2,b2] = [p,[oe,],mult_cov]
-					except AttributeError: print(parse, c1,b1,c2,b2, contactHash[c1,b1,c2,b2])
+					except AttributeError: print('iReadInitialContact AttributeError', parse, c1,b1,c2,b2, contactHash[c1,b1,c2,b2])
 					lc +=1
 				except IndexError: print( 'iReadInitialContact IndexError', j, parse )
 				except ValueError: print( 'iReadInitialContact ValueError', j, parse )
@@ -185,7 +185,6 @@ def _recalculateContact(ContactsHash_L, relation1, relation2):
 def _randomizing(h, new_counts, old_counts, random):
 	np.random.seed()
 	h = np.array(h)
-	#print('r1',np.sum(h[:,4]))
 	if random == 'binomial': h[:,4] = np.random.binomial(new_counts,h[:,4]/old_counts)
 	elif random == 'normal': 
 		loc = np.sqrt(h[:,4]/S)
@@ -208,7 +207,6 @@ def _randomizing(h, new_counts, old_counts, random):
 		h[:,4] = h[:,4]*h_c
 	else: pass
 	h = h[h[:,4] > 0]
-	#print('r2',np.sum(h[:,4]))
 	h = h.tolist()
 	return h
 
@@ -220,7 +218,6 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 	if (c1 != c2): real_dist = -1000
 	else: real_dist = abs(b2-b1)
 	real = 0
-	#print(c1,b1,c2,b2,mapH[c1,b1],mapH[c2,b2])
 	try:
 		for k1 in mapH[c1,b1]:
 			for k2 in mapH[c2,b2]:
@@ -229,13 +226,9 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 				if real == 1:
 					if (k1+k2) in contH:
 						lifted_c += _recalculateContact(contH[k1+k2], mapH[c1,b1][k1], mapH[c2,b2][k2])
-						#if (c1 != c2): print('_enum1',k1,k2,contH[k1+k2])
 					elif (k2+k1) in contH:
 						lifted_c += _recalculateContact(contH[k2+k1], mapH[c1,b1][k1], mapH[c2,b2][k2])
-						#if (c1 != c2): print('_enum2',k1,k2,contH[k2+k1])
-					else:
-						real = 0
-						#if (c1 != c2): print('_enum3',k1,k2)
+					else: real = 0
 				if real == 0 and nullc:
 					pc,poe,mcov = _predictContacts(k1+k2, covH, meanH, res, params_ec[1:])# nullc, pab_cont, pab_cov, pab_res
 					lifted_c += _recalculateContact([pc,poe,mcov], mapH[c1,b1][k1], mapH[c2,b2][k2])
@@ -244,7 +237,6 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 	data, norm, balance = 0, -1.,-1.
 	try: meanH[real_dist]
 	except KeyError: real_dist = max(meanH.keys())
-	#print('_enum3', lifted_c)
 	if lifted_c[-1] > 0:
 		if model == 'balanced': data,norm, balance = 1, meanH[real_dist][0], lifted_c[-1]
 		elif model == 'align_sensitive': data,norm, balance = 1, meanH[real_dist][0], 1.
@@ -253,7 +245,6 @@ def _enumerateContacts(coor_to, contH, covH, meanH, mapH, res, params_ec): #mode
 		else: pass
 		cc = round(lifted_c[data]*norm/balance,8)
 	else: cc = 0
-	#print('_enum4',cc)
 	x = c1, b1, c2, b2, cc, cc/meanH[real_dist][0], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], real, meanH[real_dist][0], norm, balance
 	return x 
 
@@ -309,12 +300,9 @@ def _predictContacts(coor_from, covH, meanH, res, params_pc):
 def _rescaleContacts(high_cl, high_res, contH, covH, meanH, mapH, res, params_rand, params_rc): # params_rC: model, nullc, pab_cont, pab_cov, pab_res
 	_cl = []
 	contact_count,allCon,random = params_rand
-	print('rescale0')
-	#for key in sorted(contH.keys()): print(key, contH[key])
 	for hi in high_cl:
 		c1,b1,c2,b2,count = hi[:5]
 		ri1,ri2,rj1,rj2 = int(b1*high_res/res),int((b1+1)*high_res/res),int(b2*high_res/res),int((b2+1)*high_res/res)
-		#if c1!=c2: print('rescale1',c1,b1,c2,b2,count)
 		_s,_clh = [],[]
 		for ri in range(ri1,ri2):
 			if (c1,b1) == (c2,b2): rj1 = ri
@@ -322,25 +310,20 @@ def _rescaleContacts(high_cl, high_res, contH, covH, meanH, mapH, res, params_ra
 				try:
 					mapH[c1,ri],mapH[c2,rj]
 					y = _enumerateContacts((c1,ri,c2,rj), contH, covH, meanH, mapH, res, params_rc)
-					#if c1!=c2: print('rescale2',y[4])
 					_clh.append(y)
-				except KeyError: pass #print('rescale KeyError',c1,ri,c2,rj)#
+				except KeyError: pass
 		_clh = np.array(_clh)
 		try:
 			if random:
-				#print('1',random)
 				p = 1.*_clh[:,9]*_clh[:,11]
 				p = p/np.sum(p)
 				_clh = _randomizing(_clh, count, p, 'choice')
 			else:
-				#print('2',random)
 				_clh = _randomizing(_clh, contact_count,allCon,random)
 			_clh.sort()
 			_cl.extend(_clh)
 		except IndexError: pass
 		except ValueError: pass
-		#if c1!=c2:
-	#print('rescale3')
 	return _cl
 
 def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_name, **kwargs):
@@ -419,7 +402,6 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 			for j in range(i,low_lnk):
 				num += 1
 				key1,key2 = LowKeys[i],LowKeys[j]
-				#print(key1,key2)
 				if set(LowObjCoorMP[key1].keys()) & set(pointviews): pKeys.add(key1)
 				elif set(LowObjCoorMP[key2].keys()) & set(pointviews): pKeys.add(key2)
 				else:
@@ -451,7 +433,6 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 		aKeys.sort()
 		alnk = len(aKeys)
 		aKeys += bKeys
-	#print(pKeys)
 	if LowObjCoorMP == False or pKeys:
 		if pKeys: gf.printlog('\tPointview edges modelling', logname)
 		else: gf.printlog('\tModelling without rescaling', logname)

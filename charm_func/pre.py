@@ -1,8 +1,8 @@
 import os
 import sys
 import timeit
-import pre_func as prf
-import global_func as gf
+from charm_func import pre_func as prf
+from charm_func import global_func as gf
 
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
 	capture, work_dir, path_to_hic, norm, path_to_hic_dump,

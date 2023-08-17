@@ -1,8 +1,8 @@
 import os
 import sys
 import timeit
-import global_func as gf
-import sim_func as sf
+from charm_func import global_func as gf
+from charm_func import sim_func as sf
 
 def read_Contact_Data(
 	contact_dir, coverage_file, distance_file, resolution,

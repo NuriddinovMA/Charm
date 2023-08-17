@@ -1,7 +1,7 @@
 import timeit
 import sys
 import os
-import global_func as gf
+from charm_func import global_func as gf
 try: import numpy as np
 except ImportError: print("numpy not found!")
 try: import scipy.stats as sc

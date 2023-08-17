@@ -5,7 +5,7 @@ import scipy.stats as st
 import timeit
 import sys
 import os
-import global_func as gf
+from charm_func import global_func as gf
 
 def readBedGraph(fname, resolution,ChrIdxs):
 

@@ -1,8 +1,8 @@
 import os
 import sys
 import timeit
-import c2h_func as c2h
-import global_func as gf
+from charm_func import c2h_func as c2h
+from charm_func import global_func as gf
 
 def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	chosen_chroms, chrom_sizes, resolution,

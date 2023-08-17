@@ -22,35 +22,6 @@ def FindKey(Hash, key):
 			except KeyError: pass
 	else: return key
 
-def diag_counts(chrSzs,**kwargs):
-	try: logname = kwargs['log']
-	except KeyError: logname = False
-	try: capture = kwargs['capture']
-	except KeyError: capture = False
-	counts = {}
-	start_time = timeit.default_timer()
-	gf.printlog('\t\tstart diag count',logname)
-	if capture:
-		lnc = capture[2]-capture[1]
-		for l in range(lnc):
-			try: counts[l] += (lnc-l)
-			except KeyError: counts[l] = (lnc-l)
-	else:
-		Chrms = sorted(chrSzs)
-		lnc = len(Chrms)
-		full = (lnc+1)*lnc/2
-		for i in range(lnc):
-			for l in range(chrSzs[Chrms[i]]):
-				try: counts[l] += (chrSzs[Chrms[i]]-l)
-				except KeyError: counts[l] = (chrSzs[Chrms[i]]-l)
-			for j in range(i+1,lnc):
-				l = -1000
-				try: counts[l] += chrSzs[Chrms[i]]*chrSzs[Chrms[j]]
-				except KeyError: counts[l] = chrSzs[Chrms[i]]*chrSzs[Chrms[j]]
-	elp = timeit.default_timer() - start_time
-	gf.printlog('\t\tend diag count %.2fs' % elp,logname)
-	return counts
-
 def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 	try: logname = kwargs['log']
 	except KeyError: logname = False
@@ -98,8 +69,12 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 				b1,b2,p = int(parse[idx[0]])//resolution,int(parse[idx[1]])//resolution,float(parse[idx[2]])
 				if np.isnan(p): p = 0
 				S += p
-				CI[c1][b1][l2i[c2]-1] += p
-				CI[c2][b2][l2i[c1]-1] += p
+				try:
+					CI[c1][b1][l2i[c2]-1] += p
+					CI[c2][b2][l2i[c1]-1] += p
+				except IndexError:
+					gf.printlog('!!!! %s %s %s %s' % (b1,b2,ChrSzs[c1],ChrSzs[c2]),logname)
+					exit()
 		elpf = timeit.default_timer() - stf
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t\t...processed %i/%i files %.2fs (%.2fs)' % (nf,lnf,elpf,elp),logname)
@@ -114,12 +89,18 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 	else:
 		for i in range(lnc):
 			li = len(CI[Chrms[i]])
+			nli = 0
+			for ii in CI[Chrms[i]]:
+				if np.sum(ii) == 0: nli +=1
 			for j in range(i,lnc):
 				lj = len(CI[Chrms[j]])
-				N += li*lj
+				nlj = 0
+				for jj in CI[Chrms[j]]:
+					if np.sum(jj) == 0: nlj +=1
+				N += ((li-nli)*(lj-nlj))
 				SO += np.sum(CI[Chrms[i]])*np.sum(CI[Chrms[j]])
 			M += np.sum(CI[Chrms[i]])
-			MN += li
+			MN += (li-nli)
 	SO = 1.*SO/N
 	M = 1.*M/MN
 	elp = timeit.default_timer() - start_time
@@ -150,6 +131,56 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\tgenerate count of bin pairs %.2fs' % elp,logname)
 	return CI
+
+def diag_counts(chrSzs,binCov,**kwargs):
+	try: logname = kwargs['log']
+	except KeyError: logname = False
+	try: capture = kwargs['capture']
+	except KeyError: capture = False
+	counts = {}
+	start_time = timeit.default_timer()
+	gf.printlog('\t\tstart diag count',logname)
+	BC,NBC,NL = [],[],{}
+	for chrm in binCov:
+		for i in range(len(binCov[chrm])):
+			if np.sum(binCov[chrm][i]) == 0: NBC.append((chrm,i))
+			else: BC.append((chrm,i))
+	BC = NBC + BC
+	lnn = len(NBC)
+	lnb = len(BC)
+	for i in range(lnn):
+		for j in range(i,lnb):
+			if NBC[i][0] == BC[j][0]: l = abs(NBC[i][1] - BC[j][1])
+			else: l = -1000
+			try: NL[l] += 1
+			except KeyError: NL[l] = 1
+	del BC
+	del NBC
+	
+	if capture:
+		lnc = capture[2]-capture[1]
+		for l in range(lnc):
+			try: counts[l] += (lnc-l)
+			except KeyError: counts[l] = (lnc-l)
+	else:
+		Chrms = sorted(chrSzs)
+		lnc = len(Chrms)
+		full = (lnc+1)*lnc/2
+		for i in range(lnc):
+			for l in range(chrSzs[Chrms[i]]):
+				try: counts[l] += (chrSzs[Chrms[i]]-l)
+				except KeyError: counts[l] = (chrSzs[Chrms[i]]-l)
+			for j in range(i+1,lnc):
+				l = -1000
+				try: counts[l] += chrSzs[Chrms[i]]*chrSzs[Chrms[j]]
+				except KeyError: counts[l] = chrSzs[Chrms[i]]*chrSzs[Chrms[j]]
+	for l in counts:
+		try: k = NL[l]
+		except KeyError: k = 0
+		counts[l] = counts[l] - k
+	elp = timeit.default_timer() - start_time
+	gf.printlog('\t\tend diag count %.2fs' % elp,logname)
+	return counts
 
 def iNormContactListing( path, CI, resolution, **kwargs):
 	try: logname = kwargs['log']
@@ -346,8 +377,9 @@ def iDistanceRead(lmax,**kwargs):
 				p=hash[chrms][cons][1]
 				b1,b2=cons
 				mcov = np.sum(bincov[c1][b1]) * np.sum(bincov[c2][b2])
-				if c1 == c2: iDH[abs(b2-b1)].append((p,mcov))
-				else: iDH[-1000].append((p,mcov))
+				scov = np.sum(bincov[c1][b1]) + np.sum(bincov[c2][b2])
+				if c1 == c2: iDH[abs(b2-b1)].append((p,mcov,scov))
+				else: iDH[-1000].append((p,mcov,scov))
 				n += 1
 				if n % 1000000 == 0:
 					elp = timeit.default_timer() - start_time
@@ -392,7 +424,8 @@ def iDistanceRead(lmax,**kwargs):
 				if c1 == c2: l = abs(b2-b1)
 				else: l = -1000
 				mcov = np.sum(bincov[c1][b1]) * np.sum(bincov[c2][b2])
-				iDH[l].append((p,mcov))
+				scov = np.sum(bincov[c1][b1]) + np.sum(bincov[c2][b2])
+				iDH[l].append((p,mcov,scov))
 			del H
 			elpf = timeit.default_timer() - stf
 			elp = timeit.default_timer() - start_time
@@ -405,8 +438,9 @@ def iMeanStatistics(contactDistanceHash, count):
 	start_time = timeit.default_timer()
 	mean = 1.*np.sum(contactDistanceHash,axis=0)[0]/count
 	prop = np.mean(contactDistanceHash,axis=0)
-	try: prcList = ( np.min(contactDistanceHash,axis=0)[0],mean,np.max(contactDistanceHash,axis=0)[0],prop[0],prop[1])
-	except ValueError: prcList = (0,0,0,0,0)
+	c1 = len(np.array(contactDistanceHash)[np.array(contactDistanceHash)[:,0] == 1])
+	try: prcList = ( np.min(contactDistanceHash,axis=0)[0],mean,np.max(contactDistanceHash,axis=0)[0],prop[0],prop[1],prop[2],c1)
+	except ValueError: prcList = (0,0,0,0,0,0,0)
 	return prcList
 
 def iMeaner(contactDistanceHash,counts,path,**kwargs):
@@ -415,11 +449,11 @@ def iMeaner(contactDistanceHash,counts,path,**kwargs):
 	start_time = timeit.default_timer()
 	Keys = sorted(counts)
 	ld = len(Keys)
-	meanHash = {i:(0,0,0) for i in range(Keys[-1]+1)}
+	meanHash = {i:(0,0,0,0) for i in range(Keys[-1]+1)}
 	f = open(path + '.stat','w')
 	base_count = counts[0]
 	gf.printlog('\tstart statistic for %i distances' % ld,logname)
-	f.write('distances\tcontact_counts\tdistance_combined\tmin\tmean\tmax\tno_null_mean\tmean_coverage\n')
+	f.write('distances\tall_contacts\tcontacts=0\tcontacts=1\tdistance_combined\tmin\tmean\tmax\tno_null_mean\tmean_mult_coverage\tmean_sum_coverage\n')
 	for l in Keys:
 		count,d = counts[l],0,
 		try: cdh = contactDistanceHash[l][:]
@@ -437,9 +471,9 @@ def iMeaner(contactDistanceHash,counts,path,**kwargs):
 			except KeyError: pass
 		cdh.sort()
 		meanHash[l] = iMeanStatistics(cdh, count)
-		if l >= 0: f.write( '%i\t%i\t%i' % (l, len(cdh),d) )
-		else: f.write('interchromosome\t%i\t0' % len(cdh) )
-		for i in meanHash[l]: f.write( '\t%f' % i )
+		if l >= 0: f.write( '%i\t%i\t%i\t%i\t%i' % (l, count,(count-len(cdh)), meanHash[l][-1],d) )
+		else: f.write('interchromosome\t%i\t%i\t%i\t0' % (count,(count-len(cdh)), meanHash[l][-1]) )
+		for i in meanHash[l][:-1]: f.write( '\t%f' % i )
 		f.write('\n')
 		if (l % 10 == 0) or (l < 0):
 			elp = timeit.default_timer() - start_time
@@ -496,7 +530,7 @@ def iTotalContactListing( meanHash, binCov, resolution, out, **kwargs):
 						elp = timeit.default_timer() - start_time
 						gf.printlog('\t... %i contact transformed end time: %.2fs;' % (n, elp),logname)
 			fout = open('%s.%s.%s.allCon' % (out,c1,c2),'w')
-			fout.write('chr1\tbin1\tchr2\tbin2\tcontacts\toe\tcov_mult\n')
+			fout.write('chr1\tbin1\tchr2\tbin2\tcontacts\toe\tcov1\tcov2\n')
 			Keys = sorted(H)
 			for key in Keys:
 				c1,b1,c2,b2 = key
@@ -504,10 +538,10 @@ def iTotalContactListing( meanHash, binCov, resolution, out, **kwargs):
 				if c1 == c2: l = abs(b2-b1)
 				else: l = -1000
 				mean = meanHash[l][1]
-				mult_cov = np.sum(binCov[c1][b1])*np.sum(binCov[c2][b2])
+				cov1,cov2 = np.sum(binCov[c1][b1]),np.sum(binCov[c2][b2])
 				try: 
 					pm = 1.*p/mean
-					fout.write('%s\t%i\t%s\t%i\t%f\t%f\t%i\n' % (c1,b1,c2,b2,p,pm,mult_cov))
+					fout.write('%s\t%i\t%s\t%i\t%f\t%f\t%i\t%i\n' % (c1,b1,c2,b2,p,pm,cov1,cov2))
 				except ZeroDivisionError: gf.printlog('\t\tZeroDivisionError %s %s %i %.2f' % (c1,c2,l,meanHash[l]),lognam)
 			fout.close()
 			del H
@@ -522,17 +556,17 @@ def iTotalContactListing( meanHash, binCov, resolution, out, **kwargs):
 			c1,c2 = chrms[i]
 			if c1 == c2:
 				fout = open('%s.%s.%s.allCon' % (out,c1,c2),'w')
-				fout.write( 'chr1\tbin1\tchr2\tbin2\tcontacts\toe\tcov_mult\tnormed_contacts\n' )
+				fout.write( 'chr1\tbin1\tchr2\tbin2\tcontacts\toe\tcov1\tcov2\tnormed_contacts\n' )
 				pairs = sorted(hash[chrms[i]])
 				for pair in pairs:
 					b1,b2 = pair
 					p1,p2 = hash[chrms[i]][pair]
 					l = abs(b2-b1)
 					mean = meanHash[l][1]
-					mult_cov = np.sum(binCov[c1][b1])*np.sum(binCov[c2][b2])
+					cov1,cov2 = np.sum(binCov[c1][b1]),np.sum(binCov[c2][b2])
 					try: 
 						pm = 1.*p2/mean
-						fout.write( '%s\t%i\t%s\t%i\t%f\t%f\t%i\t%f\n' % (c1,b1,c2,b2,p1,pm,mult_cov,p2) )
+						fout.write( '%s\t%i\t%s\t%i\t%f\t%f\t%i\t%i\t%f\n' % (c1,b1,c2,b2,p1,pm,cov1,cov2,p2) )
 					except ZeroDivisionError: gf.printlog('\t\tZeroDivisionError %s %s %i %.2f' % (c1,c2,l,meanHash[l]),logname)
 					n += 1
 					if n % 1000000 == 0:
@@ -540,17 +574,17 @@ def iTotalContactListing( meanHash, binCov, resolution, out, **kwargs):
 						gf.printlog('\t... %i contact transformed end time: %.2fs;' % (n, elp),logname)
 			else:
 				fout = open('%s.%s.%s.allCon' % (out,c1,c2),'w')
-				fout.write( 'chr1\tbin1\tchr2\tbin2\tcontacts\toe\tcov_mult\tnormed_contacts' )
+				fout.write( 'chr1\tbin1\tchr2\tbin2\tcontacts\toe\tcov1\tcov2\tnormed_contacts\n' )
 				l = -1000
 				mean = meanHash[l][1]
 				pairs = sorted(hash[chrms[i]])
 				for pair in pairs:
 					b1,b2 = pair
 					p1,p2 = hash[chrms[i]][pair]
-					mult_cov = np.sum(binCov[c1][b1])*np.sum(binCov[c2][b2])
+					cov1,cov2 = np.sum(binCov[c1][b1]),np.sum(binCov[c2][b2])
 					try: 
 						pm = 1.*p2/mean
-						fout.write( '%s\t%i\t%s\t%i\t%f\t%f\t%i\t%f\n' % (c1,b1,c2,b2,p1,pm,mult_cov,p2) )
+						fout.write( '%s\t%i\t%s\t%i\t%f\t%f\t%i\t%i\t%f\n' % (c1,b1,c2,b2,p1,pm,cov1,cov2,p2) )
 					except ZeroDivisionError: gf.printlog('\t\tZeroDivisionError %s %s %i %.2f' % (c1,c2,l,meanHash[l]),logname)
 					n += 1
 					if n % 1000000 == 0:

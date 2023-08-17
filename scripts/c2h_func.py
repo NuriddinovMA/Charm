@@ -5,7 +5,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 	try: order = kwargs['order']
 	except KeyError: order = False
 	try: format = kwargs['format']
-	except KeyError: format = 'pre'
+	except KeyError: format = 'short.gz'
 
 	H,F = {},{}
 	names = set([])
@@ -59,7 +59,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 		else: Keys = sorted(H,key=lambda k:(k[0],k[2],k[1],k[3]))
 		fname='%s/%s/%s.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
 		f = open(fname,'w')
-		if format == 'short':
+		if format in ['short','short.gz']:
 			for key in Keys: f.write('%s\t%i\t%s\t%i\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
 		else:
 			for key in Keys: f.write('0\t%s\t%i\t0\t1\t%s\t%i\t1\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))

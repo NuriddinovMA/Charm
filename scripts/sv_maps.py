@@ -93,6 +93,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, stand
 			
 			if stand_alone == False:
 				chosen_chroms = ''
+				if len(cc) == 1: cc = list(cc)*2
 				for c in cc: chosen_chroms += '%s,' % c
 				return chosen_chroms[:-1],map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
 				exit()

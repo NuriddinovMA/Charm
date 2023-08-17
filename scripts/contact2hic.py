@@ -27,7 +27,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	wt2_contacts = gf.boolean(wt2_contacts)
 	
 	elp = timeit.default_timer() - start_time
-	gf.printlog( '\t Step 1: summing muntant and wild type contacts, %.2f' % (elp), log_file)
+	gf.printlog( '\t\tsumming muntant and wild type contacts, %.2f' % (elp), log_file)
 
 	c2h.SummingPre( svs_contacts, wt1_contacts, wt2_contacts, resolution, sim_name, out_dir, 
 		order=l2i, format=format
@@ -47,7 +47,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		params = "%s %s %s" % (F,O,chrom_sizes)
 		if hic_resolutions: resolution_list = ' -r %s' % hic_resolutions
 		else: resolution_list= ''
-		gf.printlog('\texecuted command: %s %s %s ' %( command, params, resolution_list),log_file)
+		gf.printlog('\t\texecuted command: %s %s %s ' %( command, params, resolution_list),log_file)
 		os.system( command + params + resolution_list)
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
@@ -58,7 +58,14 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
-		os.system('gzip ' + F + '.gz')
+		os.system('gzip ' + F)
+	elif format == 'short': 
+		F = '%s/%s.short.pre' % ( out_dir, sim_name )
+	elif format == 'short.gz':
+		F = '%s/%s.short.pre' % ( out_dir, sim_name )
+		try: os.remove(F + '.gz')
+		except FileNotFoundError: pass
+		os.system('gzip ' + F)
 	else:
 		gl.printlog('Error! Unsupported format, use "hic" or "pre", or "pre.gz" ',log_file)
 		exit()

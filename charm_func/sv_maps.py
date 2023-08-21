@@ -4,7 +4,7 @@ from charm_func import sv_func as svf
 from charm_func import global_func as gf
 from copy import deepcopy
 
-def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, stand_alone):
+def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, complexed, stand_alone):
 	
 	outdir = work_dir + '/rear'
 	try: os.makedirs(outdir)
@@ -28,8 +28,16 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 			
 			p11 = int(p11)//resolution
 			if a in ['->','!>']: 
-				print('start')
+				#print('start')
 				chrms = [c1,c2]
+				if c1 == c2: pairs = [(c1,c2)]
+				else: pairs = [(c1,c1),(c1,c2),(c2,c2)]
+				add_pairs = []
+				if abs(cnv1)+abs(cnv2) != 1: 
+					if c2 in ChrmSzs: add_pairs = [(c1,'all')]
+					else: add_pairs = [(c1,'all'),(c2,'all')]
+				else: pass
+				
 				try: p12 = int(p12)//resolution
 				except ValueError:
 					try: p12 = ChrmSzs[c1]
@@ -39,8 +47,15 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 					try: p2 = ChrmSzs[c2]
 					except KeyError: p2 = 0
 			if a in ['>>','>!']:
-				print('+++')
-				chrms.extend([c1,c2])
+				#print('+++')
+				chrms += [c1,c2]
+				if c1 == c2: pairs += [(c1,c2)]
+				else: pairs += [(c1,c1),(c1,c2),(c2,c2)]
+				if abs(cnv1)+abs(cnv2) != 1: 
+					if c2 in ChrmSzs: add_pairs += [(c1,'all')]
+					else: add_pairs += [(c1,'all'),(c2,'all')]
+				else: pass
+				
 				try: p12 = int(p12)//resolution
 				except ValueError: 
 					try: p12 = ChrmSzs[c1]
@@ -52,7 +67,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 						try: p2 = mutChrmSzs[c2]
 						except KeyError: p2 = 0
 			else:
-				print( a,'generate MT' )
+				#print( a,'generate MT' )
 				MT = { ChrmIdx[i+1]:[(ChrmIdx[i+1],j) for j in range(ChrmSzs[ChrmIdx[i+1]])] for i in range(len(ChrmSzs)) }
 			if a in ['>>','>!']:
 				try: 
@@ -61,14 +76,14 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 						c2t,p2t = markHash[c2,p2-1]
 						p2t+=1
 				except KeyError: c2t,p2t = c2,p2
-				print( c2t,p2t )
+				#print( c2t,p2t )
 				ln = p12-p11
-				print( c1,p11,p12,ln )
+				#print( c1,p11,p12,ln )
 				if cnv1 and cnv2: c1t,p11t = c1,p11
 				else: c1t,p11t = markHash[c1,p11]
 				p12t = p11t+ln
-				print( c1t,p11t,p12t )
-				print( cnv1, cnv2 )
+				#print( c1t,p11t,p12t )
+				#print( cnv1, cnv2 )
 				MT = svf.mutation(MT,(c1t,p11t,p12t),(c2t,p2t),cnv1=cnv1,cnv2=cnv2)
 			else: MT = svf.mutation(MT,(c1,p11,p12),(c2,p2),cnv1=cnv1,cnv2=cnv2)
 			for key in MT: mutChrmSzs[key] = len(MT[key])
@@ -89,13 +104,40 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 					map_SV_from_ref ='%s/%s.%s.%i.mark' % (outdir, cnt, mut, resolution)
 					map_SV_to_ref ='%s/%s.%s.%i.mark' % (outdir, mut, cnt, resolution)
 					chrom_sizes_SV = '%s/%s.%s.chr.sizes' % (outdir, mut,cnt)
-				print('end')
+				#print('end')
 				
 				if stand_alone == False:
 					chosen_chroms = ''
-					if len(cc) == 1: cc = list(cc)*2
-					for c in cc: chosen_chroms += '%s,' % c
-					return chosen_chroms[:-1],map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
-					exit()
+					add_pair_chroms = ''
+					cc = list(cc)
+					if len(cc) == 1: cc *= 2
+					for i in range(len(add_pairs)-1,-1,-1):
+						c = add_pairs[i]
+						if c[1] == 'all':
+							del add_pairs[i]
+							for j in ChrmSzs: add_pairs += [(c[0],j)]
+					pairs = set(pairs)
+					add_pairs = set(add_pairs)
+					for c in pairs:
+						add_pairs -= set([(c[0],c[1])])
+						add_pairs -= set([(c[1],c[0])])
+					pairs = sorted(pairs)
+					add_pairs2 = sorted(add_pairs)
+					no = set([])
+					for i in add_pairs2:
+						k = (i[0],i[1])
+						kr = (i[1],i[0])
+						if (k in add_pairs) and  (kr in add_pairs) and ((k in no) == False):
+							no |= {k,kr}
+							add_pairs -= {k}
+					add_pairs = sorted(add_pairs)
+					if complexed: 
+						for i in range(len(cc)):
+							for j in range(i,len(cc)):
+								chosen_chroms += '%s,%s;' % (cc[i],cc[j])
+					else:
+						for c in pairs: chosen_chroms += '%s,%s;' % c
+						for c in add_pairs: add_pair_chroms += '%s,%s;' % c
+					return chosen_chroms[:-1],add_pair_chroms[:-1],map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
 
 

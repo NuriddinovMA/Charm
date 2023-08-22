@@ -292,6 +292,7 @@ if __name__ == "__main__":
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t... end data reading %.2fs'% elp, log_file)
 				gf.printlog('\tStep 2: Reading mark points...', log_file)
+				print(rcf,rct)
 				MarkPoints,MarkPointsLow = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,rcf,l2i_to,rct,log_file)
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...%i mark point red for %.2f sec' % (len(MarkPoints), elp), log_file)
@@ -411,6 +412,7 @@ if __name__ == "__main__":
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t... end data reading %.2fs'% elp, log_file)
 				gf.printlog('\tStep 2: Reading mark points...', log_file)
+				print(rcf,rct)
 				MarkPoints,MarkPointsLow = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,rcf,l2i_to,rct,log_file)
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...%i mark point red for %.2f sec' % (len(MarkPoints), elp), log_file)
@@ -452,7 +454,9 @@ if __name__ == "__main__":
 		except KeyError: replica_ids = '0,1'
 		try: work_dir = config['wild_type']['work_dir']
 		except KeyError: work_dir = config['global']['work_dir']
-
+		try: contact_count = config['wild_type']['contact_count']
+		except KeyError: contact_count = config['simulation']['contact_count']
+		
 		if 'wt' in skip_stages: gf.printlog('Stage "wt" skipped', log_file)
 		else:
 			
@@ -486,8 +490,6 @@ if __name__ == "__main__":
 			except KeyError: model = config['simulation']['model']
 			try: random = config['wild_type']['random']
 			except KeyError: random = config['simulation']['random']
-			try: contact_count = config['wild_type']['contact_count']
-			except KeyError: contact_count = config['simulation']['contact_count']
 			try: predict_null_contacts = config['wild_type']['predict_null_contacts']
 			except KeyError: predict_null_contacts = config['simulation']['predict_null_contacts']
 			noised = global_noised
@@ -523,7 +525,7 @@ if __name__ == "__main__":
 						contactData = sim.read_Contact_Data(
 							contact_dir, coverage_file, distance_file, resolution,
 							contact_low, coverage_low, distance_low, resolution_low,
-							contact_pab, coverage_pab, [c1_c2],
+							contact_pab, coverage_pab, c1_c2,
 							l2i, work_dir, log_file
 						)
 						elp = timeit.default_timer() - start_time
@@ -540,14 +542,14 @@ if __name__ == "__main__":
 					elp = timeit.default_timer() - start_time
 					gf.printlog('\t...end replicas simulation %.2fs'% elp, log_file)
 		
-		wt_path = []
-		if replica_ids and (('hic' in skip_stages) == False):
-			for replica_id in replica_ids.split(','):
-				wt_path.append('%s/wt/%s/%s/%s' % (work_dir,sim_id,contact_count,replica_id))
-			try: config['hic']['wt1_contacts'] 
-			except KeyError: config['hic']['wt1_contacts']  = wt_path[0]
-			try: config['hic']['wt2_contacts']
-			except KeyError: config['hic']['wt2_contacts']  = wt_path[1]
+	wt_path = []
+	if replica_ids and ('hic' not in skip_stages):
+		for replica_id in replica_ids.split(','):
+			wt_path.append('%s/wt/%s/%s/%s' % (work_dir,sim_id,contact_count,replica_id))
+		try: config['hic']['wt1_contacts'] 
+		except KeyError: config['hic']['wt1_contacts']  = wt_path[0]
+		try: config['hic']['wt2_contacts']
+		except KeyError: config['hic']['wt2_contacts']  = wt_path[1]
 
 	if args.stage in ['pre+','SVs+','sim+','lift','lift+','wt+','hic']:
 		from charm_func import contact2hic as c2h

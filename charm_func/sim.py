@@ -165,7 +165,7 @@ def sv_Simulation(
 
 def wt_Simulation(
 	contactData, resolution, resolution_low, resolution_pab,
-	chosen_chroms, c2s_low, l2i,
+	c1_c2, c2s_low, l2i,
 	model, contact_count, random, predict_null_contacts, noised,
 	sim_name, replica_id, work_dir, log_file
 	):
@@ -177,7 +177,6 @@ def wt_Simulation(
 	contactHash, covHash, psList, contactLow, covLow, psListLow, contactPAB, covPAB = contactData
 	out_dir = '%s/wt/%s/%i/%s' % (work_dir,sim_name,contact_count,replica_id)
 	
-	c1_c2 = chosen_chroms.split(',')
 	out_name = '%s/wt/%s/%i/%s/%s.%s' % (work_dir,sim_name,contact_count,replica_id,sim_name,replica_id)
 	sf.iContactRegression( covHash, resolution, c1_c2, l2i, c2s_low, out_name,
 		model=model, scoring=psList, random=random, contact_count=contact_count,

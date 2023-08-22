@@ -506,23 +506,24 @@ if __name__ == "__main__":
 					wt_name = '%s/wt/%s/%s/%s' % (work_dir,sim_id,contact_count,replica_id)
 					try: os.makedirs( wt_name )
 					except FileExistsError: pass
-					chroms = [],[]
-					if chosen_chroms == 'all': chroms = sorted(c2s_low.keys())
-					else: chroms = sorted( set(c2s_low.keys())& set(chosen_chroms.split(',')) )
-					for ci in range(len(chroms)):
-						i = chroms[ci]
-						for cj in range(ci,len(chroms)):
-							j = chroms[cj]
-							if l2i[i] <= l2i[j]: c1_c2 = '%s,%s' % (chroms[ci],chroms[cj])
-							else: c1_c2 = '%s,%s' % (chroms[cj],chroms[ci])
-							pair_list.append(c1_c2)
+					chroms,pair_list = [],[]
+					if chosen_chroms == 'all':
+						chroms = sorted(c2s_low.keys())
+						for ci in range(len(chroms)):
+							i = chroms[ci]
+							for cj in range(ci,len(chroms)):
+								j = chroms[cj]
+								if l2i[i] <= l2i[j]: c1_c2 = (chroms[ci],chroms[cj])
+								else: c1_c2 = (chroms[cj],chroms[ci])
+								pair_list.append(c1_c2)
+					else: pair_list = [c.split(',') for c in chosen_chroms.split(';')]
 
 					for c1_c2 in pair_list:
 						gf.printlog('\tStep 1: %s data reading...' % c1_c2, log_file)
 						contactData = sim.read_Contact_Data(
 							contact_dir, coverage_file, distance_file, resolution,
 							contact_low, coverage_low, distance_low, resolution_low,
-							contact_pab, coverage_pab, c1_c2,
+							contact_pab, coverage_pab, [c1_c2],
 							l2i, work_dir, log_file
 						)
 						elp = timeit.default_timer() - start_time

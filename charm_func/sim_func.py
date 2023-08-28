@@ -76,8 +76,6 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 	except KeyError: logname = False
 	try: chrms = kwargs['chrms']
 	except KeyError: chrms = sorted(ChrIdxs)
-	# try: pair = kwargs['pair']
-	# except KeyError: pair = False
 	try: scale = kwargs['scale']
 	except KeyError: scale = 1
 	try: index = kwargs['index']
@@ -90,6 +88,7 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 
 	for i in range(lf):
 		parse = files[i].split('.')
+		Keys = []
 		if ([parse[-2],parse[-3]] in chrms) or ([parse[-3],parse[-2]] in chrms):
 			stf = timeit.default_timer()
 			gf.printlog('\t\t\t\topen %s, %s/%i' % (files[i],i,lf), logname)
@@ -99,7 +98,7 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 			elpf = timeit.default_timer() - stf
 			gf.printlog('\t\t\t\t...close, %.2f' % (elpf) , logname)
 			ln = len(lines)
-			Keys = []
+			
 			for j in range(ln-1,0,-1):
 				parse = lines[j].split()
 				del lines[j]
@@ -111,7 +110,7 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 						contactHash[c1,b1,c2,b2][0] += p 
 						contactHash[c1,b1,c2,b2][1].append(oe)
 					except KeyError: contactHash[c1,b1,c2,b2] = [p,[oe,]]
-					except AttributeError: print('iReadInitialContact AttributeError', parse, c1,b1,c2,b2, contactHash[c1,b1,c2,b2])
+					except AttributeError: print('iReadInitialContact AttributeError', parse, c1,b1,c2,b2, contactHash[c1,b1,c2,b2],p,oe)
 					lc +=1
 				except IndexError: print( 'iReadInitialContact IndexError', j, parse )
 				except ValueError: print( 'iReadInitialContact ValueError', j, parse )
@@ -121,8 +120,8 @@ def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database f
 			elpf = timeit.default_timer() - stf
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\t\t\tfile is readed, %.2fs (%.2fs)' % (elpf,elp), logname)
-			for key in Keys: contactHash[key][1] = np.mean(contactHash[key][1])
-			del Keys
+		for key in Keys: contactHash[key][1] = np.mean(contactHash[key][1])
+		del Keys
 	return contactHash
 
 def iReadingMarkPoints(fname, resolution, **kwargs):
@@ -135,11 +134,12 @@ def iReadingMarkPoints(fname, resolution, **kwargs):
 	try: ChrIdxs_to = kwargs['chrm_index_to']
 	except KeyError: ChrIdxs_to = ChrIdxs_from
 	try: chrms_from = kwargs['chrms_from']
-	except KeyError: chrms = sorted(ChrIdxs_from)
+	except KeyError: chrms_from = ChrIdxs_from
 	try: chrms_to = kwargs['chrms_to']
-	except KeyError: chrms = sorted(ChrIdxs_to)
+	except KeyError: chrms_to = ChrIdxs_to
 	ObjCoorMPH = {},{},{}
 	ObjCoorMP = {}
+	chosen_from = set([])
 	gf.printlog('\t\t\tstart reading markpoints '+fname, logname)
 	start_time = timeit.default_timer()
 	f = open(fname, 'r')
@@ -151,6 +151,7 @@ def iReadingMarkPoints(fname, resolution, **kwargs):
 		parse = lines[i].split()
 		c1,p11,p12,c2,p21,p22 = parse[:6]
 		if c1 in chrms_from and c2 in chrms_to:
+			chosen_from.add(c1)
 			c1,c2 = ChrIdxs_from[c1], ChrIdxs_to[c2]
 			p11,p12,p21,p22 = int(p11),int(p12),int(p21),int(p22)
 			p1,p2 = (p11+p12)//2,(p21+p22)//2 
@@ -178,7 +179,9 @@ def iReadingMarkPoints(fname, resolution, **kwargs):
 	del ObjCoorMPH
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\t\t...end remapping lowficient calculating %.2fs' % elp, logname)
-	return ObjCoorMP
+	chosen_from = list(chosen_from)
+	chosen_from.sort()
+	return ObjCoorMP,chosen_from
 
 def createUntouchedMarkPoints(chroms,chrSizes,ChrIdxs_to,ChrIdxs_from):
 	UnCoorMP = {}

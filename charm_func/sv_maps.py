@@ -1,143 +1,110 @@
 import numpy as np
 import os
-from charm_func import sv_func as svf
+from charm_func import sv2_func as svf
 from charm_func import global_func as gf
 from copy import deepcopy
 
-def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, complexed, stand_alone):
+def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, stand_alone,log_file):
 	
 	outdir = work_dir + '/rear'
 	try: os.makedirs(outdir)
 	except OSError: pass
 	resolution = int(resolution)
+	shift = resolution//2
 	ChrmSzs = gf.ChromSizes(chrom_sizes,resolution)
 	ChrmIdx = gf.ChromIndexing(chrom_sizes)
-	mutChrmSzs = {}
-	WT = { ChrmIdx[i+1]:[(ChrmIdx[i+1],j) for j in range(ChrmSzs[ChrmIdx[i+1]])] for i in range(len(ChrmSzs)) }
-	cc, pointviews = set([]),''
+
 	with open(rearrangement_list, 'r') as f: lines = f.readlines()
 	for line in lines:
-		cnt,mut,c1,p11,p12,a,c2,p2,cnv1,cnv2 = line.split()[:10]
-		if rname == False or rname == mut:
-			cnv1,cnv2 = int(cnv1),int(cnv2)
-			cc.add(c1)
-			cc.add(c2)
-			pointviews += '%s %s %s\n' % (c1,p11,p12)
-			if cnv2 < 0: invert = True
-			else: invert = False
+		cnt,mut,c1,p11,p12,a,c2,cnv1,cnv2 = line.split()[:9]
+		if rname == False or rname == mut or stand_alone:
+			gf.printlog('\t\tstructural variation %s' % line.strip(),log_file)
 			
-			p11 = int(p11)//resolution
 			if a in ['->','!>']: 
-				#print('start')
-				chrms = [c1,c2]
-				if c1 == c2: pairs = [(c1,c2)]
-				else: pairs = [(c1,c1),(c1,c2),(c2,c2)]
-				add_pairs = []
-				if abs(cnv1)+abs(cnv2) != 1: 
-					if c2 in ChrmSzs: add_pairs = [(c1,'all')]
-					else: add_pairs = [(c1,'all'),(c2,'all')]
-				else: pass
-				
-				try: p12 = int(p12)//resolution
-				except ValueError:
-					try: p12 = ChrmSzs[c1]
-					except KeyError: p12 = 0
-				try: p2 = int(p2)//resolution
-				except ValueError:
-					try: p2 = ChrmSzs[c2]
-					except KeyError: p2 = 0
-			if a in ['>>','>!']:
-				#print('+++')
-				chrms += [c1,c2]
-				if c1 == c2: pairs += [(c1,c2)]
-				else: pairs += [(c1,c1),(c1,c2),(c2,c2)]
-				if abs(cnv1)+abs(cnv2) != 1: 
-					if c2 in ChrmSzs: add_pairs += [(c1,'all')]
-					else: add_pairs += [(c1,'all'),(c2,'all')]
-				else: pass
-				
-				try: p12 = int(p12)//resolution
-				except ValueError: 
-					try: p12 = ChrmSzs[c1]
-					except KeyError: p12 = mutChrmSzs[c1]
-				try: p2 = int(p2)//resolution
-				except ValueError:
-					try: p2 = ChrmSzs[c2]
-					except KeyError:
-						try: p2 = mutChrmSzs[c2]
-						except KeyError: p2 = 0
-			else:
-				#print( a,'generate MT' )
-				MT = { ChrmIdx[i+1]:[(ChrmIdx[i+1],j) for j in range(ChrmSzs[ChrmIdx[i+1]])] for i in range(len(ChrmSzs)) }
-			if a in ['>>','>!']:
-				try: 
-					if (c2,p2) == markHash[c2,p2]: c2t,p2t = c2,p2
-					else:
-						c2t,p2t = markHash[c2,p2-1]
-						p2t+=1
-				except KeyError: c2t,p2t = c2,p2
-				#print( c2t,p2t )
-				ln = p12-p11
-				#print( c1,p11,p12,ln )
-				if cnv1 and cnv2: c1t,p11t = c1,p11
-				else: c1t,p11t = markHash[c1,p11]
-				p12t = p11t+ln
-				#print( c1t,p11t,p12t )
-				#print( cnv1, cnv2 )
-				MT = svf.mutation(MT,(c1t,p11t,p12t),(c2t,p2t),cnv1=cnv1,cnv2=cnv2)
-			else: MT = svf.mutation(MT,(c1,p11,p12),(c2,p2),cnv1=cnv1,cnv2=cnv2)
-			for key in MT: mutChrmSzs[key] = len(MT[key])
-			if a in ['>>','!>']: markHash = svf.hashgenerate(MT)
-			if a in ['!>','->']:
-				try: os.remove('%s/%s.%s.%i.mark' % (outdir, cnt, mut, resolution))
-				except OSError: pass 
-				try: os.remove('%s/%s.%s.%i.mark' % (outdir, mut, cnt, resolution))
-				except OSError: pass 
+				pointviews = ''
+				chrm_from, chrm_to, add_from, add_to = set([]),set([]),set([]),set([])
+				cc_from,cc_to,MT,mutChrmSzs = {},{},{},{}
+			pointviews += '%s %s %s\n' % (c1,p11,p12)
+			
+			cnv1,cnv2 = int(cnv1),int(cnv2)
+			
+			try: cc_from[c2].add(c1)
+			except KeyError: cc_from[c2] = set([c1,])
+			
+			try: cc_to[c1].add(c2)
+			except KeyError: cc_to[c1] = set([c2,])
+
+			if (c2 not in ChrmSzs) or ((cnv1+abs(cnv2)) > 1):
+				for chrm in ChrmSzs: 
+					add_from.add((c1,chrm))
+					add_to.add((c2,chrm))
+			
+			p11 = (int(p11)+shift)//resolution
+			try: p12 = (int(p12)+shift)//resolution
+			except ValueError: p12 = ChrmSzs[c1]
+			
+			if cnv2 > 0: 
+				try: MT[c2] += [(c1,i) for i in range(p11,p12)]*cnv2
+				except KeyError: MT[c2] = [(c1,i) for i in range(p11,p12)]*cnv2
+			elif cnv2 < 0: 
+				try: MT[c2] += [(c1,i) for i in range(p12-1,p11-1,-1)]*abs(cnv2)
+				except KeyError: MT[c2] = [(c1,i) for i in range(p12-1,p11-1,-1)]*abs(cnv2)
+			else: pass
+			
+			try: mutChrmSzs[c2] += (p12-p11)*abs(cnv2)
+			except KeyError: mutChrmSzs[c2] = (p12-p11)*abs(cnv2)
+			
 			if a in ['->','>!']:
-				chrms = list(set(chrms))
-				chrms.sort()
-				for c1 in range(len(chrms)): svf.markgenerate(MT,chrms[c1],outdir,resolution,(cnt,mut),c1)
-			if a in ['->','>!']:
+				svf.markgenerate(MT,resolution,(cnt,mut),outdir)
+				
+				print(cc_from)
+				for c2 in cc_from:
+					print('1',cc_from[c2])
+					cc_from[c2] = list(cc_from[c2])
+					cc_from[c2].sort()
+					print('1',cc_from[c2])
+					for i in range(len(cc_from[c2])):
+						for j in range(i,len(cc_from[c2])): 
+							chrm_from.add((cc_from[c2][i],cc_from[c2][j]))
+							if i != j: 
+								print('2',(cc_from[c2][j],cc_from[c2][i]))
+								chrm_from -= set([(cc_from[c2][j],cc_from[c2][i])])
+							add_from -= set([(cc_from[c2][i],cc_from[c2][j]),(cc_from[c2][j],cc_from[c2][i])])
+				
+				print(cc_to)
+				for c1 in cc_to:
+					cc_to[c1] = list(cc_to[c1])
+					print('3',cc_to[c1])
+					for i in range(len(cc_to[c1])):
+						for j in range(i,len(cc_to[c1])):
+							chrm_to.add((cc_to[c1][i],cc_to[c1][j]))
+							if i != j: chrm_to -= set([(cc_to[c1][j],cc_to[c1][i])])
+							add_to -= set([(cc_to[c1][i],cc_to[c1][j]),(cc_to[c1][j],cc_to[c1][i])])
+				
+				for c2 in ChrmSzs:
+					try: mutChrmSzs[c2]
+					except KeyError: mutChrmSzs[c2] = ChrmSzs[c2]
+				
 				with open('%s/%s.%s.chr.sizes' % (outdir, mut, cnt), 'w') as f: 
-					Keys = sorted(MT)
-					for key in Keys: print( key, (mutChrmSzs[key]+1)*resolution, file=f)
+					Keys = sorted(mutChrmSzs)
+					for key in Keys: f.write( '%s %i\n' % (key, (mutChrmSzs[key]+1)*resolution) )
 					map_SV_from_ref ='%s/%s.%s.%i.mark' % (outdir, cnt, mut, resolution)
 					map_SV_to_ref ='%s/%s.%s.%i.mark' % (outdir, mut, cnt, resolution)
 					chrom_sizes_SV = '%s/%s.%s.chr.sizes' % (outdir, mut,cnt)
-				#print('end')
 				
-				if stand_alone == False:
-					chosen_chroms = ''
-					add_pair_chroms = ''
-					cc = list(cc)
-					if len(cc) == 1: cc *= 2
-					for i in range(len(add_pairs)-1,-1,-1):
-						c = add_pairs[i]
-						if c[1] == 'all':
-							del add_pairs[i]
-							for j in ChrmSzs: add_pairs += [(c[0],j)]
-					pairs = set(pairs)
-					add_pairs = set(add_pairs)
-					for c in pairs:
-						add_pairs -= set([(c[0],c[1])])
-						add_pairs -= set([(c[1],c[0])])
-					pairs = sorted(pairs)
-					add_pairs2 = sorted(add_pairs)
-					no = set([])
-					for i in add_pairs2:
-						k = (i[0],i[1])
-						kr = (i[1],i[0])
-						if (k in add_pairs) and  (kr in add_pairs) and ((k in no) == False):
-							no |= {k,kr}
-							add_pairs -= {k}
-					add_pairs = sorted(add_pairs)
-					if complexed: 
-						for i in range(len(cc)):
-							for j in range(i,len(cc)):
-								chosen_chroms += '%s,%s;' % (cc[i],cc[j])
-					else:
-						for c in pairs: chosen_chroms += '%s,%s;' % c
-						for c in add_pairs: add_pair_chroms += '%s,%s;' % c
-					return chosen_chroms[:-1],add_pair_chroms[:-1],map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
+				chrm_from,add_from,chrm_to,add_to = list(chrm_from),list(add_from),list(chrm_to),list(add_to)
+				chrm_from.sort(),add_from.sort(),chrm_to.sort(),add_to.sort()
+				gf.printlog('\t\tchrm_from %s' % chrm_from,log_file)
+				gf.printlog('\t\tadd_from %s' % add_from,log_file)
+				gf.printlog('\t\tchrm_to %s' % chrm_to,log_file)
+				gf.printlog('\t\tadd_to %s' % add_to,log_file)
+				
+				cf,af,ct,at = '','','',''
+				
+				for i in chrm_from: cf = '%s,%s;%s' % (i[0],i[1],cf)
+				for i in add_from: af = '%s,%s;%s' % (i[0],i[1],af)
+				for i in chrm_to: ct = '%s,%s;%s' % (i[0],i[1],ct)
+				for i in add_to: at = '%s,%s;%s' % (i[0],i[1],at)
+				if stand_alone == False: return (cf[:-1],ct[:-1]),(af[:-1],at[:-1]),map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
 
 

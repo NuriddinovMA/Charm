@@ -152,7 +152,7 @@ if __name__ == "__main__":
 	
 	if 'svs' in skip_stages: gf.printlog('Stage "SVs" skipped', log_file)
 	else:
-		from charm_func import sv2_maps as sm
+		from charm_func import sv_maps as sm
 		gf.printlog('Stage "SVs" - SV descriptions preparing...', log_file)
 		Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, rname, stand_alone,log_file)
 		

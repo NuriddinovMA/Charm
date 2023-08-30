@@ -98,7 +98,7 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 python3 scripts/charm_manager.py -i [ini_file] [-S stage]
 ```
 ### The chromosome sizes file
-This file contains chromosome sizes (see https://github.com/aidenlab/juicer/wiki/Pre). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
+This file contains chromosome sizes ([example](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
 File format (see the example "test.chr.sizes")
 ```
 <chromosome name> <chromosome size bp>
@@ -182,7 +182,6 @@ test	several	2	1000000	2000000	>>	2	0	0
 test	several	2	2000000	7000000	>>	2	0	0
 test	several	1	2000000	7000000	>>	2	0	1
 test	several	2	7000000	+	>!	2	0	1
-
 ```
 
 ## Advanced description

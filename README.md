@@ -6,11 +6,14 @@ Charm is python-based tool to simulate Hi-C-maps with the user-defined chromosom
 1) Python >= 3.7 with numpy
 2) [Jucier Tools](https://github.com/aidenlab/juicer)(for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
 
-## Quick Start
-
 ## Test dataset run
+```
 charm.sh -i testdataset/EXAMPLE.ini
+```
 As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
+
+#Quick Start
+
 ## Example tasks
 1) The establish of reference database without consequent simulations:
 ```

@@ -29,6 +29,7 @@ charm.sh -i testdataset/example_PRE.ini
 	- the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
 
 where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
+
 2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
 ```
 charm.sh -i testdataset/EXAMPLE.ini *-S wt*
@@ -38,16 +39,19 @@ or
 charm.sh -i testdataset/example_WT.ini
 ```
 As ending, the Charm creates in "testdataset" the folders "wt/TEST.cov_mult_f1/841160/0/" with files named like "TEST.cov_mult_f1.0.<chr1>.<chr2>.allCon" and the folders "wt/TEST.cov_mult_f1/841160/1/" with files named like "TEST.cov_mult_f1.1.<chr1>.<chr2>.allCon"
+
 3) The simulation of *heterozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
 charm.sh -i testdataset/example_HETEROZYGOUS.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "heterozygous.del.hic"
+
 4) The simulation of *homozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
 charm.sh -i testdataset/example_HOMOZYGOUS.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "homozygous.del.hic"
+
 5) The simulation of *mutant* genome, IF the reference database:
 ```
 charm.sh -i testdataset/example_MUTANT.ini -S SVs+

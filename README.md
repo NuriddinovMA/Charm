@@ -3,7 +3,7 @@
 Charm is python-based tool to simulate Hi-C-maps with the user-defined chromosomal rearrangements. This tool allow to simulate CNVs, inversions, translocation, and extra-chromosomal fragments.
 
 ## Requirements
-1) Python >= 3.7 with numpy
+1) Python }= 3.7 with numpy
 2) [Jucier Tools](https://github.com/aidenlab/juicer)(for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
 
 ## Test dataset run
@@ -25,13 +25,13 @@ charm.sh -i testdataset/example_PRE.ini
 ```
 As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
 
-- the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.<chr1>.<chr2>.allCon"
+- the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.{chr1}.{chr2}.allCon"
 
-- the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.<chr1>.<chr2>.allCon"
+- the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.{chr1}.{chr2}.allCon"
 
-- the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
+- the files "pab.TEST.{resolution_pab}.stat", "pab.TEST.{resolution_pab}.binCov" and the folder "pab.TEST.{resolution_pab}" containing files "Tpab.TEST.{resolution_pab}.{chr1}.{chr2}.allCon"
 
-where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
+where {chr1} and {chr2} are the chromosome names and {resolution_pab} is the resolution from [global] section, "resolution_pab" key.
 
 ### 2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
 ```
@@ -41,7 +41,7 @@ or
 ```
 charm.sh -i testdataset/example_WT.ini
 ```
-As ending, the Charm creates in "testdataset" the folders "wt/TEST.cov_mult_f1/841160/0/" with files named like "TEST.cov_mult_f1.0.<chr1>.<chr2>.allCon" and the folders "wt/TEST.cov_mult_f1/841160/1/" with files named like "TEST.cov_mult_f1.1.<chr1>.<chr2>.allCon"
+As ending, the Charm creates in "testdataset" the folders "wt/TEST.cov_mult_f1/841160/0/" with files named like "TEST.cov_mult_f1.0.{chr1}.{chr2}.allCon" and the folders "wt/TEST.cov_mult_f1/841160/1/" with files named like "TEST.cov_mult_f1.1.{chr1}.{chr2}.allCon"
 
 ### 3) The simulation of *heterozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
@@ -117,85 +117,85 @@ python3 scripts/charm_manager.py [-S stage] -i [ini_file]
 This file contains chromosome sizes (see https://github.com/aidenlab/juicer/wiki/Pre). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
 File format (see the example "test.chr.sizes")
 ```
-<chromosome name> <chromosome size bp>
+{chromosome name} {chromosome size bp}
 ```
 
 ### The SVs description 
 To simulate SVs, Charm requires the description of rearrangement in the following format (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
-<reference genome id> <mutant genome uniq id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <the indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
+{reference genome id} {mutant genome uniq id} {chromosome} {coordinate chromosome block start} {coordinate of chromosome block end} {the indicator} {new chromosome} {copy number of locus on OLD position} {copy number of locus on NEW position}
 ```
 The indicator variants:
-  - Use "->" for the plain SVs, this indicator designs the start and the end of SVs description
-  - Use "!>" for the start of the description of complex SVs
-  - Use ">>" for the continuation of description SVs
-  - Use ">!" for the end of the description of complex SVs, the all lines between "!>" and ">!" are processed by Charm as one SV.
+  - Use "-}" for the plain SVs, this indicator designs the start and the end of SVs description
+  - Use "!}" for the start of the description of complex SVs
+  - Use "}}" for the continuation of description SVs
+  - Use "}!" for the end of the description of complex SVs, the all lines between "!}" and "}!" are processed by Charm as one SV.
  
 Examples:
 *(1)* An general translocation; the moving of locus 1:1Mb-2Mb to 7Mb: 
 ```
-test	trn	1	0	1000000	!>	1	0	1
-test	trn	1	2000000	7000000	>>	1	0	1
-test	trn	1	1000000	2000000	>>	1	0	1
-test	trn	1	7000000	+	>!	1	0	1
+test	trn	1	0	1000000	!}	1	0	1
+test	trn	1	2000000	7000000	}}	1	0	1
+test	trn	1	1000000	2000000	}}	1	0	1
+test	trn	1	7000000	+	}!	1	0	1
 ```
 *(2)* An tandem duplication of locus 1:1Mb-2Mb
 ```
-test	dups	1	0	*2000000*	!>	1	0	1
-test	dups	1	1000000	*2000000*	>>	1	*1*	1
-test	dups	1	7000000	+	>!	1	0	1
+test	dups	1	0	*2000000*	!}	1	0	1
+test	dups	1	1000000	*2000000*	}}	1	*1*	1
+test	dups	1	7000000	+	}!	1	0	1
 ```
   or
 ```
-test	dups	1	0	*1000000*	!>	1	0	1
-test	dups	1	*1000000*	2000000	>>	1	0	*2*
-test	dups	1	7000000	+	>!	1	0	1
+test	dups	1	0	*1000000*	!}	1	0	1
+test	dups	1	*1000000*	2000000	}}	1	0	*2*
+test	dups	1	7000000	+	}!	1	0	1
 ```
 *(3)* An deletion of locus 1:1Mb-2Mb
 
 ```
-test	del	1	0	1000000	!>	1	0	1
-test	del	1	1000000	2000000	>>	1	0	0
-test	del	1	7000000	+	>!	1	0	1
+test	del	1	0	1000000	!}	1	0	1
+test	del	1	1000000	2000000	}}	1	0	0
+test	del	1	7000000	+	}!	1	0	1
 ```
 *(4)* An inversion of locus 1:1Mb-2Mb
 ```
-test	inv	1	0	1000000	!>	1	0	1
-test	inv	1	1000000	2000000	>>	1	0	*-1*
-test	inv	1	7000000	+	>!	1	0	1
+test	inv	1	0	1000000	!}	1	0	1
+test	inv	1	1000000	2000000	}}	1	0	*-1*
+test	inv	1	7000000	+	}!	1	0	1
 ```
 *(5)* An translocation of locus 1:1,000,000-2,000,000 to chromosome end with the locus saving on old position and cnv x10 on new position
 ```
-test	trnx10	1	0	+	!>	1	0	1
-test	trnx10	1	1000000	2000000	>!	1	1	10
+test	trnx10	1	0	+	!}	1	0	1
+test	trnx10	1	1000000	2000000	}!	1	1	10
 ```
 *(6)* An interchomosome  translocation; the moving of locus 1:1Mb-2Mb to the chromosome 2:7Mb: 
 ```
-test	trn	1	0	1000000	!>	1	0	1
-test	trn	1	7000000	+	>!	1	0	1
-test	trn	2	0	700000	>>	2	0	1
-test	trn	1	2000000	7000000	>>	*2*	0	1
-test	trn	2	7000000	+	>!	2	0	1
+test	trn	1	0	1000000	!}	1	0	1
+test	trn	1	7000000	+	}!	1	0	1
+test	trn	2	0	700000	}}	2	0	1
+test	trn	1	2000000	7000000	}}	*2*	0	1
+test	trn	2	7000000	+	}!	2	0	1
 ```
 
 *(7)* An complex rearrangement: the translocation with cnv x3 of locus 1:1Mb-2Mb on a new chromosome, the translocation with inversion and cnv x3 of locus 1:3Mb-4Mb on the new chromosome,
 the translocation with cnv x5 of locus 1:5Mb-7,5Mb on the new chromosome. The chromosomes 1 is intact.
 ```
-test	compX	1	0	+	!> 1	0	1
-test	compX 1 1000000 2000000 >> chrNew + 1 3
-test	compX 1 3000000 4000000 >> chrNew + 1 -3
-test	compX 1 5000000 7500000 >! chrNew + 1 5
+test	compX	1	0	+	!} 1	0	1
+test	compX 1 1000000 2000000 }} chrNew + 1 3
+test	compX 1 3000000 4000000 }} chrNew + 1 -3
+test	compX 1 5000000 7500000 }! chrNew + 1 5
 ```
 *(8)* Several rearrangements: a translocation from chromosome 1:1Mb-2Mb to 2:7Mb, tandem duplication of 1:7Mb-8Mb and deletion of 2:1Mb-2Mb
 ```
-test	several	1	0	1000000	!>	1	0	1
-test	several	1	2000000	7000000	>>	1	0	1
-test	several	1	7000000	8000000	>>	1	0	2
-test	several	1	8000000	+	>>	1	0	1
-test	several	2	0	1000000	>>	2	0	1
-test	several	2	1000000	2000000	>>	2	0	0
-test	several	2	2000000	7000000	>>	2	0	0
-test	several	1	2000000	7000000	>>	*2*	0	1
-test	several	2	7000000	+	>!	2	0	1
+test	several	1	0	1000000	!}	1	0	1
+test	several	1	2000000	7000000	}}	1	0	1
+test	several	1	7000000	8000000	}}	1	0	2
+test	several	1	8000000	+	}}	1	0	1
+test	several	2	0	1000000	}}	2	0	1
+test	several	2	1000000	2000000	}}	2	0	0
+test	several	2	2000000	7000000	}}	2	0	0
+test	several	1	2000000	7000000	}}	*2*	0	1
+test	several	2	7000000	+	}!	2	0	1
 
 ```

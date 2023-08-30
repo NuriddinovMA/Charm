@@ -27,7 +27,7 @@ charm.sh -i testdataset/example_PRE.ini
 	- the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.<chr1>.<chr2>.allCon"
 	- the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.<chr1>.<chr2>.allCon"
 	- the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
-	where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
+where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
 2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
 ```
 charm.sh -i testdataset/EXAMPLE.ini *-S wt*

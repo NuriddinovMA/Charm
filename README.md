@@ -15,7 +15,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
 # Quick Start
 
 ## Example tasks
-###1) The establish of reference database without consequent simulations:
+### 1) The establish of reference database without consequent simulations:
 ```
 charm.sh -i testdataset/EXAMPLE.ini *-S pre*
 ```
@@ -33,7 +33,7 @@ As ending, the Charm creates in "testdataset" the folders "pre/TEST" with:
 
 where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
 
-###2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
+### 2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
 ```
 charm.sh -i testdataset/EXAMPLE.ini *-S wt*
 ```
@@ -43,26 +43,26 @@ charm.sh -i testdataset/example_WT.ini
 ```
 As ending, the Charm creates in "testdataset" the folders "wt/TEST.cov_mult_f1/841160/0/" with files named like "TEST.cov_mult_f1.0.<chr1>.<chr2>.allCon" and the folders "wt/TEST.cov_mult_f1/841160/1/" with files named like "TEST.cov_mult_f1.1.<chr1>.<chr2>.allCon"
 
-###3) The simulation of *heterozygous* mutation, IF the reference database and the pseudoreplicas were performed:
+### 3) The simulation of *heterozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
 charm.sh -i testdataset/example_HETEROZYGOUS.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "heterozygous.del.hic"
 
-###4) The simulation of *homozygous* mutation, IF the reference database and the pseudoreplicas were performed:
+### 4) The simulation of *homozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
 charm.sh -i testdataset/example_HOMOZYGOUS.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "homozygous.del.hic"
 
-###5) The simulation of *mutant* genome, IF the reference database:
+### 5) The simulation of *mutant* genome, IF the reference database:
 ```
 charm.sh -i testdataset/example_MUTANT.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "in_mut.cnv-X.hic".
 This hi-c file will contain the new chromosome "1x".
 
-###6) The building of wild-type contact map, IF the reference database and the pseudoreplicas were performed:
+### 6) The building of wild-type contact map, IF the reference database and the pseudoreplicas were performed:
 ```
 charm.sh -i testdataset/example_REPLICAS.ini -S hic
 ```

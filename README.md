@@ -186,8 +186,8 @@ test	several	2	7000000	+	>!	2	0	1
 
 ## Advanced description
 charm.sh [-i ini_file] [-S stage] 
-* [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model paramaters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/BIG_EXAMPLE.ini)
-The short useful example see in the [EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/EXAMPLE.ini)
+* [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model paramaters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](https://github.com/NuriddinovMA/Charm/blob/main/BIG_EXAMPLE.ini)
+The short useful example see in the [EXAMPLE.ini](https://github.com/NuriddinovMA/Charm/blob/main/EXAMPLE.ini)
 * [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
   - "pre+" is the default parameter, from hic-file with the wild-type data to hic-file with simulated SVs
   - Use "SVs+" when the database with contact statistics exists, but the file with rearrangement description has not yet been created 

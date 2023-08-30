@@ -132,6 +132,7 @@ The indicator variants:
   - Use ">!" for the end of the description of complex SVs, the all lines between "!>" and ">!" are processed by Charm as one SV.
  
 Examples:
+
 *(1)* An general translocation; the moving of locus 1:1Mb-2Mb to 7Mb: 
 ```
 test	trn	1	0	1000000	!>	1	0	1

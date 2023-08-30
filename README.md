@@ -23,7 +23,7 @@ or
 ```
 charm.sh -i testdataset/example_PRE.ini
 ```
-As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
+* As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
 	- the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.<chr1>.<chr2>.allCon"
 	- the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.<chr1>.<chr2>.allCon"
 	- the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
@@ -63,21 +63,21 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 ## The your task: step by step.
 1) Create your file with the description of rearrangment (see "The SVs description" section)
 2) Duplicate the any examplified ini-file accordingly your tasks and change it:
-  [global] section:
+  * [global] section:
     - "work_dir" - the path to the your work directory;
     - "chrom_sizes" - the path to the file with the chromosome sizes of reference genome;
     - "path_to_juicertools " - the path to the juicertools jar file;
     - "noised" - "True" if the reference HI-C is whole genomic, "False" if the reference Hi-C is enriched like promoter-capture;
     - "simulation_id" - the preferred name of simulations.
-  [preprocessing] section
+  * [preprocessing] section
     - "path_to_hic" - the path to the hic file with the reference contact map;
-  [SVs] section
+  * [SVs] section
     - "path_to_svs_list" - the path to the your file with the description of rearrangments;
     - "rearrangment_id" - the unique id of simulated rearrangment;
-  [simulation] section
+  * [simulation] section
     - "contact_count" - the summ of contacts on simulated hi-c map
     - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_missq_f1" for enriched Hi-C
-  [hic]
+  * [hic]
     - "simulation_id" - the unique name of resulted simulation
     - "format" - "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format),
       "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file,

@@ -7,7 +7,82 @@ Charm is python-based tool to simulate Hi-C-maps with the user-defined chromosom
 2) [Jucier Tools](https://github.com/aidenlab/juicer)(for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
 
 ## Quick Start
-### Unix
+
+## Test dataset run
+charm.sh -i testdataset/EXAMPLE.ini
+As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
+## Example tasks
+1) The establish of reference database without consequent simulations:
+```
+charm.sh -i testdataset/EXAMPLE.ini *-S pre*
+```
+or
+```
+charm.sh -i testdataset/example_PRE.ini
+```
+As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
+	- the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.<chr1>.<chr2>.allCon"
+	- the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.<chr1>.<chr2>.allCon"
+	- the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
+	where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
+2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
+```
+charm.sh -i testdataset/EXAMPLE.ini *-S wt*
+```
+or
+```
+charm.sh -i testdataset/example_WT.ini
+```
+As ending, the Charm creates in "testdataset" the folders "wt/TEST.cov_mult_f1/841160/0/" with files named like "TEST.cov_mult_f1.0.<chr1>.<chr2>.allCon" and the folders "wt/TEST.cov_mult_f1/841160/1/" with files named like "TEST.cov_mult_f1.1.<chr1>.<chr2>.allCon"
+3) The simulation of *heterozygous* mutation, IF the reference database and the pseudoreplicas were performed:
+```
+charm.sh -i testdataset/example_HETEROZYGOUS.ini -S SVs+
+```
+As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "heterozygous.del.hic"
+4) The simulation of *homozygous* mutation, IF the reference database and the pseudoreplicas were performed:
+```
+charm.sh -i testdataset/example_HOMOZYGOUS.ini -S SVs+
+```
+As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "homozygous.del.hic"
+5) The simulation of *mutant* genome, IF the reference database:
+```
+charm.sh -i testdataset/example_MUTANT.ini -S SVs+
+```
+As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "in_mut.cnv-X.hic".
+This hi-c file will contain the new chromosome "1x".
+
+6) The building of wild-type contact map, IF the reference database and the pseudoreplicas were performed:
+```
+charm.sh -i testdataset/example_REPLICAS.ini -S hic
+```
+As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "replicas.TEST.cov_mult_f1.hic".
+
+## The your task: step by step.
+1) Create your file with the description of rearrangment (see "The SVs description" section)
+2) Duplicate the any examplified ini-file accordingly your tasks and change it:
+  [global] section:
+    - "work_dir" - the path to the your work directory;
+    - "chrom_sizes" - the path to the file with the chromosome sizes of reference genome;
+    - "path_to_juicertools " - the path to the juicertools jar file;
+    - "noised" - "True" if the reference HI-C is whole genomic, "False" if the reference Hi-C is enriched like promoter-capture;
+    - "simulation_id" - the preferred name of simulations.
+  [preprocessing] section
+    - "path_to_hic" - the path to the hic file with the reference contact map;
+  [SVs] section
+    - "path_to_svs_list" - the path to the your file with the description of rearrangments;
+    - "rearrangment_id" - the unique id of simulated rearrangment;
+  [simulation] section
+    - "contact_count" - the summ of contacts on simulated hi-c map
+    - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_missq_f1" for enriched Hi-C
+  [hic]
+    - "simulation_id" - the unique name of resulted simulation
+    - "format" - "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format),
+      "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file,
+      "pre.gz" and "short.gz" - the gzipped output.
+    - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher. 
+3) Run charm
+
+## Advanced description
 charm.sh [-i ini_file] [-S stage] 
 * [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model paramaters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/BIG_EXAMPLE.ini) The short usefull example see in the [TEST_EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/TEST_EXAMPLE.ini)
 * [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
@@ -23,26 +98,9 @@ charm.sh [-i ini_file] [-S stage]
   - Use "sim" to only simulate contacts within *mutated* genome based on provided database
   - Use "lift" to liftover contacts from provided defined mutant genome
   - Use "wt" to simulate wild-type replicas
+
 ### others OS
 python3 scripts/charm_manager.py [-S stage] -i [ini_file]
-
-## Test dataset
-TODO: describe the minimal test here
-
-## First run
-Modify **TEST_EXAMPLE.ini**:
-1) [global] section, "work_dir" key: provide the path to the working directory
-TODO: refactor the rest of the manual as above.
-
-
-2) provide the unique experiment ID in the [global] section, on the "simulation_id" key
-3) write to ini-file the path to juicer tools .jar-file in the [global] section, on the "path_to_juicertools" key  
-4.5 optional, if path to java not defined, write to ini-file twihe path to java directory in the [global] section, on the "path_to_java_dir" key 
-5) write to ini-file the path to **you_chromosome_sizes_file** file in the [global] section, on the "chrom_sizes" key; the file format see below 
-6) write to ini-file the path to **you_hic_map.hic** file in the [prerpoceesing] section, on the "path_to_hic" key
-7) write to ini-file the path to **you_SVs_list_file** in the [SVs] section, on the "path_to_svs_list" key; the file format see below
-8) change other parameters as you wish
-9) run Charm
 
 ### The chromosome sizes file
 This file contains chromosome sizes (see https://github.com/aidenlab/juicer/wiki/Pre). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 

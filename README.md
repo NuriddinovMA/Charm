@@ -12,7 +12,7 @@ charm.sh -i testdataset/EXAMPLE.ini
 ```
 As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
 
-#Quick Start
+# Quick Start
 
 ## Example tasks
 1) The establish of reference database without consequent simulations:

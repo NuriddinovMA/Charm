@@ -93,23 +93,6 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
     - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher. 
 3) Run charm
 
-## Advanced description
-charm.sh [-i ini_file] [-S stage] 
-* [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model paramaters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/BIG_EXAMPLE.ini) The short usefull example see in the [TEST_EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/TEST_EXAMPLE.ini)
-* [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
-  - "pre+" is the default parameter, from hic-file with the wild-type data to hic-file with simulated SVs
-  - Use "SVs+" when the database with contact statistics exists, but the file with rearrangement description has not yet been created 
-  - Use "sim+" when the rearrangement description and database are done, but the contacts of the mutant genome are not yet been simulated
-  - Use "lift+" when the contacts of the mutant genome are simulated ("in_mut.[simulation_id]" files created), but these contacts are not yet lifted on the reference genome
-  - Use "wt+" when the simulation is fully processed ("in_ref.[simulation_id]" created), but wild-type replicas are not
-  - Use "hic" when all previous stages are successfully completed, but .hic-file is not created
-* advanced settings for [stage]:
-  - Use "pre" to create the database with contact statistics only
-  - Use "SVs" to create the rearrangement description files only; in this mode, Charm can process the file containing any number of independent SVs 
-  - Use "sim" to only simulate contacts within *mutated* genome based on provided database
-  - Use "lift" to liftover contacts from provided defined mutant genome
-  - Use "wt" to simulate wild-type replicas
-
 ### others OS
 python3 scripts/charm_manager.py [-S stage] -i [ini_file]
 
@@ -200,3 +183,21 @@ test	several	1	2000000	7000000	>>	*2*	0	1
 test	several	2	7000000	+	>!	2	0	1
 
 ```
+
+## Advanced description
+charm.sh [-i ini_file] [-S stage] 
+* [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model paramaters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/BIG_EXAMPLE.ini)
+The short useful example see in the [EXAMPLE.ini](https://github.com/genomech/Charm/blob/main/EXAMPLE.ini)
+* [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
+  - "pre+" is the default parameter, from hic-file with the wild-type data to hic-file with simulated SVs
+  - Use "SVs+" when the database with contact statistics exists, but the file with rearrangement description has not yet been created 
+  - Use "sim+" when the rearrangement description and database are done, but the contacts of the mutant genome are not yet been simulated
+  - Use "lift+" when the contacts of the mutant genome are simulated ("in_mut.[simulation_id]" files created), but these contacts are not yet lifted on the reference genome
+  - Use "wt+" when the simulation is fully processed ("in_ref.[simulation_id]" created), but wild-type replicas are not
+  - Use "hic" when all previous stages are successfully completed, but .hic-file is not created
+* advanced settings for [stage]:
+  - Use "pre" to create the database with contact statistics only
+  - Use "SVs" to create the rearrangement description files only; in this mode, Charm can process the file containing any number of independent SVs 
+  - Use "sim" to only simulate contacts within *mutated* genome based on provided database
+  - Use "lift" to liftover contacts from provided defined mutant genome
+  - Use "wt" to simulate wild-type replicas

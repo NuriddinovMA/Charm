@@ -35,7 +35,7 @@ where {chr1} and {chr2} are the chromosome names and {resolution_pab} is the res
 
 ### 2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
 ```
-charm.sh -i testdataset/EXAMPLE.ini *-S wt*
+charm.sh -i testdataset/EXAMPLE.ini -S wt
 ```
 or
 ```
@@ -125,14 +125,14 @@ test	trn	1	7000000	+	>!	1	0	1
 ```
 *(2)* An tandem duplication of locus 1:1Mb-2Mb
 ```
-test	dups	1	0	*2000000*	!>	1	0	1
-test	dups	1	1000000	*2000000*	>>	1	*1*	1
+test	dups	1	0	2000000	!>	1	0	1
+test	dups	1	1000000	2000000	>>	1	1	1
 test	dups	1	7000000	+	>!	1	0	1
 ```
   or
 ```
-test	dups	1	0	*1000000*	!>	1	0	1
-test	dups	1	*1000000*	2000000	>>	1	0	*2*
+test	dups	1	0	1000000	!>	1	0	1
+test	dups	1	1000000	2000000	>>	1	0	2
 test	dups	1	7000000	+	>!	1	0	1
 ```
 *(3)* An deletion of locus 1:1Mb-2Mb
@@ -145,7 +145,7 @@ test	del	1	7000000	+	>!	1	0	1
 *(4)* An inversion of locus 1:1Mb-2Mb
 ```
 test	inv	1	0	1000000	!>	1	0	1
-test	inv	1	1000000	2000000	>>	1	0	*-1*
+test	inv	1	1000000	2000000	>>	1	0	-1
 test	inv	1	7000000	+	>!	1	0	1
 ```
 *(5)* An translocation of locus 1:1,000,000-2,000,000 to chromosome end with the locus saving on old position and cnv x10 on new position
@@ -158,7 +158,7 @@ test	trnx10	1	1000000	2000000	>!	1	1	10
 test	trn	1	0	1000000	!>	1	0	1
 test	trn	1	7000000	+	>!	1	0	1
 test	trn	2	0	700000	>>	2	0	1
-test	trn	1	2000000	7000000	>>	*2*	0	1
+test	trn	1	2000000	7000000	>>	2	0	1
 test	trn	2	7000000	+	>!	2	0	1
 ```
 
@@ -179,7 +179,7 @@ test	several	1	8000000	+	>>	1	0	1
 test	several	2	0	1000000	>>	2	0	1
 test	several	2	1000000	2000000	>>	2	0	0
 test	several	2	2000000	7000000	>>	2	0	0
-test	several	1	2000000	7000000	>>	*2*	0	1
+test	several	1	2000000	7000000	>>	2	0	1
 test	several	2	7000000	+	>!	2	0	1
 
 ```

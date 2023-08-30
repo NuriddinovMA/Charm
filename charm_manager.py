@@ -621,8 +621,8 @@ if __name__ == "__main__":
 						i = chroms[ci]
 						for cj in range(ci,len(chroms)):
 							j = chroms[cj]
-							if l2i[i] <= l2i[j]: c1_c2 = (chroms[ci],chroms[cj])
-							else: c1_c2 = (chroms[cj],chroms[ci])
+							if l2i[i] <= l2i[j]: c1_c2 = [chroms[ci],chroms[cj]]
+							else: c1_c2 = [chroms[cj],chroms[ci]]
 							pair_list.append(c1_c2)
 				else: pair_list = [c.split(',') for c in chosen_chroms.split(';')]
 

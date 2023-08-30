@@ -23,10 +23,10 @@ or
 ```
 charm.sh -i testdataset/example_PRE.ini
 ```
-* As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
-	- the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.<chr1>.<chr2>.allCon"
-	- the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.<chr1>.<chr2>.allCon"
-	- the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
+As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
+	* the files "TEST.5000.stat", "TEST.5000.binCov" and the folder "TEST.5000" containing files "TEST.5000.<chr1>.<chr2>.allCon"
+	* the files "TEST.50000.stat", "TEST.50000.binCov" and the folder "TEST.50000" containing files "TEST.50000.<chr1>.<chr2>.allCon"
+	* the files "pab.TEST.<resolution_pab>.stat", "pab.TEST.<resolution_pab>.binCov" and the folder "pab.TEST.<resolution_pab>" containing files "Tpab.TEST.<resolution_pab>.<chr1>.<chr2>.allCon"
 
 where <chr1> and <chr2> are the chromosome names and <resolution_pab> is the resolution from [global] section, "resolution_pab" key.
 

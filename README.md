@@ -70,7 +70,7 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 
 ## The your task: step by step.
 1) Create your file with the description of rearrangment (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
-2) Duplicate the any examplified ini-file accordingly your tasks (see [The SVs description](https://github.com/NuriddinovMA/Charm#example-tasks) and change it:
+2) Duplicate the any examplified ini-file accordingly your tasks (see [example tasks](https://github.com/NuriddinovMA/Charm#example-tasks) and change it:
   * [global] section:
     - "work_dir" - the path to the your work directory;
     - "chrom_sizes" - the path to the file with the chromosome sizes of reference genome;

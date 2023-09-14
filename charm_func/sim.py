@@ -45,7 +45,7 @@ def read_Contact_Statistics(
 	covPAB = {}
 	if coverage_pab:
 		for pab in coverage_pab.split(','):
-			pab_res = int(pab.split('.')[2])
+			pab_res = int(pab.split('.')[-2])
 			covPAB[pab_res] = sf.readCovHash(pab,l2i_from,log=log_file)
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\t... compartments coverage reading end time %.2fs' % elp, log_file)
@@ -84,7 +84,7 @@ def read_Contact_Data(
 
 	if contact_pab:
 		for pab in contact_pab.split(','):
-			pab_res = int(pab.split('.')[2])
+			pab_res = int(pab.split('.')[-1])
 			contactPAB[pab_res] = sf.iReadInitialContact(pab,l2i_from,chrms=chosen_chroms_from, index=4,log=log_file)
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\t... multiple compartments reading end time %.2fs' % elp, log_file)

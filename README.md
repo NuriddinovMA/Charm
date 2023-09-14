@@ -3,12 +3,12 @@
 Charm is python-based tool to simulate Hi-C-maps with the user-defined chromosomal rearrangements. This tool allow to simulate CNVs, inversions, translocation, and extra-chromosomal fragments.
 
 ## Requirements
-1) Python }= 3.7 with numpy
-2) [Jucier Tools](https://github.com/aidenlab/juicer)(for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
-
+1) Python >= 3.7 with numpy
+2) [Juicer Tools](https://github.com/aidenlab/juicer) (for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
+3) Java (the Juicer Tools requirement)
 ## Test dataset run
 ```
-charm.sh -i testdataset/EXAMPLE.ini
+python3 charm.py -i testdataset/EXAMPLE.ini
 ```
 As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
 
@@ -17,11 +17,11 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
 ## Example tasks
 ### 1) The establish of reference database without consequent simulations:
 ```
-charm -i testdataset/EXAMPLE.ini *-S pre*
+python3 charm.py -i testdataset/EXAMPLE.ini *-S pre*
 ```
 or
 ```
-charm -i testdataset/example_PRE.ini
+python3 charm.py -i testdataset/example_PRE.ini
 ```
 As ending, the Charm creates in "testdataset" the folders "pre/TEST" with: 
 
@@ -35,36 +35,36 @@ where {chr1} and {chr2} are the chromosome names and {resolution_pab} is the res
 
 ### 2) The establish of database of randomized wild-type contacts, IF the reference database was performed:
 ```
-charm -i testdataset/EXAMPLE.ini -S wt
+python3 charm.py -i testdataset/EXAMPLE.ini -S wt
 ```
 or
 ```
-charm -i testdataset/example_WT.ini
+python3 charm.py -i testdataset/example_WT.ini
 ```
 As ending, the Charm creates in "testdataset" the folders "wt/TEST.cov_mult_f1/841160/0/" with files named like "TEST.cov_mult_f1.0.{chr1}.{chr2}.allCon" and the folders "wt/TEST.cov_mult_f1/841160/1/" with files named like "TEST.cov_mult_f1.1.{chr1}.{chr2}.allCon"
 
 ### 3) The simulation of *heterozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
-charm -i testdataset/example_HETEROZYGOUS.ini -S SVs+
+python3 charm.py -i testdataset/example_HETEROZYGOUS.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "heterozygous.del.hic"
 
 ### 4) The simulation of *homozygous* mutation, IF the reference database and the pseudoreplicas were performed:
 ```
-charm -i testdataset/example_HOMOZYGOUS.ini -S SVs+
+python3 charm.py -i testdataset/example_HOMOZYGOUS.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "homozygous.del.hic"
 
 ### 5) The simulation of *mutant* genome, IF the reference database:
 ```
-charm -i testdataset/example_MUTANT.ini -S SVs+
+python3 charm.py -i testdataset/example_MUTANT.ini -S SVs+
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "in_mut.cnv-X.hic".
 This hi-c file will contain the new chromosome "1x".
 
 ### 6) The building of wild-type contact map, IF the reference database and the pseudoreplicas were performed:
 ```
-charm -i testdataset/example_REPLICAS.ini -S hic
+python3 charm.py -i testdataset/example_REPLICAS.ini -S hic
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "replicas.TEST.cov_mult_f1.hic".
 
@@ -91,12 +91,8 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
       "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file,
       "pre.gz" and "short.gz" - the gzipped output.
     - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher. 
-3) Run charm
+3) python3 charm.py -i [ini-file] -S [step]
 
-### others OS
-```
-python3 scripts/charm_manager.py -i [ini_file] [-S stage]
-```
 ### The chromosome sizes file
 This file contains chromosome sizes ([example](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
 File format (see the example "test.chr.sizes")

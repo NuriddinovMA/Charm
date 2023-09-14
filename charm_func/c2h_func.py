@@ -36,10 +36,12 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 			try:
 				c1,b1,c2,b2,p = lines[i].split()[:5]
 				b1,b2,p = int(b1),int(b2), float(p)
-				key = c1,b1//div*resolution,c2,b2//div*resolution
+				k1,k2 = (c1,b1//div*resolution),(c2,b2//div*resolution)
 				if np.isnan(p): p = 0
-				try: H[key] += p
-				except KeyError: H[key] = p
+				try: H[k1+k2] += p
+				except KeyError:
+					try: H[k2+k1] += p
+					except KeyError: H[k1+k2] = p
 				del lines[i]
 			except ValueError:pass
 		if dir_wt2:
@@ -48,27 +50,34 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 				try:
 					c1,b1,c2,b2,p = lines[i].split()[:5]
 					b1,b2,p = int(b1),int(b2), float(p)
-					key = c1,b1//resolution*resolution,c2,b2//resolution*resolution
+					k1,k2 = (c1,b1//resolution*resolution),(c2,b2//resolution*resolution)
 					if np.isnan(p): p = 0
-					try: H[key] += p
-					except KeyError: H[key] = p
+					try: H[k1+k2] += p
+					except KeyError:
+						try: H[k2+k1] += p
+						except KeyError: H[k1+k2] = p
 					del lines[i]
 				except ValueError:pass
 		del F[name]
 		if order: Keys = sorted(H,key=lambda k:(order[k[0]],order[k[2]],k[1],k[3]))
 		else: Keys = sorted(H,key=lambda k:(k[0],k[2],k[1],k[3]))
-		fname='%s/%s/%s.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
-		f = open(fname,'w')
+		
 		if format in ['short','short.gz']:
-			for key in Keys: f.write('%s\t%i\t%s\t%i\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
+			fname='%s/%s/short.%s.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
+			with open(fname,'w') as f:
+				for key in Keys: f.write('%s\t%i\t%s\t%i\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
 		else:
-			for key in Keys: f.write('0\t%s\t%i\t0\t1\t%s\t%i\t1\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
-		f.close()
+			fname='%s/%s/%s.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
+			with open(fname,'w') as f:
+				for key in Keys: f.write('0\t%s\t%i\t0\t1\t%s\t%i\t1\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
+
 	files = os.listdir('%s/%s' % (out_path,out_name))
 	if order: files.sort(key=lambda k: (order[k.split('.')[-3]],order[k.split('.')[-2]]))
 	else: files.sort(key=lambda k: k.split('.')[-3:-1])
-
-	with open('%s/%s.pre' % (out_path,out_name),'w') as f:
+	
+	if format in ['short','short.gz']: fname = '%s/%s.short.pre' % (out_path,out_name)
+	else: fname = '%s/%s.pre' % (out_path,out_name)
+	with open(fname,'w') as f:
 		for file in files:
 			with open('%s/%s/%s' % (out_path,out_name,file) ) as g:
 				lines = g.read()

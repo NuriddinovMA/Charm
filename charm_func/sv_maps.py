@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from charm_func import sv2_func as svf
+from charm_func import sv_func as svf
 from charm_func import global_func as gf
 from copy import deepcopy
 

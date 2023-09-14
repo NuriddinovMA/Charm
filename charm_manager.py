@@ -279,7 +279,6 @@ if __name__ == "__main__":
 		map_file = config['simulation']['map_file']
 		pointviews = config['simulation']['pointviews']
 		
-		#if cleaning: 
 		os.system('rm -r %s' % sim_dir)
 		os.makedirs( sim_dir )
 
@@ -442,8 +441,7 @@ if __name__ == "__main__":
 		if add_pairs: add_pairs = [c.split(',') for c in add_pairs.split(';')]
 		try: log_file = config['liftover']['log_file']
 		except KeyError: log_file = config['global']['log_file']
-		
-		#if cleaning: 
+
 		os.system('rm -r %s' % sim_dir)
 		os.makedirs( sim_dir )
 		gf.printlog('Stage "lift" - the contact liftovering to the reference genome...', log_file)
@@ -545,6 +543,7 @@ if __name__ == "__main__":
 		try: config['hic']['resolution'] 
 		except KeyError: config['hic']['resolution'] = resolution
 	
+	if cleaning: os.system('rm -r %s' % contact_dir)
 
 	################################
 	#WILD-TYPE REPLICA STAGE wt/wt+#

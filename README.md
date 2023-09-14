@@ -17,7 +17,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
 ## Example tasks
 ### 1) The establish of reference database without consequent simulations:
 ```
-python3 charm.py -i testdataset/EXAMPLE.ini *-S pre*
+python3 charm.py -i testdataset/EXAMPLE.ini -S pre
 ```
 or
 ```

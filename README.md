@@ -1,6 +1,6 @@
 # Charm
 **Ch**romosome re**ar**rangement **m**odeler.
-Charm is python-based tool to simulate Hi-C-maps with the user-defined chromosomal rearrangements. This tool allow to simulate CNVs, inversions, translocation, and extra-chromosomal fragments.
+Charm is python-based tool to simulate Hi-C-maps with the user-defined chromosomal rearrangements. This tool allows to model CNVs, inversions, translocation, and extra-chromosomal fragments.
 
 ## Requirements
 1) Python >= 3.7 with numpy

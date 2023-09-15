@@ -32,6 +32,7 @@ if __name__ == "__main__":
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
 	try: os.makedirs(config['global']['work_dir'])
+	except FileExistsError: pass
 	except OSError: raise UndefinedValues('work directory in global section is not defined')
 	try: skip_stages |= set(config['global']['skip_stages'].split(','))
 	except KeyError: pass

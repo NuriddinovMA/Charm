@@ -14,7 +14,6 @@ if __name__ == "__main__":
 	config = ConfigParser(interpolation=ExtendedInterpolation())
 	config.read(args.ini)
 
-
 	if args.stage == 'pre': skip_stages = set(['svs','sim','lift','wt','hic'])
 	elif args.stage == 'pre+':skip_stages = set([])
 	elif args.stage == 'SVs': skip_stages = set(['pre','sim','lift','wt','hic'])
@@ -27,15 +26,13 @@ if __name__ == "__main__":
 	elif args.stage == 'wt+': skip_stages = set(['pre','svs','sim','lift'])
 	elif args.stage == 'hic': skip_stages = set(['pre','svs','sim','lift','wt'])
 	else: 
-		print(args.stage,'''is the incorrect stage id!
+		raise UndefinedValues(args.stage,'''is the incorrect stage id!
 	Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
-		exit()
-
 
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
 	try: os.makedirs(config['global']['work_dir'])
-	except OSError: raise UndefinedValues(' work directory in global section is not defined')
+	except OSError: raise UndefinedValues('work directory in global section is not defined')
 	try: skip_stages |= set(config['global']['skip_stages'].split(','))
 	except KeyError: pass
 	try: cleaning = gf.boolean(config['global']['cleaning'])

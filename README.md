@@ -75,13 +75,13 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
     - "work_dir" - the path to the your work directory;
     - "chrom_sizes" - the path to the file with the chromosome sizes of reference genome;
     - "path_to_juicertools " - the path to the juicertools jar file;
-    - "noised" - "True" if the reference HI-C is whole genomic, "False" if the reference Hi-C is enriched like promoter-capture;
+    - "one_as_null" - "True" contacts == 1 are processed as 0 \("True" should be used for the whole genomic Hi-C, and "False" should be used for the enriched Hi-C, like promoter-capture\);
     - "simulation_id" - the preferred name of simulations.
   * [preprocessing] section
     - "path_to_hic" - the path to the hic file with the reference contact map;
   * [SVs] section
     - "path_to_svs_list" - the path to the your file with the description of rearrangments;
-    - "rearrangment_id" - the unique id of simulated rearrangment;
+    - "rearrangment_id" - the unique id of simulated rearrangment from SVs list;
   * [simulation] section
     - "contact_count" - the summ of contacts on simulated hi-c map
     - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_missq_f1" for enriched Hi-C
@@ -103,7 +103,7 @@ File format (see the example "test.chr.sizes")
 ### The SVs description 
 To simulate SVs, Charm requires the description of rearrangement in the following format (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
-<reference genome id> <mutant genome uniq id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
+<reference genome id> <rearrangment id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
 ```
 The <indicator> variants:
   - Use "->" for the plain SVs, this indicator designs the start and the end of SVs description
@@ -111,7 +111,7 @@ The <indicator> variants:
   - Use ">>" for the continuation of description SVs
   - Use ">!" for the end of the description of complex SVs, the all lines between "!>" and ">!" are processed by Charm as one SV.
 
-The  \<reference genome id\> and  \<mutant genome uniq id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. All lines between the "!>" and "<!" indicators must have the same name. 
+The  \<reference genome id\> and  \<rearrangment id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. All lines between the "!>" and "<!" indicators must have the same name. 
 
 The "+" should be used in  \<coordinate of chromosome block end\> column as the symbol of the chromosome end.
 

@@ -105,8 +105,12 @@ To simulate SVs, Charm requires the description of rearrangement in the followin
 ```
 <reference genome id> <mutant genome uniq id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <the indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
 ```
-where and are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly.
-The indicator variants:
+where <reference genome id> and <mutant genome uniq id> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly.
+The "+" should be used in <coordinate of chromosome block end> collumn as the symbol of the chromosome end.
+The values in <copy number of locus on OLD position> must be 0 or 1.
+The values in <copy number of locus on NEW position> can be any; the negative values correspondend to the invesrion.
+
+<the indicator> variants:
   - Use "->" for the plain SVs, this indicator designs the start and the end of SVs description
   - Use "!>" for the start of the description of complex SVs
   - Use ">>" for the continuation of description SVs
@@ -116,22 +120,22 @@ Examples:
 
 *(1)* An general translocation; the moving of locus 1:1Mb-2Mb to 7Mb: 
 ```
-test	trn	1	0	1000000	!>	1	0	1
-test	trn	1	2000000	7000000	>>	1	0	1
-test	trn	1	1000000	2000000	>>	1	0	1
-test	trn	1	7000000	+	>!	1	0	1
+test	trn	chr1	0	1000000	!>	chr1	0	1
+test	trn	chr1	2000000	7000000	>>	chr1	0	1
+test	trn	chr1	1000000	2000000	>>	chr1	0	1
+test	trn	chr1	7000000	+	>!	chr1	0	1
 ```
 *(2)* An tandem duplication of locus 1:1Mb-2Mb
 ```
-test	dups	1	0	2000000	!>	1	0	1
-test	dups	1	1000000	2000000	>>	1	1	1
-test	dups	1	2000000	+	>!	1	0	1
+test	dups	chr1	0	2000000	!>	chr1	0	1
+test	dups	chr1	1000000	2000000	>>	chr1	1	1
+test	dups	chr1	2000000	+	>!	chr1	0	1
 ```
   or
 ```
-test	dups	1	0	1000000	!>	1	0	1
-test	dups	1	1000000	2000000	>>	1	0	2
-test	dups	1	2000000	+	>!	1	0	1
+test	dups	chr1	0	1000000	!>	chr1	0	1
+test	dups	chr1	1000000	2000000	>>	chr1	0	2
+test	dups	chr1	2000000	+	>!	chr1	0	1
 ```
 *(3)* An deletion of locus 1:1Mb-2Mb
 
@@ -154,9 +158,9 @@ test	trnx10	1	1000000	2000000	>!	1	1	10
 *(6)* An interchomosome  translocation; the moving of locus 1:1Mb-2Mb to the chromosome 2:7Mb: 
 ```
 test	trn	1	0	1000000	!>	1	0	1
-test	trn	1	7000000	+	>!	1	0	1
+test	trn	1	2000000	+	>>	1	0	1
 test	trn	2	0	700000	>>	2	0	1
-test	trn	1	2000000	7000000	>>	2	0	1
+test	trn	1	1000000	2000000	>>	2	0	1
 test	trn	2	7000000	+	>!	2	0	1
 ```
 

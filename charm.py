@@ -34,19 +34,20 @@ if __name__ == "__main__":
 
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
-
+	try: os.makedirs(config['global']['work_dir'])
+	except OSError: raise UndefinedValues(' work directory in global section is not defined')
 	try: skip_stages |= set(config['global']['skip_stages'].split(','))
 	except KeyError: pass
 	try: cleaning = gf.boolean(config['global']['cleaning'])
 	except KeyError: cleaning = True
-	try: global_noised = gf.boolean(config['global']['noised'])
+	try: global_noised = gf.boolean(config['global']['one_as_null'])
 	except KeyError: global_noised = False
-	try: log_file = config['global']['log_file']
-	except KeyError:
+	try: 
+		log_file = config['global']['log_file']
 		f = open(log_file,'w')
 		f.close()
-
-	
+	except KeyError: log_file = False
+		
 	start_time = timeit.default_timer()
 
 	##############################

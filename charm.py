@@ -306,7 +306,7 @@ if __name__ == "__main__":
 		lc = len(cct)
 		for i in range(lc):
 			c1,c2 = cct[i]
-			gf.printlog('\tSimulation contacts on the mutant chromosome pair %s %s %i/%i' % (c1,c2,i,lc), log_file)
+			gf.printlog('\tSimulation contacts on the mutant chromosome pair %s %s %i/%i' % (c1,c2,i+1,lc), log_file)
 			gf.printlog('\tStep 1: Reading mark points...', log_file)
 			
 			if c1 == c2:
@@ -469,7 +469,7 @@ if __name__ == "__main__":
 		lc = len(cct)
 		for i in range(lc):
 			c1,c2 = cct[i]
-			gf.printlog('\tLiftover contacts to the chromosome pair %s %s %i/%i' % (c1,c2,i,lc), log_file)
+			gf.printlog('\tLiftover contacts to the chromosome pair %s %s %i/%i' % (c1,c2,i+1,lc), log_file)
 			gf.printlog('\tStep 1: Reading mark points...', log_file)
 			
 			if c1 == c2:
@@ -533,7 +533,9 @@ if __name__ == "__main__":
 				gf.printlog('\t...no markpoints, no contact liftovering %.2fs'% elp, log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end of stage "lift" %.2f' % elp, log_file)
-	
+		if cleaning:
+			print('cleaning',contact_dir)
+			os.system('rm -r %s' % contact_dir)
 	if 'hic' in skip_stages: pass
 	else:
 		try: config['hic']['svs_contacts']
@@ -543,7 +545,7 @@ if __name__ == "__main__":
 		try: config['hic']['resolution'] 
 		except KeyError: config['hic']['resolution'] = resolution
 	
-	if cleaning: os.system('rm -r %s' % contact_dir)
+	
 
 	################################
 	#WILD-TYPE REPLICA STAGE wt/wt+#

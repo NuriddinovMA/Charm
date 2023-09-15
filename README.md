@@ -105,6 +105,7 @@ To simulate SVs, Charm requires the description of rearrangement in the followin
 ```
 <reference genome id> <mutant genome uniq id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <the indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
 ```
+where <reference genome id> and <mutant genome uniq id> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly.  
 The indicator variants:
   - Use "->" for the plain SVs, this indicator designs the start and the end of SVs description
   - Use "!>" for the start of the description of complex SVs
@@ -137,13 +138,13 @@ test	dups	1	7000000	+	>!	1	0	1
 ```
 test	del	1	0	1000000	!>	1	0	1
 test	del	1	1000000	2000000	>>	1	0	0
-test	del	1	7000000	+	>!	1	0	1
+test	del	1	2000000	+	>!	1	0	1
 ```
 *(4)* An inversion of locus 1:1Mb-2Mb
 ```
 test	inv	1	0	1000000	!>	1	0	1
 test	inv	1	1000000	2000000	>>	1	0	-1
-test	inv	1	7000000	+	>!	1	0	1
+test	inv	1	2000000	+	>!	1	0	1
 ```
 *(5)* An translocation of locus 1:1,000,000-2,000,000 to chromosome end with the locus saving on old position and cnv x10 on new position
 ```

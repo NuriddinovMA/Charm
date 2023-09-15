@@ -111,13 +111,13 @@ The <indicator> variants:
   - Use ">>" for the continuation of description SVs
   - Use ">!" for the end of the description of complex SVs, the all lines between "!>" and ">!" are processed by Charm as one SV.
 
-The <reference genome id> and <mutant genome uniq id> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. All lines between the "!>" and "<!" indicators must have the same name. 
+The "<reference genome id>" and "<mutant genome uniq id>" are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. All lines between the "!>" and "<!" indicators must have the same name. 
 
-The "+" should be used in <coordinate of chromosome block end> column as the symbol of the chromosome end.
+The "+" should be used in "<coordinate of chromosome block end>" column as the symbol of the chromosome end.
 
-The values in <copy number of the locus on OLD position> must be 0 or 1.
+The values in "<copy number of the locus on OLD position>" must be 0 or 1.
 
-The values in <copy number of the locus on NEW position> can be any; the negative values correspond to the inversion.
+The values in "<copy number of the locus on NEW position>" can be any; the negative values correspond to the inversion.
 
 Examples:
 

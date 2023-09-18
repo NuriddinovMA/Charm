@@ -100,7 +100,7 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 If your task requires simulating many independent rearrangements, split it into several subtasks.
 
 **The first step**: the generation of a reference database.
-1) Copy the example_PRE.ini and modify:
+1) Copy the [EXAMPLE.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
    * [global] section:
      - "work_dir" - the path to the your work directory;
      - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
@@ -114,9 +114,9 @@ python3 charm.py -i your-pre.ini -S pre
 ```
 3) The database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:simulation_id]/** .
 
-**The second step**: the generation of pseudoreplicas (if your will simulate heterozygous rearrangments)
+**The second step**: the generation of pseudoreplicas (Only if you will simulate heterozygous rearrangements, skip this stage in another)
 
-1) Copy the example_REPLICAS.ini and modify:
+1) Copy the [example_REPLICAS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_REPLICAS.ini) and modify:
    * [global] and [preprocessing] sections - past the values from the ini-file create in the first step;
    * [simulation]
      - predict_null_contacts - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
@@ -131,7 +131,7 @@ python3 charm.py -i your-replicas.ini -S wt
 
 **The third step**: the rearrangement simulations.
 1) Create your file with the description of rearrangments (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
-2) Copy the example_HETEROZYGOUS.ini or exampl_HOMOZYGOUS.ini and modify:
+2) Copy the [example_HETEROZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini] (https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HOMOZYGOUS.ini) and modify:
    * [global], [simulation] and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to the your file the description of rearrangments;

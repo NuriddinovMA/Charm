@@ -109,19 +109,25 @@ The format of the SVs list file (also see the example "test.svs_list.txt" in the
 ```
 <reference genome id> <rearrangment id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
 ```
-The <indicator> variants:
+The  \<reference genome id\> and  the \<rearrangment id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. 
+
+The \<chromosome\> is the name of the reference genome chromosome involved in the rearrangement.
+
+The \<coordinate chromosome block start\> and the\<coordinate of chromosome block end\> are the coordinates of breakpoints in reference genome. The "+" should be used in \<coordinate of chromosome block end\> column as the symbol of the chromosome end.
+
+The \<indicator\> variants:
   - Use "->" for the plain SVs, this indicator designs the start and the end of SVs description
   - Use "!>" for the start of the description of complex SVs
   - Use ">>" for the continuation of description SVs
   - Use ">!" for the end of the description of complex SVs, the all lines between "!>" and ">!" are processed by Charm as one SV.
 
-The  \<reference genome id\> and  \<rearrangment id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. All lines between the "!>" and "<!" indicators must have the same name. 
+All lines between the "!>" and "<!" indicators must have the same \<rearrangment id\>.
 
-The "+" should be used in  \<coordinate of chromosome block end\> column as the symbol of the chromosome end.
+The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or can be novel.
 
-The values in \<copy number of the locus on OLD position\> must be 0 or 1.
+The values in \<copy number of the locus on OLD position\> must be 0 or 1. The 1 can be used only for CNV simulations.
 
-The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion.
+The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion if \<copy number of the locus on OLD position\> is "0", too.
 
 Examples:
 

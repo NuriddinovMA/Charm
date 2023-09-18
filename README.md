@@ -13,6 +13,32 @@ python3 charm.py -i testdataset/EXAMPLE.ini
 As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
 
 # Quick Start
+1) Create your file with the description of rearrangment (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
+2) Duplicate [EXAMPLE.ini file](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
+  * [global] section:
+    - "work_dir" - the path to the your work directory;
+    - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
+    - "one_as_null" - if "True" contacts == 1 are processed as 0 \("True" should be used for the whole genomic Hi-C, and "False" should be used for the enriched Hi-C, like promoter-capture\);
+    - "simulation_id" - the preferred name of simulations.
+  * [preprocessing] section
+    - "path_to_hic" - the path to your hic-file;
+  * [SVs] section
+    - "path_to_svs_list" - the path to the your file with the [description of rearrangments](https://github.com/NuriddinovMA/Charm#the-svs-description);
+    - "rearrangment_id" - the unique id of simulated rearrangment from your SVs list;
+  * [simulation] section
+    - "contact_count" - the summ of contacts on simulated hi-c map;
+    - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
+  * [hic]
+    - "simulation_id" - the unique name of resulted simulation
+    - "format" - "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format),
+      "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file,
+      "pre.gz" and "short.gz" - the gzipped output.
+    - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher. 
+3) run
+```
+python3 charm.py -i YOUR-INI-FILE.ini
+```
+4) the result will be placed in the folder **[global:work_dir]/out** . The name of resulted file will be **[hic:simulation_id].[hic:format]**
 
 ## Example tasks
 ### 1) The establish of reference database without consequent simulations:

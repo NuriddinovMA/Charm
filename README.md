@@ -68,13 +68,12 @@ python3 charm.py -i testdataset/example_REPLICAS.ini -S hic
 ```
 As ending, the Charm creates in "testdataset" the folder "out" containing the hi-c file with simulated rearrangement named "replicas.TEST.cov_mult_f1.hic".
 
-## The your task: step by step.
+## Your task: step by step.
 1) Create your file with the description of rearrangment (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
 2) Duplicate the any examplified ini-file accordingly your tasks (see [example tasks](https://github.com/NuriddinovMA/Charm#example-tasks) ) and modify:
   * [global] section:
     - "work_dir" - the path to the your work directory;
     - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
-    - "path_to_juicertools " - the path to the juicertools jar file;
     - "one_as_null" - if "True" contacts == 1 are processed as 0 \("True" should be used for the whole genomic Hi-C, and "False" should be used for the enriched Hi-C, like promoter-capture\);
     - "simulation_id" - the preferred name of simulations.
   * [preprocessing] section

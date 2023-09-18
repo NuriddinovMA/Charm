@@ -95,7 +95,7 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 ```
 python3 charm.py -i [ini-file] -S [step]
 ```
-4) the result will be placed in the folder [global:work_dir]/out . The name of resulted file will be [hic:simulation_id].[hic:format]
+4) the result will be placed in the folder **[global:work_dir]/out** . The name of resulted file will be **[hic:simulation_id].[hic:format]**
  
 ### The chromosome sizes file
 This file contains chromosome sizes ([example](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 

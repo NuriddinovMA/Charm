@@ -13,6 +13,7 @@ python3 charm.py -i testdataset/EXAMPLE.ini
 As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
 
 # Quick Start
+Attention! This Quick Start suits only for heterozygous rearrangements!
 1) Create your file with the description of rearrangment (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
 2) Duplicate [EXAMPLE.ini file](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
   * [global] section:

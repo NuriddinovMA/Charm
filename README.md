@@ -13,7 +13,7 @@ python3 charm.py -i testdataset/EXAMPLE.ini
 As ending, the Charm creates in "testdataset" folder "out" containing the hi-c file with simulated rearrangement named "example.cnv-X.hic"
 
 # Quick Start
-Attention! This Quick Start suits only for heterozygous rearrangements!
+
 1) Create your file with the description of rearrangment (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
 2) Duplicate [EXAMPLE.ini file](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
   * [global] section:
@@ -31,10 +31,11 @@ Attention! This Quick Start suits only for heterozygous rearrangements!
     - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
   * [hic]
     - "simulation_id" - the unique name of resulted files;
-    - "format" - "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format),
-      "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file,
-      "pre.gz" and "short.gz" - the gzipped output.
-    - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher. 
+    - "format" - "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format);
+      "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file;
+      "pre.gz" and "short.gz" - the gzipped output;
+    - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher;
+    - "wt2_contacts = NO" - add this string if you simulate the homozygous rearrangement. 
 3) run
 ```
 python3 charm.py -i YOUR-INI-FILE.ini

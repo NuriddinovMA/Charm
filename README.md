@@ -101,14 +101,12 @@ File format (see the example "test.chr.sizes")
 ```
 
 ### The SVs description 
-To simulate SVs, Charm requires the file with a description of rearrangement. It shows which fragments of reference chromosomes compose the rearranged chromosome and their order.
-
-![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
-
-The format of the SVs list file (also see the example "test.svs_list.txt" in the testdataset folder):
+To simulate SVs, Charm requires the file with a description of rearrangement. It shows which fragments of reference chromosomes compose the rearranged chromosome and their order. This file must include the following columns (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
 <reference genome id> <rearrangment id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
 ```
+![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
+
 The  \<reference genome id\> and  the \<rearrangment id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. 
 
 The \<chromosome\> is the name of the reference genome chromosome involved in the rearrangement.

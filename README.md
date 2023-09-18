@@ -91,8 +91,10 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
       "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file,
       "pre.gz" and "short.gz" - the gzipped output.
     - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher. 
-3) python3 charm.py -i [ini-file] -S [step]
-
+3) run
+```
+python3 charm.py -i [ini-file] -S [step]
+```
 ### The chromosome sizes file
 This file contains chromosome sizes ([example](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
 File format (see the example "test.chr.sizes")

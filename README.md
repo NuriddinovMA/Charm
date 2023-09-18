@@ -70,21 +70,21 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 
 ## The your task: step by step.
 1) Create your file with the description of rearrangment (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
-2) Duplicate the any examplified ini-file accordingly your tasks (see [example tasks](https://github.com/NuriddinovMA/Charm#example-tasks) and change it:
+2) Duplicate the any examplified ini-file accordingly your tasks (see [example tasks](https://github.com/NuriddinovMA/Charm#example-tasks) ) and modify:
   * [global] section:
     - "work_dir" - the path to the your work directory;
-    - "chrom_sizes" - the path to the file with the chromosome sizes of reference genome;
+    - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
     - "path_to_juicertools " - the path to the juicertools jar file;
-    - "one_as_null" - "True" contacts == 1 are processed as 0 \("True" should be used for the whole genomic Hi-C, and "False" should be used for the enriched Hi-C, like promoter-capture\);
+    - "one_as_null" - if "True" contacts == 1 are processed as 0 \("True" should be used for the whole genomic Hi-C, and "False" should be used for the enriched Hi-C, like promoter-capture\);
     - "simulation_id" - the preferred name of simulations.
   * [preprocessing] section
-    - "path_to_hic" - the path to the hic file with the reference contact map;
+    - "path_to_hic" - the path to your hic-file;
   * [SVs] section
-    - "path_to_svs_list" - the path to the your file with the description of rearrangments;
-    - "rearrangment_id" - the unique id of simulated rearrangment from SVs list;
+    - "path_to_svs_list" - the path to the your file with the [description of rearrangments](https://github.com/NuriddinovMA/Charm#the-svs-description);
+    - "rearrangment_id" - the unique id of simulated rearrangment from your SVs list;
   * [simulation] section
-    - "contact_count" - the summ of contacts on simulated hi-c map
-    - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_missq_f1" for enriched Hi-C
+    - "contact_count" - the summ of contacts on simulated hi-c map;
+    - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
   * [hic]
     - "simulation_id" - the unique name of resulted simulation
     - "format" - "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format),
@@ -95,6 +95,8 @@ As ending, the Charm creates in "testdataset" the folder "out" containing the hi
 ```
 python3 charm.py -i [ini-file] -S [step]
 ```
+4) the result will be placed in the folder [global:work_dir]/out . The name of resulted file will be [hic:simulation_id].[hic:format]
+ 
 ### The chromosome sizes file
 This file contains chromosome sizes ([example](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
 File format (see the example "test.chr.sizes")

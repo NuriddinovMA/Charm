@@ -131,7 +131,7 @@ python3 charm.py -i your-replicas.ini -S wt
 
 **The third step**: the rearrangement simulations.
 1) Create your file with the description of rearrangments (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
-2) Copy the [example_HETEROZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini] (https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HOMOZYGOUS.ini) and modify:
+2) Copy the [example_HETEROZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HOMOZYGOUS.ini) and modify:
    * [global], [simulation] and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to the your file the description of rearrangments;

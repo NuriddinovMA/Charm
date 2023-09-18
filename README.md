@@ -101,7 +101,7 @@ File format (see the example "test.chr.sizes")
 ```
 
 ### The SVs description 
-To simulate SVs, Charm requires the file with description of rearrangement. 
+To simulate SVs, Charm requires the file with a description of rearrangement. It shows which fragments of reference chromosomes compose the rearranged chromosome and their order.
 
 ![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
 

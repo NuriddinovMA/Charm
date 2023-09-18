@@ -117,7 +117,7 @@ python3 charm.py -i your-pre.ini -S pre
 **The second step**: the generation of pseudoreplicas (if your will simulate heterozygous rearrangments)
 
 1) Duplicate the example_REPLICAS.ini and modify:
-   * [global] and [preprocessing] sections - copy values from the ini-file create in the first step;
+   * [global] and [preprocessing] sections - copy the values from the ini-file create in the first step;
    * [simulation]
      - predict_null_contacts - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
      - contact_count - the summ of contacts on simulated hi-c map;
@@ -132,7 +132,7 @@ python3 charm.py -i your-replicas.ini -S wt
 **The third step**: the rearrangement simulations.
 1) Create your file with the description of rearrangments (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
 2) Duplicate the example_HETEROZYGOUS.ini or exampl_HOMOZYGOUS.ini and modify:
-   * [global], [simulation] and [preprocessing] sections - copy values from the ini-file create in the second step;
+   * [global], [simulation] and [preprocessing] sections - copy the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to the your file the description of rearrangments;
      - "rearrangment_id" - the unique id of simulated rearrangment from your SVs list;

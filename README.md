@@ -38,7 +38,9 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
 ```
 python3 charm.py -i YOUR-INI-FILE.ini
 ```
-4) the result will be placed in the folder **[global:work_dir]/out** . The name of resulted file will be **[hic:simulation_id].[hic:format]**
+4) the result will be placed in the folder **[global:work_dir]/out** . The name of resulted file will be **[hic:simulation_id].[hic:format]** .
+5) the database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:simulation_id]/** .
+6) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:simulation_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
 
 ## Example tasks
 ### 1) The establish of reference database without consequent simulations:

@@ -103,7 +103,7 @@ File format (see the example "test.chr.sizes")
 ### The SVs description 
 To simulate SVs, Charm requires the file with description of rearrangement. 
 
-[grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
+![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
 
 The format of the SVs list file (also see the example "test.svs_list.txt" in the testdataset folder):
 ```

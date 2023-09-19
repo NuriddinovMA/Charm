@@ -32,14 +32,19 @@ if __name__ == "__main__":
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
 	try: os.makedirs(config['global']['work_dir'])
-	except FileExistsError: pass
-	except OSError: raise UndefinedValues('work directory in global section is not defined')
+	except OSError: raise UndefinedValues('The work directory in global section is not defined')
+	try: global_noised = gf.boolean(config['global']['one_as_null'])
+	except KeyError: global_noised = False
+	try: heterozygous = gf.boolean(config['global']['heterozygous'])
+	except KeyError: heterozygous = True
+	try:
+		global_count = gf.boolean(config['global']['contact_count'])
+		if heterozygous: global_count = global_count//2
+	except KeyError: raise UndefinedValues('The contact counts in global section is not defined')
 	try: skip_stages |= set(config['global']['skip_stages'].split(','))
 	except KeyError: pass
 	try: cleaning = gf.boolean(config['global']['cleaning'])
 	except KeyError: cleaning = True
-	try: global_noised = gf.boolean(config['global']['one_as_null'])
-	except KeyError: global_noised = False
 	try: 
 		log_file = config['global']['log_file']
 		f = open(log_file,'w')
@@ -257,7 +262,8 @@ if __name__ == "__main__":
 	
 	model = config['simulation']['model']
 	random = config['simulation']['random']
-	contact_count = config['simulation']['contact_count']
+	try: contact_count = config['simulation']['contact_count']
+	except KeyError: contact_count = global_count
 	predict_null_contacts = config['simulation']['predict_null_contacts']
 	noised = global_noised
 	pair = False
@@ -697,8 +703,10 @@ if __name__ == "__main__":
 		except KeyError: svs_contacts = False
 		try: wt1_contacts = config['hic']['wt1_contacts']
 		except KeyError: wt1_contacts = False
-		try: wt2_contacts = config['hic']['wt2_contacts']
-		except KeyError: wt2_contacts = False
+		if heterozygous:
+			try: wt2_contacts = config['hic']['wt2_contacts']
+			except KeyError: wt2_contacts = False
+		else: wt2_contacts = False
 		try: chosen_chroms = config['hic']['chosen_chroms']
 		except KeyError: chosen_chroms = config['simulation']['chosen_chroms_from']
 		try: chrom_sizes = config['hic']['chrom_sizes']

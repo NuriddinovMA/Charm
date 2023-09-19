@@ -1,8 +1,8 @@
 import os
 
 def boolean(x):
-	if x in ['False', 'false','NO','no'] : return False
-	elif x in ['True', 'true','YES','yes']: return True
+	if x.lower() in ['false','no','n'] : return False
+	elif x.lower() in ['true','yes','y']: return True
 	else: return x
 
 def printlog(str, logname):

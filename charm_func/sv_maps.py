@@ -17,7 +17,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 	with open(rearrangement_list, 'r') as f: lines = f.readlines()
 	for line in lines:
 		cnt,mut,c1,p11,p12,a,c2,cnv1,cnv2 = line.split()[:9]
-		if rname == False or rname == mut or stand_alone:
+		if (rname == False or rname == mut or stand_alone) and (line[0] != '#)':
 			gf.printlog('\t\tstructural variation %s' % line.strip(),log_file)
 			
 			if a in ['->','!>']: 

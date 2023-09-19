@@ -1,3 +1,4 @@
+#<reference_id> <rearrangment+id> <old_chromosome> <block_start> <block_end> <indicator> <new_chromosome> <copy number of locus on OLD position> <copy_number_on_new>
 test	del	1	0	4490000	!>	1	0	1
 test	del	1	4490000	7620000	>>	1	0	0
 test	del	1	7620000	+	>!	1	0	1

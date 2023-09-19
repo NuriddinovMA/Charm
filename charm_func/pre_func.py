@@ -80,7 +80,7 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 					chromosome %s, size %i, called bin %i
 					'''
 					gf.printlog(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2),logname)
-					raise IndexError(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2)
+					raise IndexError(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2))
 		elpf = timeit.default_timer() - stf
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t\t...processed %i/%i files %.2fs (%.2fs)' % (nf,lnf,elpf,elp),logname)

@@ -73,8 +73,14 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 					CI[c1][b1][l2i[c2]-1] += p
 					CI[c2][b2][l2i[c1]-1] += p
 				except IndexError:
-					gf.printlog('!!!! %s %s %s %s' % (b1,b2,ChrSzs[c1],ChrSzs[c2]),logname)
-					exit()
+					text = '''
+					The chromosome size error!!!
+					The number of bin must be less then 
+					chromosome %s, size %i, called bin %i
+					chromosome %s, size %i, called bin %i
+					'''
+					gf.printlog(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2),logname)
+					raise IndexError(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2)
 		elpf = timeit.default_timer() - stf
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t\t...processed %i/%i files %.2fs (%.2fs)' % (nf,lnf,elpf,elp),logname)

@@ -26,21 +26,23 @@ if __name__ == "__main__":
 	elif args.stage == 'wt+': skip_stages = set(['pre','svs','sim','lift'])
 	elif args.stage == 'hic': skip_stages = set(['pre','svs','sim','lift','wt'])
 	else: 
-		raise UndefinedValues(args.stage,'''is the incorrect stage id!
+		raise NameError(args.stage,'''is the incorrect stage id!
 	Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
 
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
 	try: os.makedirs(config['global']['work_dir'])
-	except OSError: raise UndefinedValues('The work directory in global section is not defined')
+	except FileExistsError: pass
+	except KeyError: raise KeyError('The work directory in global section is not defined')
 	try: global_noised = gf.boolean(config['global']['one_as_null'])
 	except KeyError: global_noised = False
 	try: heterozygous = gf.boolean(config['global']['heterozygous'])
 	except KeyError: heterozygous = True
 	try:
 		global_count = gf.boolean(config['global']['contact_count'])
-		if heterozygous: global_count = global_count//2
-	except KeyError: raise UndefinedValues('The contact counts in global section is not defined')
+		if heterozygous: global_count = str(int(global_count)//2)
+	except KeyError: pass
+	
 	try: skip_stages |= set(config['global']['skip_stages'].split(','))
 	except KeyError: pass
 	try: cleaning = gf.boolean(config['global']['cleaning'])
@@ -263,7 +265,12 @@ if __name__ == "__main__":
 	model = config['simulation']['model']
 	random = config['simulation']['random']
 	try: contact_count = config['simulation']['contact_count']
-	except KeyError: contact_count = global_count
+	except KeyError:
+		try:
+			config['simulation']['contact_count'] = global_count
+			contact_count = config['simulation']['contact_count']
+		except NameError: raise NameError('The value "contact_count" in section [global] or [simulation] is not defined!')
+		
 	predict_null_contacts = config['simulation']['predict_null_contacts']
 	noised = global_noised
 	pair = False
@@ -388,7 +395,8 @@ if __name__ == "__main__":
 		config['liftover']['simulation_id'] = config['simulation']['simulation_id']
 	try: config['wild_type']['simulation_id']
 	except KeyError: config['wild_type']['simulation_id'] = config['simulation']['simulation_id']
-	
+	try: config['wild_type']['contact_count']
+	except KeyError: config['wild_type']['contact_count'] = config['simulation']['contact_count']
 	
 
 	########################################
@@ -566,7 +574,11 @@ if __name__ == "__main__":
 	try: work_dir = config['wild_type']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 	try: contact_count = config['wild_type']['contact_count']
-	except KeyError: contact_count = config['simulation']['contact_count']
+	except KeyError: 
+		try: contact_count = config['simulation']['contact_count']
+		except KeyError: 
+			try: contact_count = global_count
+			except NameError: raise NameError('The value "contact_count" in sections [global], or [simulation], or [wt] is not defined!')
 	
 	if 'wt' in skip_stages: gf.printlog('Stage "wt" skipped', log_file)
 	else:

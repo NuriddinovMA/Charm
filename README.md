@@ -157,15 +157,15 @@ File format (see the example "test.chr.sizes")
 ### The SVs description 
 To simulate SVs, Charm requires the file with a description of rearrangement. It shows which fragments of reference chromosomes compose the rearranged chromosome and their order. This file must include the following columns (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
-<reference id> <simulation id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on NEW position>
+<reference_id> <simulation_id> <chromosome> <block_start> <block_end> <indicator> <new_chromosome> <copy_number>
 ```
 ![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
 
-The \<reference id\> and  the \<simulation id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. 
+The \<reference_id\> and  the \<simulation id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. 
 
 The \<chromosome\> is the name of the reference genome chromosome involved in the rearrangement.
 
-The \<coordinate chromosome block start\> and the\<coordinate of chromosome block end\> are the coordinates of breakpoints in reference genome. The "+" should be used in \<coordinate of chromosome block end\> column as the symbol of the chromosome end.
+The \<block_start\> and the\<block_end\> are the coordinates of breakpoints in reference genome. The "+" should be used in \<block_end\> column as the symbol of the chromosome end.
 
 The \<indicator\> variants:
   - Use "->" for the plain SVs, this indicator designs the start and the end of model description;
@@ -174,9 +174,9 @@ The \<indicator\> variants:
   - Use ">!" for the end of the description of model.
 All lines between "!>" and ">!" are processed by Charm as one model and can include several independent rearrangements, but all rearrangements must have the same \<rearrangment id\>.
 
-The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or, better, be novel. **Attention!** The reference chromosomes specified in the \<chromosome\> column are totally deleted and replaced by the \<new chromosome\>.
+The \<new_chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or, better, be novel. **Attention!** The reference chromosomes specified in the \<chromosome\> column are totally deleted and replaced by the \<new_chromosome\>.
 
-The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion. **Attention!** If \<copy number of the locus on NEW position\> is more then 1, or less then -1, the rearrangment will bi simulated as *tandem*,head-to-tail, CNV (example 4). In other cases, describe every repeated loci by the new line (example 5).   
+The values in \<copy_number\> can be any; the negative values correspond to the inversion (example 2); the "0" corresponds to the deletion (example 3). **Attention!** If \<copy_number\> is more then 1, or less then -1, the rearrangment will bi simulated as *tandem*,head-to-tail, CNV (example 4). In other cases, describe every repeated loci by the new line (example 5).   
 
 Examples:
 

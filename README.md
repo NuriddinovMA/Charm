@@ -41,8 +41,8 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
 python3 charm.py -i YOUR-INI-FILE.ini
 ```
 4) the result will be placed in the folder **[global:work_dir]/out** . The name of resulted file will be **[hic:simulation_id].[hic:format]** .
-5) the database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:simulation_id]/** .
-6) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:simulation_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
+5) the database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:reference_id]/** .
+6) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
 
 ## Example tasks
 ### 1) The establish of reference database without consequent simulations:
@@ -114,7 +114,7 @@ If your task requires simulating many independent rearrangements, split it into 
 ```
 python3 charm.py -i your-pre.ini -S pre
 ```
-3) The database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:simulation_id]/** .
+3) The database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:reference_id]/** .
 
 **The second step**: the generation of pseudoreplicas (Only if you will simulate heterozygous rearrangements, skip this stage in another)
 
@@ -129,7 +129,7 @@ python3 charm.py -i your-pre.ini -S pre
 ```
 python3 charm.py -i your-replicas.ini -S wt
 ```
-3) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:simulation_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
+3) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
 
 **The third step**: the rearrangement simulations.
 1) Create your file with the description of rearrangments (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
@@ -137,7 +137,7 @@ python3 charm.py -i your-replicas.ini -S wt
    * [global], [simulation] and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to the your file the description of rearrangments;
-     - "simulation_id" - the unique id of simulated rearrangment from your SVs list;
+     - "simulation_id" - the unique id of simulated rearrangment from your file the description of rearrangments;
    * [wild_type]
      - replica_ids - use any TWO values from the ini-file create in the second step;
 3) run

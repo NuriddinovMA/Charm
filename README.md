@@ -27,7 +27,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
     - "path_to_hic" - the path to your hic-file;
   * [SVs] section
     - "path_to_svs_list" - the path to the your file with the [description of rearrangments](https://github.com/NuriddinovMA/Charm#the-svs-description);
-    - "simulation_id" - the unique id of simulated rearrangment from your SVs list;
+    - "simulation_id" - the unique id of simulated rearrangment from your file with the description of rearrangments;
   * [simulation] section
     - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
   * [hic]

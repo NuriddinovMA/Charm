@@ -42,7 +42,7 @@ python3 charm.py -i YOUR-INI-FILE.ini
 ```
 4) the result will be placed in the folder **[global:work_dir]/out** . The name of resulted file will be **[hic:simulation_id].[hic:format]** .
 5) the database with statisics of reference Hi-C map will be placed in the folder **[global:work_dir]/pre/[global:reference_id]/** .
-6) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
+6) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulation:predict_null_contacts]/[simulation:contact_counts]/[wt:replicas_ids]/** .
 
 ## Example tasks
 ### 1) The establish of reference database without consequent simulations:
@@ -129,7 +129,7 @@ python3 charm.py -i your-pre.ini -S pre
 ```
 python3 charm.py -i your-replicas.ini -S wt
 ```
-3) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulatiom:predict_null_contacts]/[simulatiom:contact_counts]/[wt:replicas_ids]/** .
+3) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulation:predict_null_contacts]/[simulation:contact_counts]/[wt:replicas_ids]/** .
 
 **The third step**: the rearrangement simulations.
 1) Create your file with the description of rearrangments (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))

@@ -394,7 +394,7 @@ if __name__ == "__main__":
 		config['liftover']['chrom_sizes_to'] = str(chrom_sizes_from)
 		config['liftover']['simulation_id'] = config['simulation']['simulation_id']
 	try: config['wild_type']['simulation_id']
-	except KeyError: config['wild_type']['simulation_id'] = '%s.%s' % (config['global']['reference_id'],config['simulation']['model'])
+	except KeyError: config['wild_type']['simulation_id'] = '%s.%s' % (config['global']['reference_id'],config['simulation']['predict_null_contacts'])
 	try: config['wild_type']['contact_count']
 	except KeyError: config['wild_type']['contact_count'] = config['simulation']['contact_count']
 	
@@ -567,7 +567,7 @@ if __name__ == "__main__":
 
 	try: sim_id = config['wild_type']['simulation_id']
 	except KeyError: 
-		try: sim_id = '%s.%s' % (config['global']['reference_id'],config['simulation']['model'])
+		try: sim_id = '%s.%s' % (config['global']['reference_id'],config['simulation']['predict_null_contacts'])
 		except KeyError: sim_id = config['global']['reference_id']
 	try: replica_ids = config['wild_type']['replica_ids']
 	except KeyError: replica_ids = '0,1'

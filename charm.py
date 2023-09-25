@@ -59,10 +59,10 @@ if __name__ == "__main__":
 	#PREPROCESSING STAGE PRE/PRE+#
 	##############################
 		
-	try: sim_id = config['preprocessing']['simulation_id']
+	try: sim_id = config['preprocessing']['reference_id']
 	except KeyError: 
-		sim_id = config['global']['simulation_id']
-		config['preprocessing']['simulation_id'] = sim_id
+		sim_id = config['global']['reference_id']
+		config['preprocessing']['reference_id'] = sim_id
 	try: work_dir = config['preprocessing']['work_dir']
 	except KeyError:
 		work_dir = config['global']['work_dir']
@@ -121,9 +121,9 @@ if __name__ == "__main__":
 	config['simulation']['contact_pab'] = name_pab[:-1]
 	config['simulation']['coverage_pab'] = name_cov_pab[:-1]
 	config['simulation']['distance_pab'] = name_dist_pab[:-1]
-	config['preprocessing']['simulation_id'] = sim_id
+	config['preprocessing']['reference_id'] = sim_id
 	try: config['simulation']['simulation_id']
-	except KeyError: onfig['simulation']['simulation_id'] = sim_id
+	except KeyError: config['simulation']['simulation_id'] = sim_id
 	
 	if 'pre' in skip_stages: gf.printlog('Stage "pre" skipped', log_file)
 	else:
@@ -153,7 +153,7 @@ if __name__ == "__main__":
 	path_to_svs_list = config['SVs']['path_to_svs_list']
 	try: log_file = config['SVs']['log_file']
 	except KeyError: log_file = config['global']['log_file']
-	try: rname = config['SVs']['rearrangment_id']
+	try: rname = config['SVs']['simulation_id']
 	except KeyError: rname = False
 	
 	if 'svs' in skip_stages: gf.printlog('Stage "SVs" skipped', log_file)
@@ -187,8 +187,8 @@ if __name__ == "__main__":
 
 	try: sim_id = 'in_mut.' + config['simulation']['simulation_id']
 	except KeyError:
-		config['simulation']['simulation_id'] = config['global']['simulation_id']
-		sim_id = 'in_mut.' + config['global']['simulation_id']
+		config['simulation']['simulation_id'] = config['SVs']['simulation_id']
+		sim_id = 'in_mut.' + config['SVs']['simulation_id']
 	try: work_dir = config['simulation']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 
@@ -197,15 +197,15 @@ if __name__ == "__main__":
 	
 	try: contact_dir = config['simulation']['contact_dir']
 	except KeyError: 
-		config['simulation']['contact_dir'] = '%s/pre/%s/%s.%s' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],resolution)
+		config['simulation']['contact_dir'] = '%s/pre/%s/%s.%s' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],resolution)
 		contact_dir = config['simulation']['contact_dir']
 	try: coverage_file = config['simulation']['coverage_file']
 	except KeyError:
-		config['simulation']['coverage_file'] = '%s/pre/%s/%s.%s.binCov' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],resolution)
+		config['simulation']['coverage_file'] = '%s/pre/%s/%s.%s.binCov' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],resolution)
 		coverage_file  = config['simulation']['coverage_file']
 	try: distance_file = config['simulation']['distance_file']
 	except KeyError: 
-		config['simulation']['distance_file'] = '%s/pre/%s/%s.%s.stat' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],resolution)
+		config['simulation']['distance_file'] = '%s/pre/%s/%s.%s.stat' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],resolution)
 		distance_file = config['simulation']['distance_file']
 
 	try: contact_low = config['simulation']['contact_low']
@@ -218,13 +218,13 @@ if __name__ == "__main__":
 	try:
 		resolution_low = config['simulation']['resolution_low']
 		if contact_low == False:
-			config['simulation']['contact_low'] ='%s/pre/%s/%s.%s' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],resolution_low)
+			config['simulation']['contact_low'] ='%s/pre/%s/%s.%s' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],resolution_low)
 			contact_low = config['simulation']['contact_low']
 		if coverage_low == False:
-			config['simulation']['coverage_low'] = '%s/pre/%s/%s.%s.binCov' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],resolution_low)
+			config['simulation']['coverage_low'] = '%s/pre/%s/%s.%s.binCov' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],resolution_low)
 			coverage_low = config['simulation']['coverage_low']
 		if distance_low == False:
-			config['simulation']['distance_low'] = '%s/pre/%s/%s.%s.stat' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],resolution_low)
+			config['simulation']['distance_low'] = '%s/pre/%s/%s.%s.stat' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],resolution_low)
 			distance_low = config['simulation']['distance_low']
 	except KeyError: resolution_low = config['global']['resolution_low']
 	
@@ -238,13 +238,13 @@ if __name__ == "__main__":
 		if contact_pab: pass
 		else:
 			for pab in resolution_pab.split(','):
-				contact_pab += '%s/pre/%s/pab.%s.%s,' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],pab)
+				contact_pab += '%s/pre/%s/pab.%s.%s,' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],pab)
 			config['simulation']['contact_pab'] = contact_pab[:-1]
 			contact_pab = config['simulation']['contact_pab']
 		if coverage_pab: pass
 		else:
 			for pab in resolution_pab.split(','):
-				coverage_pab +='%s/pre/%s/pab.%s.%s.binCov,' % (config['global']['work_dir'],config['global']['simulation_id'],config['global']['simulation_id'],pab)
+				coverage_pab +='%s/pre/%s/pab.%s.%s.binCov,' % (config['global']['work_dir'],config['global']['reference_id'],config['global']['reference_id'],pab)
 			config['simulation']['coverage_pab'] = coverage_pab[:-1]
 			coverage_pab = config['simulation']['coverage_pab']
 	except KeyError: resolution_pab = config['global']['resolution_pab']
@@ -394,7 +394,7 @@ if __name__ == "__main__":
 		config['liftover']['chrom_sizes_to'] = str(chrom_sizes_from)
 		config['liftover']['simulation_id'] = config['simulation']['simulation_id']
 	try: config['wild_type']['simulation_id']
-	except KeyError: config['wild_type']['simulation_id'] = config['simulation']['simulation_id']
+	except KeyError: config['wild_type']['simulation_id'] = '%s.%s' % (config['global']['reference_id'],config['simulation']['model'])
 	try: config['wild_type']['contact_count']
 	except KeyError: config['wild_type']['contact_count'] = config['simulation']['contact_count']
 	
@@ -406,7 +406,7 @@ if __name__ == "__main__":
 	try: sim_id = 'to_ref.' + config['liftover']['simulation_id']
 	except KeyError: 
 		try: sim_id = 'to_ref.' + config['simulation']['simulation_id']
-		except KeyError: sim_id = 'to_ref.' + config['global']['simulation_id']
+		except KeyError: sim_id = 'to_ref.' + config['SVs']['simulation_id']
 	try: work_dir = config['liftover']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 
@@ -567,8 +567,8 @@ if __name__ == "__main__":
 
 	try: sim_id = config['wild_type']['simulation_id']
 	except KeyError: 
-		try: sim_id = config['simulation']['simulation_id']
-		except KeyError: sim_id = config['global']['simulation_id']
+		try: sim_id = '%s.%s' % (config['global']['reference_id'],config['simulation']['model'])
+		except KeyError: sim_id = config['global']['reference_id']
 	try: replica_ids = config['wild_type']['replica_ids']
 	except KeyError: replica_ids = '0,1'
 	try: work_dir = config['wild_type']['work_dir']
@@ -690,7 +690,7 @@ if __name__ == "__main__":
 	try: sim_id = config['hic']['simulation_id']
 	except KeyError:
 		try: sim_id = config['simulation']['simulation_id']
-		except KeyError: sim_id = config['global']['simulation_id']
+		except KeyError: sim_id = config['SVs']['simulation_id']
 	try: work_dir = config['hic']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
 	try: resolution = config['hic']['resolution']

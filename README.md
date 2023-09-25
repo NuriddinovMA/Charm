@@ -176,7 +176,7 @@ All lines between "!>" and ">!" are processed by Charm as one model and can incl
 
 The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or, better, be novel. **Attention!** The reference chromosomes specified in the \<chromosome\> column are totally deleted and replaced by the \<new chromosome\>.
 
-The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion.
+The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion. **Attention!** If \<copy number of the locus on NEW position\> is more then 1, or less then -1, the rearrangment will bi simulated as *tandem* (head-to-tail) CNV. In other cases, describe every repeated loci by the new line.   
 
 Examples:
 
@@ -203,7 +203,7 @@ test	del	chr1	2000000	+	>!	chr1	1
 ```
 test	inv	chr1	0	1000000	!>	chr1 1
 test	inv	chr1	1000000	2000000	>>	chr1 -1
-test	inv	chr1	2000000	+	>!	chr1	1
+test	inv	chr1	2000000	+	>!	chr1 1
 ```
 *(5)* A loss of chromosome 1 arm after 5Mb (and saving of locus from 0 to 5Mb) 
 ```

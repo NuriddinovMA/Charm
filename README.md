@@ -22,12 +22,12 @@ As ending, the Charm creates in "testdataset" folder "out" containing the hi-c f
     - "contact_count" - the summ of contacts on simulated hi-c map;
     - "heterozygous" - "YES" if *all* rearrengments are heterozygous; "NO" if *all* rearrengments are homozygous;
     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "NO" should be used for the enriched Hi-C, like promoter-capture\);
-    - "simulation_id" - the preferred name of simulations.
+    - "reference_id" - the preferred name of database.
   * [preprocessing] section
     - "path_to_hic" - the path to your hic-file;
   * [SVs] section
     - "path_to_svs_list" - the path to the your file with the [description of rearrangments](https://github.com/NuriddinovMA/Charm#the-svs-description);
-    - "rearrangment_id" - the unique id of simulated rearrangment from your SVs list;
+    - "simulation_id" - the unique id of simulated rearrangment from your SVs list;
   * [simulation] section
     - "predict_null_contacts" - use or "cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/"cov_sq_f1" for whole genomic Hi-C, "cov_mixed_f"/"cov_mixsq_f"/"cov_mixed_f1"/"cov_mixsq_f1" for enriched Hi-C
   * [hic]
@@ -106,8 +106,8 @@ If your task requires simulating many independent rearrangements, split it into 
    * [global] section:
      - "work_dir" - the path to the your work directory;
      - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
-     - "one_as_null" - if "True" contacts == 1 are processed as 0 \("True" should be used for the whole genomic Hi-C, and "False" should be used for the enriched Hi-C, like promoter-capture\);
-     - "simulation_id" - the preferred name of simulations.
+     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "YES" should be used for the enriched Hi-C, like promoter-capture\);
+     - "reference_id" - the preferred reference name used to build the database; 
    * [preprocessing] section
      - "path_to_hic" - the path to your hic-file;
 2) run
@@ -137,7 +137,7 @@ python3 charm.py -i your-replicas.ini -S wt
    * [global], [simulation] and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to the your file the description of rearrangments;
-     - "rearrangment_id" - the unique id of simulated rearrangment from your SVs list;
+     - "simulation_id" - the unique id of simulated rearrangment from your SVs list;
    * [wild_type]
      - replica_ids - use any TWO values from the ini-file create in the second step;
 3) run
@@ -157,11 +157,11 @@ File format (see the example "test.chr.sizes")
 ### The SVs description 
 To simulate SVs, Charm requires the file with a description of rearrangement. It shows which fragments of reference chromosomes compose the rearranged chromosome and their order. This file must include the following columns (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
-<reference genome id> <rearrangment id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on NEW position>
+<reference id> <simulation id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on NEW position>
 ```
 ![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
 
-The \<reference genome id\> and  the \<rearrangment id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. 
+The \<reference id\> and  the \<simulation id\> are any names to description the reference genome and the modeled rearrangements. Every model must be named uniquelly. 
 
 The \<chromosome\> is the name of the reference genome chromosome involved in the rearrangement.
 

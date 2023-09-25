@@ -176,7 +176,7 @@ All lines between "!>" and ">!" are processed by Charm as one model and can incl
 
 The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or, better, be novel. **Attention!** The reference chromosomes specified in the \<chromosome\> column are totally deleted and replaced by the \<new chromosome\>.
 
-The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion. **Attention!** If \<copy number of the locus on NEW position\> is more then 1, or less then -1, the rearrangment will bi simulated as *tandem* (head-to-tail) CNV. In other cases, describe every repeated loci by the new line.   
+The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion. **Attention!** If \<copy number of the locus on NEW position\> is more then 1, or less then -1, the rearrangment will bi simulated as *tandem*,head-to-tail, CNV (example 4). In other cases, describe every repeated loci by the new line (example 5).   
 
 Examples:
 
@@ -187,11 +187,11 @@ test	trn	chr1	2000000	7000000	>>	chr1	1
 test	trn	chr1	1000000	2000000	>>	chr1	1
 test	trn	chr1	7000000	+	>!	chr1	1
 ```
-*(2)* An tandem duplication of locus 1:1Mb-2Mb
+*(2)* An inversion of locus 1:1Mb-2Mb
 ```
-test	dups	chr1	0	1000000	!>	chr1	1
-test	dups	chr1	1000000	2000000	>>	chr1	2
-test	dups	chr1	2000000	+	>!	chr1	1
+test	inv	chr1	0	1000000	!>	chr1 1
+test	inv	chr1	1000000	2000000	>>	chr1 -1
+test	inv	chr1	2000000	+	>!	chr1 1
 ```
 *(3)* An deletion of locus 1:1Mb-2Mb
 ```
@@ -199,22 +199,29 @@ test	del	chr1	0	1000000	!>	chr1	1
 test	del	chr1	1000000	2000000	>>	chr1	0
 test	del	chr1	2000000	+	>!	chr1	1
 ```
-*(4)* An inversion of locus 1:1Mb-2Mb
+*(4)* An tandem duplication of locus 1:1Mb-2Mb
 ```
-test	inv	chr1	0	1000000	!>	chr1 1
-test	inv	chr1	1000000	2000000	>>	chr1 -1
-test	inv	chr1	2000000	+	>!	chr1 1
+test	dups	chr1	0	1000000	!>	chr1	1
+test	dups	chr1	1000000	2000000	>>	chr1	2
+test	dups	chr1	2000000	+	>!	chr1	1
 ```
-*(5)* A loss of chromosome 1 arm after 5Mb (and saving of locus from 0 to 5Mb) 
+*(5)* An head-to-head duplication of locus 1:1Mb-2Mb
+```
+test	dups	chr1	0	1000000	!>	chr1	1
+test	dups	chr1	1000000	2000000	>>	chr1	1
+test	dups	chr1	1000000	2000000	>>	chr1	-1
+test	dups	chr1	2000000	+	>!	chr1	1
+```
+*(6)* A loss of chromosome 1 arm after 5Mb (and saving of locus from 0 to 5Mb) 
 ```
 test	inv	chr1	0	5000000	->	chr1	1
 ```
-*(6)* An translocation of locus 1:1,000,000-2,000,000 to chromosome end with the locus saving on old position and cnv x10 on new position
+*(7)* An translocation of locus 1:1,000,000-2,000,000 to chromosome end with the locus saving on old position and cnv x10 on new position
 ```
 test	trnx10	chr1	0	+	!>	chr1	1
 test	trnx10	chr1	1000000	2000000	>!	chr1	10
 ```
-*(7)* An interchomosome  translocation; the moving of locus 1:1Mb-2Mb to the chromosome 2:7Mb: 
+*(8)* An interchomosome  translocation; the moving of locus 1:1Mb-2Mb to the chromosome 2:7Mb: 
 ```
 test	trn	chr1	0	1000000	!>	chr1	1
 test	trn	chr1	2000000	+	>>	chr1	1
@@ -223,7 +230,7 @@ test	trn	chr1	1000000	2000000	>>	chr2	1
 test	trn	chr2	7000000	+	>!	chr2	1
 ```
 
-*(8)* An complex rearrangement: the translocation with cnv x3 of locus 1:1Mb-2Mb on a new chromosome, the translocation with inversion and cnv x3 of locus 1:3Mb-4Mb on the new chromosome,
+*(9)* An complex rearrangement: the translocation with cnv x3 of locus 1:1Mb-2Mb on a new chromosome, the translocation with inversion and cnv x3 of locus 1:3Mb-4Mb on the new chromosome,
 the translocation with cnv x5 of locus 1:5Mb-7,5Mb on the new chromosome. The chromosomes 1 is saved intact.
 ```
 test	compX	chr1	0	+	!> 1	0	1
@@ -231,7 +238,7 @@ test	compX chr1 1000000 2000000 >> chrNew + 1 3
 test	compX chr1 3000000 4000000 >> chrNew + 1 -3
 test	compX chr1 5000000 7500000 >! chrNew + 1 5
 ```
-*(9)* Several rearrangements: a translocation from chromosome 1:1Mb-2Mb to 2:7Mb, tandem duplication of 1:7Mb-8Mb and deletion of 2:1Mb-2Mb
+*(10)* Several rearrangements: a translocation from chromosome 1:1Mb-2Mb to 2:7Mb, tandem duplication of 1:7Mb-8Mb and deletion of 2:1Mb-2Mb
 ```
 test	several	chr1	0	1000000	!>	chr1	0	1
 test	several	chr1	2000000	7000000	>>	chr1	0	1

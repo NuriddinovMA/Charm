@@ -174,7 +174,7 @@ The \<indicator\> variants:
   - Use ">!" for the end of the description of model.
 All lines between "!>" and ">!" are processed by Charm as one model and can include several independent rearrangements, but all rearrangements must have the same \<rearrangment id\>.
 
-The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or can be novel.
+The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or, better, be novel. **Attention!** The reference chromosomes specified in the \<chromosome\> column are totally deleted and replaced by the \<new chromosome\>.
 
 The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion.
 
@@ -224,7 +224,7 @@ test	trn	chr2	7000000	+	>!	chr2	1
 ```
 
 *(8)* An complex rearrangement: the translocation with cnv x3 of locus 1:1Mb-2Mb on a new chromosome, the translocation with inversion and cnv x3 of locus 1:3Mb-4Mb on the new chromosome,
-the translocation with cnv x5 of locus 1:5Mb-7,5Mb on the new chromosome. The chromosomes 1 is intact.
+the translocation with cnv x5 of locus 1:5Mb-7,5Mb on the new chromosome. The chromosomes 1 is saved intact.
 ```
 test	compX	chr1	0	+	!> 1	0	1
 test	compX chr1 1000000 2000000 >> chrNew + 1 3

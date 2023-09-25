@@ -157,7 +157,7 @@ File format (see the example "test.chr.sizes")
 ### The SVs description 
 To simulate SVs, Charm requires the file with a description of rearrangement. It shows which fragments of reference chromosomes compose the rearranged chromosome and their order. This file must include the following columns (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
-<reference genome id> <rearrangment id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on OLD position> <copy number of locus on NEW position>
+<reference genome id> <rearrangment id> <chromosome> <coordinate chromosome block start> <coordinate of chromosome block end> <indicator> <new chromosome> <copy number of locus on NEW position>
 ```
 ![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
 
@@ -168,62 +168,59 @@ The \<chromosome\> is the name of the reference genome chromosome involved in th
 The \<coordinate chromosome block start\> and the\<coordinate of chromosome block end\> are the coordinates of breakpoints in reference genome. The "+" should be used in \<coordinate of chromosome block end\> column as the symbol of the chromosome end.
 
 The \<indicator\> variants:
-  - Use "->" for the plain SVs, this indicator designs the start and the end of SVs description
-  - Use "!>" for the start of the description of complex SVs
-  - Use ">>" for the continuation of description SVs
-  - Use ">!" for the end of the description of complex SVs, the all lines between "!>" and ">!" are processed by Charm as one SV.
-
-All lines between the "!>" and "<!" indicators must have the same \<rearrangment id\>.
+  - Use "->" for the plain SVs, this indicator designs the start and the end of model description;
+  - Use "!>" for the start of the description of model;
+  - Use ">>" for the continuation of model description;
+  - Use ">!" for the end of the description of model.
+All lines between "!>" and ">!" are processed by Charm as one model and can include several independent rearrangements, but all rearrangements must have the same \<rearrangment id\>.
 
 The \<new chromosome\> is the name of the simulated chromosome resulting from the rearrangement. This name can match with the \<chromosome\> or can be novel.
 
-The values in \<copy number of the locus on OLD position\> must be 0 or 1. The 1 can be used only for CNV simulations.
-
-The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion if \<copy number of the locus on OLD position\> is "0", too.
+The values in \<copy number of the locus on NEW position\> can be any; the negative values correspond to the inversion; the "0" corresponds to the deletion.
 
 Examples:
 
 *(1)* An general translocation; the moving of locus 1:1Mb-2Mb to 7Mb: 
 ```
-test	trn	chr1	0	1000000	!>	chr1	0	1
-test	trn	chr1	2000000	7000000	>>	chr1	0	1
-test	trn	chr1	1000000	2000000	>>	chr1	0	1
-test	trn	chr1	7000000	+	>!	chr1	0	1
+test	trn	chr1	0	1000000	!>	chr1	1
+test	trn	chr1	2000000	7000000	>>	chr1	1
+test	trn	chr1	1000000	2000000	>>	chr1	1
+test	trn	chr1	7000000	+	>!	chr1	1
 ```
 *(2)* An tandem duplication of locus 1:1Mb-2Mb
 ```
-test	dups	chr1	0	1000000	!>	chr1	0	1
-test	dups	chr1	1000000	2000000	>>	chr1	0	2
-test	dups	chr1	2000000	+	>!	chr1	0	1
+test	dups	chr1	0	1000000	!>	chr1	1
+test	dups	chr1	1000000	2000000	>>	chr1	2
+test	dups	chr1	2000000	+	>!	chr1	1
 ```
 *(3)* An deletion of locus 1:1Mb-2Mb
 ```
-test	del	chr1	0	1000000	!>	chr1	0	1
-test	del	chr1	1000000	2000000	>>	chr1	0	0
-test	del	chr1	2000000	+	>!	chr1	0	1
+test	del	chr1	0	1000000	!>	chr1	1
+test	del	chr1	1000000	2000000	>>	chr1	0
+test	del	chr1	2000000	+	>!	chr1	1
 ```
 *(4)* An inversion of locus 1:1Mb-2Mb
 ```
-test	inv	chr1	0	1000000	!>	chr1	0	1
-test	inv	chr1	1000000	2000000	>>	chr1	0	-1
-test	inv	chr1	2000000	+	>!	chr1	0	1
+test	inv	chr1	0	1000000	!>	chr1 1
+test	inv	chr1	1000000	2000000	>>	chr1 -1
+test	inv	chr1	2000000	+	>!	chr1	1
 ```
 *(5)* A loss of chromosome 1 arm after 5Mb (and saving of locus from 0 to 5Mb) 
 ```
-test	inv	chr1	0	5000000	->	chr1	0	1
+test	inv	chr1	0	5000000	->	chr1	1
 ```
 *(6)* An translocation of locus 1:1,000,000-2,000,000 to chromosome end with the locus saving on old position and cnv x10 on new position
 ```
-test	trnx10	chr1	0	+	!>	chr1	0	1
-test	trnx10	chr1	1000000	2000000	>!	chr1	1	10
+test	trnx10	chr1	0	+	!>	chr1	1
+test	trnx10	chr1	1000000	2000000	>!	chr1	10
 ```
 *(7)* An interchomosome  translocation; the moving of locus 1:1Mb-2Mb to the chromosome 2:7Mb: 
 ```
-test	trn	chr1	0	1000000	!>	chr1	0	1
-test	trn	chr1	2000000	+	>>	chr1	0	1
-test	trn	chr2	0	700000	>>	chr2	0	1
-test	trn	chr1	1000000	2000000	>>	chr2	0	1
-test	trn	chr2	7000000	+	>!	chr2	0	1
+test	trn	chr1	0	1000000	!>	chr1	1
+test	trn	chr1	2000000	+	>>	chr1	1
+test	trn	chr2	0	700000	>>	chr2	1
+test	trn	chr1	1000000	2000000	>>	chr2	1
+test	trn	chr2	7000000	+	>!	chr2	1
 ```
 
 *(8)* An complex rearrangement: the translocation with cnv x3 of locus 1:1Mb-2Mb on a new chromosome, the translocation with inversion and cnv x3 of locus 1:3Mb-4Mb on the new chromosome,

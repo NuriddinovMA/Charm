@@ -14,8 +14,8 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
 
 # Quick Start
 
-1) Create your file with the description of rearrangements (see [The SVs description](https://github.com/genomech/Charm#the-svs-description))
-2) Duplicate [EXAMPLE.ini file](https://github.com/genomech/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
+1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))
+2) Duplicate [EXAMPLE.ini file](Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
   * [global] section:
     - "work_dir" - the path to your working (output) directory;
     - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
@@ -108,7 +108,7 @@ If your task requires simulating many independent rearrangements, split it into 
 1) Copy the [EXAMPLE.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
    * [global] section:
      - "work_dir" - the path to your work directory;
-     - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
+     - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
      - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "YES" should be used for the enriched Hi-C, like promoter-capture\);
      - "reference_id" - the preferred reference name used to build the database; 
    * [preprocessing] section
@@ -135,7 +135,7 @@ python3 charm.py -i your-replicas.ini -S wt
 3) the pseudo replicas will be placed in the folder **[global:work_dir]/wt/[global:reference_id].[simulation:predict_null_contacts]/[simulation:contact_counts]/[wt:replicas_ids]/** .
 
 **The third step**: the rearrangements simulation.
-1) Create your file with the description of rearrangements (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
+1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))
 2) Copy the [example_HETEROZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HOMOZYGOUS.ini) and modify:
    * [global], [simulation], and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section

@@ -15,7 +15,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
 # Quick Start
 
 1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))
-2) Duplicate [EXAMPLE.ini file](Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
+2) Duplicate [EXAMPLE.ini file](EXAMPLE.ini) and modify:
   * [global] section:
     - "work_dir" - the path to your working (output) directory;
     - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
@@ -26,7 +26,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
   * [preprocessing] section
     - "path_to_hic" - the path to the reference hic-file;
   * [SVs] section
-    - "path_to_svs_list" - the path to your file with the [description of rearrangments](https://github.com/genomech/Charm#the-svs-description);
+    - "path_to_svs_list" - the path to your file with the [description of rearrangments](#the-svs-description);
     - "simulation_id" - the unique id of simulated rearrangement from your file with the description of rearrangements;
   * [simulation] section
     - "predict_null_contacts" - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
@@ -46,7 +46,7 @@ python3 charm.py -i YOUR-INI-FILE.ini
 ## Example tasks
 
 Charm includes several steps. If your task requires simulating many independent rearrangements, split it into subtasks as shown in the examples below and in a 
-detailed [guide](https://github.com/genomech/Charm#simulation-of-the-structural-variant-a-step-by-step-guide).
+detailed [guide](#simulation-of-the-structural-variant-a-step-by-step-guide).
 
 ### 1) Generating reference database without consequent simulations:
 ```
@@ -105,7 +105,7 @@ As a result, the Charm creates in "testdataset" the folder "out" containing the 
 If your task requires simulating many independent rearrangements, split it into several subtasks.
 
 **The first step**: the generation of a reference database.
-1) Copy the [EXAMPLE.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
+1) Copy the [EXAMPLE.ini](testdataset/EXAMPLE.ini) and modify:
    * [global] section:
      - "work_dir" - the path to your work directory;
      - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
@@ -121,7 +121,7 @@ The database with statistics of reference Hi-C map will be placed in the folder 
 
 **The second step**: the generation of pseudoreplicates (only required for heterozygous rearrangements)
 
-1) Copy the [example_REPLICAS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_REPLICAS.ini) and modify:
+1) Copy the [example_REPLICAS.ini](testdataset/example_REPLICAS.ini) and modify:
    * [global] and [preprocessing] sections - past the values from the ini-file created in the first step;
    * [simulation]
      - predict_null_contacts - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
@@ -136,7 +136,7 @@ python3 charm.py -i your-replicas.ini -S wt
 
 **The third step**: the rearrangements simulation.
 1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))
-2) Copy the [example_HETEROZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/example_HOMOZYGOUS.ini) and modify:
+2) Copy the [example_HETEROZYGOUS.ini](testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini](testdataset/example_HOMOZYGOUS.ini) and modify:
    * [global], [simulation], and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to your file with the description of rearrangements;
@@ -151,7 +151,7 @@ python3 charm.py -i your-simulation.ini -S SVs+
 5) Repeat this step for every independent simulation.
 
 ### The chromosome sizes file
-This file contains chromosome sizes ([example](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
+This file contains chromosome sizes ([example](testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 
 File format (see the example "test.chr.sizes")
 ```
 <chromosome name> <chromosome size bp>
@@ -167,7 +167,7 @@ The file describing rearrangments must include the following columns (also see t
 ```
 <reference_id> <simulation_id> <chromosome_name> <block_start> <block_end> <indicator> <new_chromosome_name> <copy_number>
 ```
-![grafical example](https://github.com/NuriddinovMA/Charm/blob/main/description.png)
+![grafical example](description.png)
 
 The \<reference_id\> and  the \<simulation id\> are any names corresponding to the ini file records "reference_id" and "simulation_id". Every model must be named uniquely. 
 
@@ -189,80 +189,80 @@ Examples:
 
 *(1)* A simple insertion; the locus 1Mb-2Mb of chromsome 1 is inseted at position 7Mb of the same chromsome:
 ```
-test	trn	chr1	0	1000000	!>	der1	1
+test	trn	chr1	0		1000000	!>	der1	1
 test	trn	chr1	2000000	7000000	>>	der1	1
 test	trn	chr1	1000000	2000000	>>	der1	1
-test	trn	chr1	7000000	+	>!	der1	1
+test	trn	chr1	7000000	+		>!	der1	1
 ```
-*(2)* An inversion of locus 1:1Mb-2Mb
+*(2)* An inversion of locus chr1:1Mb-2Mb
 ```
-test	inv	chr1	0	1000000	!>	der1 1
-test	inv	chr1	1000000	2000000	>>	der1 -1
-test	inv	chr1	2000000	+	>!	der1 1
+test	inv	chr1	0		1000000	!>	der1	1
+test	inv	chr1	1000000	2000000	>>	der1	-1
+test	inv	chr1	2000000	+		>!	der1	1
 ```
-*(3)* An deletion of locus 1:1Mb-2Mb
+*(3)* An deletion of locus chr1:1Mb-2Mb
 ```
-test	del	chr1	0	1000000	!>	der1	1
+test	del	chr1	0		1000000	!>	der1	1
 test	del	chr1	1000000	2000000	>>	der1	0
-test	del	chr1	2000000	+	>!	der1	1
+test	del	chr1	2000000	+		>!	der1	1
 ```
-*(4)* An tandem duplication of locus 1:1Mb-2Mb
+*(4)* An tandem duplication of locus chr1:1Mb-2Mb
 ```
-test	dups	chr1	0	1000000	!>	der1	1
+test	dups	chr1	0		1000000	!>	der1	1
 test	dups	chr1	1000000	2000000	>>	der1	2
-test	dups	chr1	2000000	+	>!	der1	1
+test	dups	chr1	2000000	+		>!	der1	1
 ```
 *(5)* An head-to-head duplication of locus 1:1Mb-2Mb
 ```
-test	dups	chr1	0	1000000	!>	der1	1
+test	dups	chr1	0		1000000	!>	der1	1
 test	dups	chr1	1000000	2000000	>>	der1	1
 test	dups	chr1	1000000	2000000	>>	der1	-1
-test	dups	chr1	2000000	+	>!	der1	1
+test	dups	chr1	2000000	+		>!	der1	1
 ```
 *(6)* A loss of chromosome 1 segment starting from 5Mb untill the end of the chromsome 
 ```
 test	del	chr1	0	5000000	->	der1	1
 ```
-*(7)* An unbalanced translocation of the locus chr1:1,000,000-2,000,000. Ten copies of this locus is inserted in the end of the chromosome 1
+*(7)* An unbalanced translocation of the locus chr1:1Mb-2Mb. Ten copies of this locus is inserted in the end of the chromosome 1
 ```
-test	trnx10	chr1	0	+	!>	der1	1
+test	trnx10	chr1	0		+		!>	der1	1
 test	trnx10	chr1	1000000	2000000	>!	der1	10
 ```
 *(8)* An insertion of the locus chr1:1Mb-2Mb to the chromosome 2:7Mb:
 ```
-test	trn	chr1	0	1000000	!>	der1	1
-test	trn	chr1	2000000	+	>>	der1	1
-test	trn	chr2	0	700000	>>	der2	1
+test	trn	chr1	0		1000000	!>	der1	1
+test	trn	chr1	2000000	+		>>	der1	1
+test	trn	chr2	0		700000	>>	der2	1
 test	trn	chr1	1000000	2000000	>>	der2	1
-test	trn	chr2	7000000	+	>!	der2	1
+test	trn	chr2	7000000	+		>!	der2	1
 ```
 
-*(9)* A complex rearrangement: the translocation with cnv x3 of locus 1:1Mb-2Mb on a new chromosome, the translocation with inversion and cnv x3 of locus 1:3Mb-4Mb on the new chromosome, the translocation with cnv x5 of locus 1:5Mb-7,5Mb on the new chromosome. Chromosome 1 is saved intact.
+*(9)* A complex rearrangement: creating new derivative chromosome from locus chr1:1Mb-2Mb (3 copy), a locus chr1:3Mb-4Mb (3 copy in the inverted orientation), a locus chr1:5Mb-7.5Mb. Chromosome 1 is saved intact.
 
 _Note: here we would like to create a derivative chromosome containing a segment from chromosome 1, yet we want to keep **all** contacts of chromosome 1. Since creating a derivative chromosome with the segment of chr1 will remove contacts of the original chr1, we will create one more derivative chromosome where we 'copy' complete chromosome 1. As a result, on the chr1 Hi-C map, we expect to see all reference contacts of this chromosome + modeled contacts of the derivative chromosome segment._
 
 ```
-test	compX	chr1	0	+	!> der1	0	1
-test	compX chr1 1000000 2000000 >> chrNew + 1 3
-test	compX chr1 3000000 4000000 >> chrNew + 1 -3
-test	compX chr1 5000000 7500000 >! chrNew + 1 5
+test	compX	chr1	0		+		!>	der1	1
+test	compX	chr1	1000000	2000000	>>	chrNew	3
+test	compX	chr1	3000000	4000000	>>	chrNew	-3
+test	compX	chr1	5000000	7500000	>!	chrNew	5
 ```
 *(10)* Several rearrangements: a translocation from chromosome 1:1Mb-2Mb to 2:7Mb, tandem duplication of 1:7Mb-8Mb and deletion of 2:1Mb-2Mb
 ```
-test	several	chr1	0	1000000	!>	der1	0	1
-test	several	chr1	2000000	7000000	>>	der1	0	1
-test	several	chr1	7000000	8000000	>>	der1	0	2
-test	several	chr1	8000000	+	>>	der1	0	1
-test	several	chr2	0	1000000	>>	der2	0	1
-test	several	chr2	1000000	2000000	>>	der2	0	0
-test	several	chr2	2000000	7000000	>>	der2	0	0
-test	several	chr1	2000000	7000000	>>	der2	0	1
-test	several	chr2	7000000	+	>!	der2	0	1
+test	several	chr1	0		1000000	!>	der1	1
+test	several	chr1	2000000	7000000	>>	der1	1
+test	several	chr1	7000000	8000000	>>	der1	2
+test	several	chr1	8000000	+		>>	der1	1
+test	several	chr2	0		1000000	>>	der2	1
+test	several	chr2	1000000	2000000	>>	der2	0
+test	several	chr2	2000000	7000000	>>	der2	0
+test	several	chr1	2000000	7000000	>>	der2	1
+test	several	chr2	7000000	+		>!	der2	1
 ```
 
 ## Advanced description
 charm [-i ini_file] [-S stage] 
-* [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model parameters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](https://github.com/NuriddinovMA/Charm/blob/main/BIG_EXAMPLE.ini). See the common description of ini-file in the python module [confiparser](https://docs.python.org/3/library/configparser.html), class configparser.ExtendedInterpolation.
+* [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model parameters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](BIG_EXAMPLE.ini). See the common description of ini-file in the python module [confiparser](https://docs.python.org/3/library/configparser.html), class configparser.ExtendedInterpolation.
 * [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
   - "pre+" is the default parameter, from hic-file with the wild-type data to hic-file with simulated SVs
   - Use "SVs+" when the database with contact statistics exists, but the file with rearrangement description has not yet been created 

@@ -14,11 +14,11 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
 
 # Quick Start
 
-1) Create your file with the description of rearrangements (see [The SVs description](https://github.com/NuriddinovMA/Charm#the-svs-description))
-2) Duplicate [EXAMPLE.ini file](https://github.com/NuriddinovMA/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
+1) Create your file with the description of rearrangements (see [The SVs description](https://github.com/genomech/Charm#the-svs-description))
+2) Duplicate [EXAMPLE.ini file](https://github.com/genomech/Charm/blob/main/testdataset/EXAMPLE.ini) and modify:
   * [global] section:
     - "work_dir" - the path to your working (output) directory;
-    - "chrom_sizes" - the path to the file with [the chromosome sizes](https://github.com/NuriddinovMA/Charm#the-chromosome-sizes-file) of reference genome;
+    - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
     - "contact_count" - the desired sum of contacts for a simulated Hi-C map;
     - "heterozygous" - "YES" if *all* rearrengments are heterozygous; "NO" if *all* rearrengments are homozygous;
     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "NO" should be used for the enriched Hi-C, like promoter-capture\);
@@ -26,7 +26,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
   * [preprocessing] section
     - "path_to_hic" - the path to the reference hic-file;
   * [SVs] section
-    - "path_to_svs_list" - the path to your file with the [description of rearrangments](https://github.com/NuriddinovMA/Charm#the-svs-description);
+    - "path_to_svs_list" - the path to your file with the [description of rearrangments](https://github.com/genomech/Charm#the-svs-description);
     - "simulation_id" - the unique id of simulated rearrangement from your file with the description of rearrangements;
   * [simulation] section
     - "predict_null_contacts" - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
@@ -46,7 +46,7 @@ python3 charm.py -i YOUR-INI-FILE.ini
 ## Example tasks
 
 Charm includes several steps. If your task requires simulating many independent rearrangements, split it into subtasks as shown in the examples below and in a 
-detailed [guide](https://github.com/NuriddinovMA/Charm#your-task-step-by-step).
+detailed [guide](https://github.com/genomech/Charm#simulation-of-the-structural-variant-a-step-by-step-guide).
 
 ### 1) Generating reference database without consequent simulations:
 ```

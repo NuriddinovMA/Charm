@@ -31,8 +31,8 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
   * [simulation] section
     - "predict_null_contacts" - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
   * [hic]
-    - "format" - output file format: "hic" for juicer tools hic-map, "pre" for the [pre-file] (https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format);
-      "short" for the [extra short] (https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file;
+    - "format" - output file format: "hic" for juicer tools hic-map, "pre" for the [pre-file](https://github.com/aidenlab/juicer/wiki/Pre#short-with-score-format);
+      "short" for the [extra short](https://github.com/aidenlab/juicer/wiki/Pre#extra-short-format-dev) pre-file;
       "pre.gz" and "short.gz" - the gzipped output;
     - "hic_resolutions" - the list of Hi-C map bin sizes; the minimal bin size must be equal to [global] "resolution" or higher;
 3) run

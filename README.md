@@ -163,11 +163,13 @@ To simulate SVs, Charm requires the file with a description of rearrangement. In
 1) for each segment of the _derivative_ chromosome, the contacts of the reference chromosome containing this segment are set to zero (in the case of homozygote modeling) or reduced by half (in the case of heterozygote modeling). **Attention!** It does not matter how small the segment of the derivative chromosome is - all contacts of the corresponding reference chromosome are removed.
 2) contacts of all segments in the _derivative_ chromosomes are modeled and added to the Hi-C map.
 
+![graphical description](chromosome_fates.png)
+
 The file describing rearrangments must include the following columns (also see the example "test.svs_list.txt" in the testdataset folder):
 ```
 <reference_id> <simulation_id> <chromosome_name> <block_start> <block_end> <indicator> <new_chromosome_name> <copy_number>
 ```
-![grafical example](description.png)
+![graphical example](description.png)
 
 The \<reference_id\> and  the \<simulation id\> are any names corresponding to the ini file records "reference_id" and "simulation_id". Every model must be named uniquely. 
 

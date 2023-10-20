@@ -16,4 +16,4 @@ The every model in dataset is a gzipped tab separated file that contains, on eac
 - **chrm1**, **pos1**, **chrm2**, **pos2** are genome coordinate of Hi-C contact;
 - **score** is the contact count.
 
-**Attention!** All SVs simalated as **hetero**zygous!
+**Attention!** All SVs simulated as **hetero**zygous!

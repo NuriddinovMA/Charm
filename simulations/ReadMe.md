@@ -7,7 +7,7 @@ Both the wgHi-C dataset and the ecHi-C dataset are built on the same rearrangeme
 - **id** is unique id number of rearrangment included in model file name (wg.**id**.pre.gz for wgHi-C and ec.**id**.pre.gz for ecHi-C);
 - **type SVs** is type of structural variantion;
 - **chrm**, **start**, **end** are genome coordianate of rearranged locus;
-- **note** includes additional information for int**er**- and int**ra**chromosomal translocations: the genome coordinates of insertion and trancsloated locus orientation.
+- **note** includes additional information for int**er**- and int**ra**chromosomal translocations: the genome coordinates of insertion and translocated locus orientation.
 
 The every model in dataset is a gzipped tab separated file that contains, on each line
 ```

@@ -1,6 +1,6 @@
 # The dataset
 The simulated dataset of structural variations consist of [whole-genome Hi-C models](https://genedev.bionet.nsc.ru/ftp/by_Project/Charm/wgHi-C/) and [exome-capture Hi-C models](https://genedev.bionet.nsc.ru/ftp/by_Project/Charm/ecHi-C/).
-Both the wgHi-C dataset and the ecHi-C dataset are built on the same rearrangements described in  [simulation.txt](simulations.txt), where each line represents a unique SV
+Both the wgHi-C dataset and the ecHi-C dataset are built on the same rearrangements described in [simulation.txt](simulations.txt), where each line represents a unique SV
 '''
 <id>  <type SVs>  <chrm>  <start>  <end>  <note>
 '''

@@ -1,3 +1,2 @@
-wgHi-C: https://genedev.bionet.nsc.ru/ftp/by_Project/Charm/wgHi-C/
-
-ecHi-C: https://genedev.bionet.nsc.ru/ftp/by_Project/Charm/ecHi-C/
+The Hi-C dataset with simulated structural variations includes 4400 [whole-genome Hi-C models](https://genedev.bionet.nsc.ru/ftp/by_Project/Charm/wgHi-C/) and 4400 [exome-capture Hi-C models](https://genedev.bionet.nsc.ru/ftp/by_Project/Charm/ecHi-C/). The wgHi-C models and the ecHi-C models share the [list of simulated rearrangments](simulations.csv). This list contains the description of rearrangments: unique_id of model, type of SVs and the genome coordinates of rearranged loci. The description of int**er**- and int**ra**chromosomal translocations is extended by the genome coordinates of insertion and this locus genome orientation.
+Attention! All SVs simalated as **hetero**zygous!  

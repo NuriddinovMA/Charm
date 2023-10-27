@@ -6,8 +6,8 @@ Charm is a Python-based tool to simulate Hi-C-maps with user-defined chromosomal
 1) Python >= 3.7 with NumPy
 2) [Juicer Tools](https://github.com/aidenlab/juicer) (for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
 3) Java (the Juicer Tools requirement)
-4) the generation of database from Hi-C map with 600 billion contacts requires around 48-60Gb RAM and 9 hours of real time
-5) the simulation of rearrangement for *one chromosome pai*r from given database requires around 6-24Gb RAM and 1-2 hours of real time
+4) the generation of database from Hi-C map with 600 million contacts requires around 48-60Gb RAM and 9 hours of real time
+5) the simulation of rearrangement for *one chromosome pai*r from given database requires around 6-36Gb RAM and 1-2 hours of real time
 ## Test dataset run
 ```
 python3 charm.py -i testdataset/EXAMPLE.ini

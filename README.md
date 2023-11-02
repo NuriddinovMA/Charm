@@ -17,7 +17,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
 # Quick Start
 
 1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))
-2) Duplicate [EXAMPLE.ini file](EXAMPLE.ini) and modify:
+2) Duplicate [EXAMPLE.ini file](testdataset/EXAMPLE.ini) and modify:
   * [global] section:
     - "work_dir" - the path to your working (output) directory;
     - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;

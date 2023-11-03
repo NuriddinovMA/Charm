@@ -4,6 +4,11 @@ import timeit
 from charm_func import global_func as gf
 from charm_func import sim_func as sf
 
+try: import numpy as np
+except ModuleNotFoundError:
+	print('Lethal Error! NumPy not found!')
+	break
+
 def read_Contact_Statistics(
 	coverage_file, distance_file,
 	coverage_low, distance_low,

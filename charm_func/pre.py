@@ -4,6 +4,11 @@ import timeit
 from charm_func import pre_func as prf
 from charm_func import global_func as gf
 
+try: import numpy as np
+except ModuleNotFoundError:
+	print('Lethal Error! NumPy not found!')
+	break
+
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
 	capture, work_dir, path_to_hic, norm, path_to_hic_dump,
 	path_to_java_dir, path_to_juicertools, log_file, cleaning

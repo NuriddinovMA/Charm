@@ -4,6 +4,11 @@ import timeit
 from charm_func import c2h_func as c2h
 from charm_func import global_func as gf
 
+try: import numpy as np
+except ModuleNotFoundError:
+	print('Lethal Error! NumPy not found!')
+	break
+
 def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	chosen_chroms, chrom_sizes, resolution,
 	format, path_to_java_dir, path_to_juicertools, hic_resolutions,

@@ -1,11 +1,12 @@
-import math
-import numpy as np
-import scipy
-import scipy.stats as st
-import timeit
-import sys
 import os
+import sys
+import timeit
 from charm_func import global_func as gf
+
+try: import numpy as np
+except ModuleNotFoundError:
+	print('Lethal Error! NumPy not found!')
+	break
 
 def readBedGraph(fname, resolution,ChrIdxs):
 

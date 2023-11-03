@@ -2,10 +2,11 @@ import timeit
 import sys
 import os
 from charm_func import global_func as gf
+
 try: import numpy as np
-except ImportError: print("numpy not found!")
-try: import scipy.stats as sc
-except ImportError: print("scipy.stats not found!")
+except ModuleNotFoundError:
+	print('Lethal Error! NumPy not found!')
+	break
 
 def HashTry(Hash, key):
 	t = 1

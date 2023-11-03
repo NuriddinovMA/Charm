@@ -1,9 +1,13 @@
-import numpy as np
 import os
 from charm_func import sv_func as svf
 from charm_func import global_func as gf
 from copy import deepcopy
 
+try: import numpy as np
+except ModuleNotFoundError:
+	print('Lethal Error! NumPy not found!')
+	break
+	
 def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, stand_alone,log_file):
 	
 	outdir = work_dir + '/rear'

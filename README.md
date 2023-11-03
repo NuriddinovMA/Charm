@@ -112,7 +112,8 @@ If your task requires simulating many independent rearrangements, split it into 
      - "work_dir" - the path to your work directory;
      - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
      - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "NO" should be used for the enriched Hi-C, like promoter-capture\);
-     - "reference_id" - the preferred reference name used to build the database; 
+     - "reference_id" - the preferred reference name used to build the database;
+     - "log_file" - a preferred name of log file.
    * [preprocessing] section
      - "path_to_hic" - the path to your hic-file;
 2) run
@@ -124,7 +125,10 @@ The database with statistics of reference Hi-C map will be placed in the folder 
 **The second step**: the generation of pseudoreplicates (only required for heterozygous rearrangements)
 
 1) Copy the [example_REPLICAS.ini](testdataset/example_REPLICAS.ini) and modify:
-   * [global] and [preprocessing] sections - past the values from the ini-file created in the first step;
+   * [global]
+     - "log_file" - insert the *new* preferred name of log file, in the other case, the log file will be overwritten;
+     - for other parameters past the values from the ini-file created in the first step;
+   * [preprocessing] sections - past the values from the ini-file created in the first step;
    * [simulation]
      - predict_null_contacts - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
      - contact_count - the desired sum of contacts for a simulated Hi-C map;
@@ -139,7 +143,10 @@ python3 charm.py -i your-replicas.ini -S wt
 **The third step**: the rearrangements simulation.
 1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))
 2) Copy the [example_HETEROZYGOUS.ini](testdataset/example_HETEROZYGOUS.ini) or [example_HOMOZYGOUS.ini](testdataset/example_HOMOZYGOUS.ini) and modify:
-   * [global], [simulation], and [preprocessing] sections - past the values from the ini-file created in the second step;
+   * [global]
+     - "log_file" - insert the *new* preferred name of log file, in the other case, the log file will be overwritten;
+     - for other parameters past the values from the ini-file created in the first step;
+   * [simulation], and [preprocessing] sections - past the values from the ini-file created in the second step;
    * [SVs] section
      - "path_to_svs_list" - the path to your file with the description of rearrangements;
      - "simulation_id" - the unique id of simulated rearrangement from your file containing the description of rearrangements;

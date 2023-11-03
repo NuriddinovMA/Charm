@@ -9,7 +9,7 @@ if __name__ == "__main__":
 	try: import numpy as np
 	except ModuleNotFoundError:
 		print('Lethal Error! NumPy not found!')
-		break
+		exit()
 
 	parser = argparse.ArgumentParser(description='Parameters for generation of rearrangement maps')
 	parser.add_argument( '-i', dest='ini',metavar='ini-file', help='path to ini-file')

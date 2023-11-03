@@ -6,7 +6,7 @@ from copy import deepcopy
 try: import numpy as np
 except ModuleNotFoundError:
 	print('Lethal Error! NumPy not found!')
-	break
+	exit()
 	
 def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, stand_alone,log_file):
 	

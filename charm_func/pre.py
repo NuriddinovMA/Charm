@@ -7,7 +7,7 @@ from charm_func import global_func as gf
 try: import numpy as np
 except ModuleNotFoundError:
 	print('Lethal Error! NumPy not found!')
-	break
+	exit()
 
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
 	capture, work_dir, path_to_hic, norm, path_to_hic_dump,

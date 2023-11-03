@@ -2,7 +2,7 @@ import os
 try: import numpy as np
 except ModuleNotFoundError:
 	print('Lethal Error! NumPy not found!')
-	break
+	exit()
 
 def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 	try: order = kwargs['order']

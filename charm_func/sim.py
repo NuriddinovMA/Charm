@@ -7,7 +7,7 @@ from charm_func import sim_func as sf
 try: import numpy as np
 except ModuleNotFoundError:
 	print('Lethal Error! NumPy not found!')
-	break
+	exit()
 
 def read_Contact_Statistics(
 	coverage_file, distance_file,

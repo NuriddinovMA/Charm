@@ -111,7 +111,7 @@ If your task requires simulating many independent rearrangements, split it into 
    * [global] section:
      - "work_dir" - the path to your work directory;
      - "chrom_sizes" - the path to the file with [the chromosome sizes](#the-chromosome-sizes-file) of reference genome;
-     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "YES" should be used for the enriched Hi-C, like promoter-capture\);
+     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "NO" should be used for the enriched Hi-C, like promoter-capture\);
      - "reference_id" - the preferred reference name used to build the database; 
    * [preprocessing] section
      - "path_to_hic" - the path to your hic-file;

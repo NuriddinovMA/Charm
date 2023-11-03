@@ -47,11 +47,13 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 					if path_to_java_dir: 
 						command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
 						gf.printlog(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
-						os.system(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
+						control = os.system(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
+						if control != 0: raise OSError('Java or juicertools absent!')
 					else: 
 						command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
 						gf.printlog(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
-						os.system(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
+						control = os.system(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
+						if control != 0: raise OSError('Java or juicertools absent!')
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\t...end dumping %.2fs' % elp, log_file)
 		

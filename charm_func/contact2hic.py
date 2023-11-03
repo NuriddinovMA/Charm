@@ -53,7 +53,8 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		if hic_resolutions: resolution_list = ' -r %s' % hic_resolutions
 		else: resolution_list= ''
 		gf.printlog('\t\texecuted command: %s %s %s ' %( command, params, resolution_list),log_file)
-		os.system( command + params + resolution_list)
+		control = os.system( command + params + resolution_list)
+		if control != 0: raise OSError('Java or juicertools absent!')
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
 		os.system('gzip ' + F + '.gz')

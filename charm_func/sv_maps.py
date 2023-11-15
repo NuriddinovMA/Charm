@@ -23,7 +23,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 		cnt,mut,c1,p11,p12,a,c2,cnv2 = line.split()[:8]
 		if (rname == False or rname == mut or stand_alone) and (line[0] != '#'):
 			gf.printlog('\t\tstructural variation %s' % line.strip(),log_file)
-			
+			c2 += '|'
 			if a in ['->','!>']: 
 				pointviews = ''
 				chrm_from, chrm_to, cnv, add_from, add_to = set([]),set([]),set([]),set([]),set([])
@@ -37,7 +37,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 			except KeyError:
 				mutChrmIdx[c2] = idxStart
 				mutChrmIdx[idxStart] = c2
-
+			
 			pointviews += '%s %s %s\n' % (c1,p11,p12)
 			cnv2 = int(cnv2)
 			
@@ -75,7 +75,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 							c2i,c2j = cc_from[c1][i],cc_from[c1][j]
 							if mutChrmIdx[c2i] <= mutChrmIdx[c2j]: chrm_to.add((c2i,c2j))
 							else: chrm_to.add((c2j,c2i))
-				print('to',chrm_to)
+				#print('to',chrm_to)
 				for c2 in cc_to:
 					lenc = len(cc_to[c2])
 					cc_to[c2] = list(cc_to[c2])
@@ -84,7 +84,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 							c1i,c1j = cc_to[c2][i],cc_to[c2][j]
 							if ChrmIdx[c1i] <= ChrmIdx[c1j]: chrm_from.add((c1i,c1j))
 							else: chrm_from.add((c1j,c1i))
-				print('from',chrm_from)
+				#print('from',chrm_from)
 				
 				full_bins_from,full_bins_to = [],[]
 				for c1 in cc_from: full_bins_from = [(c1,i) for i in range( ChrmSzs[c1] )]
@@ -93,7 +93,7 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 				cnvBins = unique[0][unique[1]>1].tolist()+list(set(full_bins_from)-set(full_bins_to))
 				
 				if len(cnvBins) > 0:
-					print('!!!CNV!!!')
+					#print('!!!CNV!!!')
 					for i in cnvBins: cnv.add(i[0])
 					for c1 in cnv:
 						for chrm in ChrmSzs: 
@@ -103,13 +103,16 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 							for chrm in mutChrmSzs: 
 								if mutChrmIdx[c2] <= mutChrmIdx[chrm]: add_to.add((c2,chrm))
 								else: add_to.add((chrm,c2))
-				else: print('!!!NO-CNV!!!')
-				print('from',add_from)
-				print('to',add_to)
+				else: pass#print('!!!NO-CNV!!!')
+				#print('from',add_from)
+				#print('to',add_to)
 				
 				with open('%s/%s.%s.chr.sizes' % (outdir, mut, cnt), 'w') as f: 
 					Keys = sorted(mutChrmSzs)
-					for key in Keys: f.write( '%s %i\n' % (key, (mutChrmSzs[key]+1)*resolution) )
+					for key in Keys:
+						chrm = key
+						if key[-1] == '|': chrm = key[:-1]
+						f.write( '%s %i\n' % (chrm, (mutChrmSzs[key]+1)*resolution) )
 					map_SV_from_ref ='%s/%s.%s.%i.mark' % (outdir, cnt, mut, resolution)
 					map_SV_to_ref ='%s/%s.%s.%i.mark' % (outdir, mut, cnt, resolution)
 					chrom_sizes_SV = '%s/%s.%s.chr.sizes' % (outdir, mut,cnt)
@@ -123,10 +126,26 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 				
 				cf,af,ct,at = '','','',''
 				
-				for i in chrm_from: cf = '%s,%s;%s' % (i[0],i[1],cf)
-				for i in add_from: af = '%s,%s;%s' % (i[0],i[1],af)
-				for i in chrm_to: ct = '%s,%s;%s' % (i[0],i[1],ct)
-				for i in add_to: at = '%s,%s;%s' % (i[0],i[1],at)
+				for i in chrm_from:
+					c1,c2 = i[0],i[1]
+					if c1[-1] == '|': c1 = c1[:-1]
+					if c2[-1] == '|': c2 = c2[:-1]
+					cf = '%s,%s;%s' % (c1,c2,cf)
+				for i in add_from:
+					c1,c2 = i[0],i[1]
+					if c1[-1] == '|': c1 = c1[:-1]
+					if c2[-1] == '|': c2 = c2[:-1]
+					af = '%s,%s;%s' % (c1,c2,af)
+				for i in chrm_to:
+					c1,c2 = i[0],i[1]
+					if c1[-1] == '|': c1 = c1[:-1]
+					if c2[-1] == '|': c2 = c2[:-1]
+					ct = '%s,%s;%s' % (c1,c2,ct)
+				for i in add_to:
+					c1,c2 = i[0],i[1]
+					if c1[-1] == '|': c1 = c1[:-1]
+					if c2[-1] == '|': c2 = c2[:-1]
+					at = '%s,%s;%s' % (c1,c2,at)
 				if stand_alone == False: return (cf[:-1],ct[:-1]),(af[:-1],at[:-1]),map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
 
 

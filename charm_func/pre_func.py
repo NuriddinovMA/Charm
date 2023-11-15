@@ -75,7 +75,7 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 					CI[c2][b2][l2i[c1]-1] += p
 				except IndexError:
 					text = '''
-					The chromosome size error!!!
+					The chromosome size error!!! The chromosome sizes in [chrom_sizes] don't math the sizes in [path_to_hic].
 					The number of bin must be less then 
 					chromosome %s, size %i, called bin %i
 					chromosome %s, size %i, called bin %i

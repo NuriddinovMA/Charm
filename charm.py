@@ -632,8 +632,17 @@ if __name__ == "__main__":
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...chromosome indexed, %.2fs' % elp, log_file)
 		
+		gf.printlog('\tStart replicas simulation', log_file)
 		if replica_ids:
+			currentStep,stepCount,currentReplica,replicaCount = 0,0,0,len(replica_ids.split(','))
 			for replica_id in replica_ids.split(','):
+				chroms,pair_list = [],[]
+				if chosen_chroms == 'all':
+					lnc = len(c2s_low.keys())
+					stepCount += lnc*(lnc+1)/2
+				else: stepCount += len(chosen_chroms.split(';'))
+			for replica_id in replica_ids.split(','):
+				currentReplica += 1
 				wt_name = '%s/wt/%s/%s/%s' % (work_dir,sim_id,contact_count,replica_id)
 				try: os.makedirs( wt_name )
 				except FileExistsError: pass
@@ -650,7 +659,8 @@ if __name__ == "__main__":
 				else: pair_list = [c.split(',') for c in chosen_chroms.split(';')]
 
 				for c1_c2 in pair_list:
-					gf.printlog('\tStep 1: %s data reading...' % c1_c2, log_file)
+					currentStep += 1
+					gf.printlog('\t\tStep %i.1/%i: %s data reading...' % (currentStep,stepCount,c1_c2), log_file)
 					contactStatistic = sim.read_Contact_Statistics(
 						coverage_file, distance_file,
 						coverage_low, distance_low,
@@ -664,8 +674,8 @@ if __name__ == "__main__":
 						l2i, work_dir, log_file
 					)
 					elp = timeit.default_timer() - start_time
-					gf.printlog('\t...end data reading, %.2fs' % elp, log_file)
-					gf.printlog('\tStep 2: replicas simulation...', log_file)
+					gf.printlog('\t\t...end data reading, %.2fs' % elp, log_file)
+					gf.printlog('\t\tStep %i.2/%i: replicas simulation %s...' % (currentStep,stepCount,c1_c2), log_file)
 					sim.wt_Simulation(
 							contactData+contactStatistic, resolution, resolution_low, resolution_pab,
 							c1_c2, c2s_low, l2i,
@@ -673,11 +683,11 @@ if __name__ == "__main__":
 							sim_id, replica_id, work_dir, log_file
 							)
 					elp = timeit.default_timer() - start_time
-					gf.printlog('end %s replica simulation %.2fs' % (replica_id, elp), log_file)
+					gf.printlog('\t\tend simulation %i/%i: %.2fs' % (currentStep,stepCount,elp), log_file)
 				elp = timeit.default_timer() - start_time
-				gf.printlog('\t...end replicas simulation %.2fs'% elp, log_file)
+				gf.printlog('\t\tend %s (%i/%i) replica simulation %.2fs' % (replica_id,currentReplica,replicaCount, elp), log_file)
 		elp = timeit.default_timer() - start_time
-		gf.printlog('... end of stage "wt" %.2f' % elp, log_file)
+		gf.printlog('\t...end of stage "wt" %.2f' % elp, log_file)
 		
 	wt_path = []
 	if replica_ids and ('hic' not in skip_stages):

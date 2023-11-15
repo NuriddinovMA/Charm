@@ -24,6 +24,12 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 	
 	resolution,resolution_low,resolution_pab = gf.boolean(resolution),gf.boolean(resolution_low),gf.boolean(resolution_pab)
 	out_name_res,out_name_low,out_name_pab = '','',''
+	
+	stepCount = 0
+	if resolution: stepCount += 1
+	if resolution_low: stepCount += 1
+	if resolution_pab: stepCount += len(resolution_pab.split(','))
+	currentStep = 0
 	if resolution:
 		resolution = int(resolution)
 		gf.printlog('\tStatistic for %sbp resolution' % resolution, log_file)
@@ -31,8 +37,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		suffix = '%s.%i' % (sim_name,resolution)
 		try: os.makedirs(pre_path+suffix)
 		except OSError: pass
-		
-		gf.printlog('\tStep 0: data preparing...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.0 / %i: data preparing...' % (currentStep, stepCount), log_file)
 		c2s = gf.ChromSizes(chrom_sizes,resolution)
 		if path_to_hic and path_to_juicertools and path_to_hic_dump == False:
 			gf.printlog('\t\tDump contactcs from hic-map', log_file)
@@ -63,18 +69,20 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		
 		out_name = pre_path+suffix
 		out_name_res = pre_path+suffix
-		gf.printlog('\tStep 1: Calculating bin coverage...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.1 / %i: Calculating bin coverage...' % (currentStep, stepCount), log_file)
 		binCov=prf.iBinCoverage(path_to_hic_dump,c2s,resolution,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...bin coverage calculated for %.2fs' % elp, log_file)
 
-		gf.printlog('\tGenome analysis...', log_file)
+		gf.printlog('\t\tGenome analysis...', log_file)
 		counts = prf.diag_counts(c2s,binCov,capture=capture,log=log_file)
 		maxd = max(counts.keys())
 		elp = timeit.default_timer() - start_time
-		gf.printlog('\t...end genome analysing %.2fs' % elp, log_file)
+		gf.printlog('\t\t...end genome analysing %.2fs' % elp, log_file)
 		
-		gf.printlog('\tStep 2: Distance depended statistics...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.2 / %i: Distance depended statistics...' % (currentStep, stepCount), log_file)
 		contactDistanceHash = prf.iDistanceRead(maxd,path=path_to_hic_dump,capture=capture,resolution=resolution,coverage=binCov,log=log_file)
 		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name,log=log_file)
 		del contactDistanceHash
@@ -82,7 +90,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		gf.printlog('...distance analyzed for %.2fs' % elp, log_file)
 		out_name = pre_path+suffix+'/'+suffix
 		
-		gf.printlog('\tStep 3: Contact transforming by mean statistic...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.3 / %i: Contact transforming by mean statistic...' % (currentStep, stepCount), log_file)
 		prf.iTotalContactListing(meanHash,binCov,resolution,out_name,capture=capture,path=path_to_hic_dump,log=log_file)
 		del meanHash
 		del binCov
@@ -97,23 +106,26 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		try: os.makedirs(pre_path+suffix)
 		except OSError: pass
 		
-		gf.printlog('\tStep 0.1: data preparing...', log_file)
-		gf.printlog('\tGenome analysis...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i / %i: data preparing...' % (currentStep, stepCount), log_file)
 		
 		c2s = gf.ChromSizes(chrom_sizes,resolution_low)
 		out_name = pre_path+suffix
 		out_name_low = pre_path+suffix
-		gf.printlog('\tStep 1.1: Calculating bin coverage...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.1 / %i: Calculating bin coverage...' % (currentStep, stepCount), log_file)
 		binCov=prf.iBinCoverage(path_to_hic_dump,c2s,resolution_low,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...bin coverage calculated for %.2fs' % elp, log_file)
-
+		
+		gf.printlog('\t\tGenome analysis...', log_file)
 		counts = prf.diag_counts(c2s,binCov,capture=capture,log=log_file)
 		maxd = max(counts.keys())
 		elp = timeit.default_timer() - start_time
-		gf.printlog('\t...end genome analysing %.2fs' % elp, log_file)
+		gf.printlog('\t\t...end genome analysing %.2fs' % elp, log_file)
 
-		gf.printlog('\tStep 2.1: Distance depended statistics...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.2 / %i: Distance depended statistics...' % (currentStep, stepCount), log_file)
 		contactDistanceHash = prf.iDistanceRead(maxd,path=path_to_hic_dump,capture=capture,resolution=resolution_low,coverage=binCov,log=log_file)
 		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name,log=log_file)
 		del contactDistanceHash
@@ -121,7 +133,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		
 		gf.printlog('\t...distance analyzed for %.2fs' % elp, log_file)
 		out_name = pre_path+suffix+'/'+suffix
-		gf.printlog('\tStep 3.1: Contact transforming by mean statistic...', log_file)
+		currentStep += 1
+		gf.printlog('\tStep %i.3 / %i: Contact transforming by mean statistic...' % (currentStep, stepCount), log_file)
 		prf.iTotalContactListing(meanHash,binCov,resolution_low,out_name,capture=capture,path=path_to_hic_dump,log=log_file)
 		del meanHash
 		del binCov
@@ -138,23 +151,25 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 			try: os.makedirs(pre_path+suffixL)
 			except OSError: pass
 			
-			gf.printlog('\tStep 0.2: data preparing...', log_file)
-			gf.printlog('\tPseudocompartment genome analysis...', log_file)
+			currentStep += 1
+			gf.printlog('\tStep %i.0 / %i: data preparing...' % (currentStep, stepCount), log_file)
 			c2s_ab = gf.ChromSizes(chrom_sizes,pab)
 
 			out_name = pre_path+suffixL
 			out_name_pab.append(pre_path+suffixL)
-			gf.printlog('\tStep 1.2: Calculating bin coverage for pseudocompartment resolution...', log_file)
+			currentStep += 1
+			gf.printlog('\tStep %i.1 / %i: Calculating bin coverage...' % (currentStep, stepCount), log_file)
 			binCovAB=prf.iBinCoverage(path_to_hic_dump,c2s_ab,pab,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t...bin coverage calculated for %.2fs' % elp, log_file)
-			
+			gf.printlog('\t\tPseudocompartment genome analysis...', log_file)
 			counts_ab = prf.diag_counts(c2s_ab,binCovAB,log=log_file)
 			maxd_ab = max(counts_ab.keys())
 			elp = timeit.default_timer() - start_time
-			gf.printlog('\t...end genome analysing %.2fs' % elp, log_file)
-			
-			gf.printlog('\tStep 2.2: Distance depended statistics for pseudocompartment resolution...', log_file)
+			gf.printlog('\t\t...end genome analysing %.2fs' % elp, log_file)
+		
+			currentStep += 1
+			gf.printlog('\tStep %i.2 / %i: Distance depended statistics ...' % (currentStep, stepCount), log_file)
 			abContacts = prf.iPsuedoAB(path_to_hic_dump,pab,log=log_file)
 			contactDistanceHashAB = prf.iDistanceRead(maxd_ab,hash=abContacts,coverage=binCovAB,log=log_file)
 			meanHashAB = prf.iMeaner( contactDistanceHashAB, counts_ab, out_name,log=log_file)
@@ -163,7 +178,8 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 			gf.printlog('...pseudocompartment resolution analyzed for %.2fs' % elp, log_file)
 
 			out_name = pre_path+suffixL+'/'+suffixL
-			gf.printlog('\tStep 3.2: Pseudocompartments contact transforming by mean statistic...', log_file)
+			currentStep += 1
+			gf.printlog('\tStep %i.3 / %i: Contact transforming by mean statistic...' % (currentStep, stepCount), log_file)
 			prf.iTotalContactListing(meanHashAB,binCovAB,pab,out_name,hash=abContacts,log=log_file)
 			del meanHashAB
 			del binCovAB

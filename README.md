@@ -2,6 +2,23 @@
 **Ch**romosome re**ar**rangement **m**odeler.
 Charm is a Python-based tool to simulate Hi-C-maps with user-defined chromosomal rearrangements. This tool allows to model CNVs, inversions, translocation, and extra-chromosomal fragments.
 
+# Citing Charm
+If you use Charm in your work, please cite
+
+```bibtex
+@article{Nuriddinov2023Nov,
+	author = {Nuriddinov, M. A. and Belokopytova, P. S. and Fishman, V. S.},
+	title = {{Charm is a flexible pipeline to simulate chromosomal rearrangements on Hi-C-like data}},
+	journal = {bioRxiv},
+	pages = {2023.11.22.568374},
+	year = {2023},
+	month = nov,
+	publisher = {Cold Spring Harbor Laboratory},
+	eprint = {2023.11.22.568374},
+	url = {https://doi.org/10.1101/2023.11.22.568374}
+}
+```
+
 ## Requirements
 1) Python >= 3.7 with NumPy
 2) [Juicer Tools](https://github.com/aidenlab/juicer) (for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)

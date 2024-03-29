@@ -211,18 +211,16 @@ def _randomizing(h, new_counts, old_counts, random):
 			print('VE2',h[h[:,4]>1])
 			print('VE3',h[(h[:,4]<1) & (h[:,4]>0)])
 	elif random == 'normal': 
-		loc = np.sqrt(h[:,4]/S)
+		loc = np.sqrt(h[:,4]/old_counts)
 		loc[loc == 0] = 1
 		h[:,4] = np.random.normal(h[:,4],loc)
 	elif random == 'hypergeometric':
-		ngood = h[:,5]
+		ngood = h[:,4]
 		ngood[ngood < 1] = 1
-		nsample = h[:,6]
-		nsample[nsample < 1] = 1
+		nsample = new_counts
 		nbad = old_counts - ngood
 		nsample,ngood,nbad = np.int32(np.round(nsample)),np.int32(np.round(ngood)),np.int32(np.round(nbad))
 		h[:,4] = np.random.hypergeometric(ngood,nbad,nsample)
-		h[:,4] = np.round(new_counts*h[:,4]/old_counts)
 	elif random == 'round': h[:,4] = np.round(1.*new_counts*h[:,4]/old_counts,decimals=8)
 	elif random == 'choice':
 		h[:,4] = 1.

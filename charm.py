@@ -99,7 +99,9 @@ if __name__ == "__main__":
 	try: path_to_contact_dump = config['preprocessing']['path_to_contact_dump']
 	except KeyError: path_to_hic_dump = False
 	try: path_to_juicertools = config['preprocessing']['path_to_juicertools']
-	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
+	except KeyError: 
+		try: path_to_juicertools = config['global']['path_to_juicertools']
+		except KeyError: path_to_juicertools = False
 	try: path_to_java_dir = config['preprocessing']['path_to_java_dir']
 	except KeyError:
 		try: path_to_java_dir = config['global']['path_to_java_dir']
@@ -729,7 +731,9 @@ if __name__ == "__main__":
 		try: path_to_java_dir = config['global']['path_to_java_dir']
 		except KeyError: path_to_java_dir = ''
 	try: path_to_juicertools = config['hic']['path_to_juicertools']
-	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
+	except KeyError: 
+		try: path_to_juicertools = config['global']['path_to_juicertools']
+		except KeyError: path_to_juicertools = False
 	try: log_file = config['hic']['log_file']
 	except KeyError: log_file = config['global']['log_file']
 	

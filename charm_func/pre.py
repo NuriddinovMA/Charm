@@ -70,7 +70,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 									gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
 									raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')
 						else:
-							cf.create_contacts_from_cool(path_to_hic_map, path_to_hic_dump, resolution, l2i[i], l2i[j], normalization):
+							cf.create_contacts_from_cool(path_to_hic_map, path_to_hic_dump, resolution, l2i[i], l2i[j], gf.boolean(normalization)):
 							
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t\t...end dumping %.2fs' % elp, log_file)

@@ -11,7 +11,7 @@ except ModuleNotFoundError:
 
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
 	capture, work_dir, path_to_hic, norm, path_to_hic_dump,
-	path_to_java_dir, path_to_juicertools, log_file, cleaning
+	path_to_java_dir, path_to_juicertools, log_file, cleaning, user_func
 	):
 	
 	start_time = timeit.default_timer()
@@ -84,7 +84,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		currentStep += 1
 		gf.printlog('\tStep %i.2 / %i: Distance depended statistics...' % (currentStep, stepCount), log_file)
 		contactDistanceHash = prf.iDistanceRead(maxd,path=path_to_hic_dump,capture=capture,resolution=resolution,coverage=binCov,log=log_file)
-		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name,log=log_file)
+		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name,log=log_file,user_func=user_func)
 		del contactDistanceHash
 		elp = timeit.default_timer() - start_time
 		gf.printlog('...distance analyzed for %.2fs' % elp, log_file)

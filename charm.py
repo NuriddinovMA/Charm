@@ -43,6 +43,8 @@ if __name__ == "__main__":
 	except KeyError: global_noised = False
 	try: heterozygous = gf.boolean(config['global']['heterozygous'])
 	except KeyError: heterozygous = True
+	try: user_func = gf.boolean(config['global']['path_to_user_functions'])
+	except KeyError: user_func = False
 	try:
 		global_count = gf.boolean(config['global']['contact_count'])
 		if heterozygous: global_count = str(int(global_count)//2)
@@ -102,6 +104,10 @@ if __name__ == "__main__":
 	except KeyError:
 		try: path_to_java_dir = config['global']['path_to_java_dir']
 		except KeyError: path_to_java_dir = ''
+	try: user_func = gf.boolean(config['preprocessing']['path_to_user_functions'])
+	except KeyError:
+		user_func = gf.boolean(config['global']['path_to_user_functions'])
+		config['preprocessing']['path_to_user_functions'] = user_func
 	try: log_file = config['preprocessing']['log_file']
 	except KeyError:
 		log_file = config['global']['log_file']
@@ -136,7 +142,7 @@ if __name__ == "__main__":
 		from charm_func import pre
 		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
 			capture, work_dir, path_to_hic, normalization, path_to_hic_dump,
-			path_to_java_dir, path_to_juicertools, log_file, cleaning)
+			path_to_java_dir, path_to_juicertools, log_file, cleaning, user_func)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
 
@@ -254,6 +260,10 @@ if __name__ == "__main__":
 			coverage_pab = config['simulation']['coverage_pab']
 	except KeyError: resolution_pab = config['global']['resolution_pab']
 	
+	try: user_func = gf.boolean(config['simulation']['path_to_user_functions'])
+	except KeyError:
+		user_func = gf.boolean(config['global']['path_to_user_functions'])
+		config['simulation']['path_to_user_functions'] = user_func
 	
 	if 'sim' in skip_stages and 'lift' in skip_stages: pass
 	else:
@@ -378,7 +388,7 @@ if __name__ == "__main__":
 					contactData+contactStatistic, resolution, resolution_low, resolution_pab, MarkPoints1, MarkPointsLow1,
 					l2i_from, l2i_to, (c1,c2), pointviews,
 					model, contact_count, random, predict_null_contacts, noised, add_pairs, MarkPoints2, MarkPointsLow2,
-					sim_id, work_dir, log_file
+					sim_id, work_dir, log_file, user_func
 					)
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...end of contact simulation %.2fs'% elp, log_file)

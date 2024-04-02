@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 	exit()
 
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
-	capture, work_dir, path_to_hic, norm, path_to_hic_dump,
+	capture, work_dir, path_to_hic_map, normalization, path_to_contact_dump,
 	path_to_java_dir, path_to_juicertools, log_file, cleaning, user_func
 	):
 	
@@ -40,32 +40,41 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		currentStep += 1
 		gf.printlog('\tStep %i.0 / %i: data preparing...' % (currentStep, stepCount), log_file)
 		c2s = gf.ChromSizes(chrom_sizes,resolution)
-		if path_to_hic and path_to_juicertools and path_to_hic_dump == False:
-			gf.printlog('\t\tDump contactcs from hic-map', log_file)
-			chr_num = len(c2s)
-			path_to_hic_dump = '%s/bcm/%s' % (work_dir,suffix)
-			try: os.makedirs(path_to_hic_dump)
-			except OSError: pass
-			
-			else: command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
-			for i in range(1,chr_num+1):
-				for j in range(i,chr_num+1):
-					if path_to_java_dir: 
-						command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
-						gf.printlog(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
-						control = os.system(command % (path_to_java_dir, path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
-						if control != 0:
-							gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
-							raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')
-					else: 
-						command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
-						gf.printlog(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) , log_file)
-						control = os.system(command % (path_to_juicertools, norm, path_to_hic, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],norm) )
-						if control != 0:
-							gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
-							raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')
-			elp = timeit.default_timer() - start_time
-			gf.printlog('\t\t...end dumping %.2fs' % elp, log_file)
+		if path_to_contact_dump == False:
+			if path_to_hic_map:
+				gf.printlog('\t\tDump contactcs from HiC map', log_file)
+				chr_num = len(c2s)
+				path_to_hic_dump = '%s/bcm/%s' % (work_dir,suffix)
+				try: os.makedirs(path_to_contact_dump)
+				except OSError: pass
+				
+				if path_to_juicertools == False: 
+					from charm_func import cooler_func as cf
+	
+				else: command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
+				for i in range(1,chr_num+1):
+					for j in range(i,chr_num+1):
+						if path_to_juicertools:
+							if path_to_java_dir: 
+								command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
+								gf.printlog(command % (path_to_java_dir, path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],normalization) , log_file)
+								control = os.system(command % (path_to_java_dir, path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],normalization) )
+								if control != 0:
+									gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
+									raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')
+							else: 
+								command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
+								gf.printlog(command % (path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],normalization) , log_file)
+								control = os.system(command % (path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,path_to_hic_dump,sim_name,resolution,l2i[i],l2i[j],normalization) )
+								if control != 0:
+									gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
+									raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')
+						else:
+							cf.create_contacts_from_cool(path_to_hic_map, path_to_hic_dump, resolution, l2i[i], l2i[j], normalization):
+							
+				elp = timeit.default_timer() - start_time
+				gf.printlog('\t\t...end dumping %.2fs' % elp, log_file)
+			else: pass
 		
 		out_name = pre_path+suffix
 		out_name_res = pre_path+suffix

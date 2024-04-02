@@ -58,6 +58,11 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
 		os.system('gzip ' + F + '.gz')
+	elif format = '.mcool':
+		F = '%s/short.%s.pre' % ( out_dir, sim_name )
+		O = '%s/%s.mcool' % ( out_dir, sim_name )
+		from charm_func import cooler_func as cf
+		cf.create_cool_from_contacts(F, O, resolution):
 	elif format == 'pre': 
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 	elif format == 'pre.gz':
@@ -66,9 +71,9 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		except FileNotFoundError: pass
 		os.system('gzip ' + F)
 	elif format == 'short': 
-		F = '%s/%s.short.pre' % ( out_dir, sim_name )
+		F = '%s/short.%s.pre' % ( out_dir, sim_name )
 	elif format == 'short.gz':
-		F = '%s/%s.short.pre' % ( out_dir, sim_name )
+		F = '%s/short.%s.pre' % ( out_dir, sim_name )
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
 		os.system('gzip ' + F)

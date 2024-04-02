@@ -92,11 +92,11 @@ if __name__ == "__main__":
 		config['preprocessing']['resolution_pab'] = resolution_pab
 	try: capture = config['preprocessing']['capture']
 	except KeyError: capture = False
-	try: path_to_hic = config['preprocessing']['path_to_hic']
-	except KeyError: path_to_hic = False
+	try: path_to_hic_map = config['preprocessing']['path_to_hic_map']
+	except KeyError: path_to_hic_map = False
 	try: normalization = config['preprocessing']['normalization']
 	except KeyError: normalization = 'NONE'
-	try: path_to_hic_dump = config['preprocessing']['path_to_hic_dump']
+	try: path_to_contact_dump = config['preprocessing']['path_to_contact_dump']
 	except KeyError: path_to_hic_dump = False
 	try: path_to_juicertools = config['preprocessing']['path_to_juicertools']
 	except KeyError: path_to_juicertools = config['global']['path_to_juicertools']
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 		gf.printlog('Stage "pre" - data preprocessing...', log_file)
 		from charm_func import pre
 		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
-			capture, work_dir, path_to_hic, normalization, path_to_hic_dump,
+			capture, work_dir, path_to_hic_map, normalization, path_to_contact_dump,
 			path_to_java_dir, path_to_juicertools, log_file, cleaning, user_func)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('... end of stage "pre" %.2f' % elp, log_file)

@@ -97,7 +97,7 @@ if __name__ == "__main__":
 	try: normalization = config['preprocessing']['normalization']
 	except KeyError: normalization = 'NONE'
 	try: path_to_contact_dump = config['preprocessing']['path_to_contact_dump']
-	except KeyError: path_to_hic_dump = False
+	except KeyError: path_to_contact_dump = False
 	try: path_to_juicertools = config['preprocessing']['path_to_juicertools']
 	except KeyError: 
 		try: path_to_juicertools = config['global']['path_to_juicertools']
@@ -107,9 +107,9 @@ if __name__ == "__main__":
 		try: path_to_java_dir = config['global']['path_to_java_dir']
 		except KeyError: path_to_java_dir = ''
 	try: user_func = gf.boolean(config['preprocessing']['path_to_user_functions'])
-	except KeyError:
-		user_func = gf.boolean(config['global']['path_to_user_functions'])
-		config['preprocessing']['path_to_user_functions'] = user_func
+	except KeyError: 
+		try: user_func = gf.boolean(config['global']['path_to_user_functions'])
+		except KeyError: user_func = False
 	try: log_file = config['preprocessing']['log_file']
 	except KeyError:
 		log_file = config['global']['log_file']
@@ -264,8 +264,8 @@ if __name__ == "__main__":
 	
 	try: user_func = gf.boolean(config['simulation']['path_to_user_functions'])
 	except KeyError:
-		user_func = gf.boolean(config['global']['path_to_user_functions'])
-		config['simulation']['path_to_user_functions'] = user_func
+		try: user_func = gf.boolean(config['global']['path_to_user_functions'])
+		except KeyError: user_func == False
 	
 	if 'sim' in skip_stages and 'lift' in skip_stages: pass
 	else:
@@ -724,7 +724,6 @@ if __name__ == "__main__":
 	except KeyError: resolution = config['global']['resolution']
 
 	format = config['hic']['format']
-	hic_resolutions = config['hic']['hic_resolutions'] 
 	
 	try: path_to_java_dir = config['hic']['path_to_java_dir']
 	except KeyError:
@@ -734,6 +733,9 @@ if __name__ == "__main__":
 	except KeyError: 
 		try: path_to_juicertools = config['global']['path_to_juicertools']
 		except KeyError: path_to_juicertools = False
+	#if path_to_juicertools: 
+	try: hic_resolutions = config['hic']['hic_resolutions']
+	except KeyError: hic_resolutions = False
 	try: log_file = config['hic']['log_file']
 	except KeyError: log_file = config['global']['log_file']
 	

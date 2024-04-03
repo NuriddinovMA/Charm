@@ -25,6 +25,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	path_to_java_dir = gf.boolean(path_to_java_dir)
 	hic_resolutions = gf.boolean(hic_resolutions)
 	l2i = gf.ChromIndexing(chrom_sizes)
+	c2s = gf.ChromSizes(chrom_sizes,1)
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
 	chosen_chroms = chosen_chroms.split(',')
 	svs_contacts = gf.boolean(svs_contacts)
@@ -58,11 +59,11 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
 		os.system('gzip ' + F + '.gz')
-	elif format = '.mcool':
+	elif format == 'mcool':
 		F = '%s/short.%s.pre' % ( out_dir, sim_name )
 		O = '%s/%s.mcool' % ( out_dir, sim_name )
 		from charm_func import cooler_func as cf
-		cf.create_cool_from_contacts(F, O, resolution):
+		cf.create_cool_from_contacts( F, O, c2s, list(np.int32(hic_resolutions.split(','))) )
 	elif format == 'pre': 
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 	elif format == 'pre.gz':
@@ -78,7 +79,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		except FileNotFoundError: pass
 		os.system('gzip ' + F)
 	else:
-		gl.printlog('Error! Unsupported format, use "hic" or "pre", or "pre.gz" ',log_file)
+		gf.printlog('Error! Unsupported format, use "hic", "mcool", "short", "short.gz", "pre", or "pre.gz" ',log_file)
 		exit()
 	if cleaning and format == 'hic':
 		try: os.remove(F)

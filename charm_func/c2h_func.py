@@ -78,7 +78,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 	if order: files.sort(key=lambda k: (order[k.split('.')[-3]],order[k.split('.')[-2]]))
 	else: files.sort(key=lambda k: k.split('.')[-3:-1])
 	
-	if format in ['short','short.gz']: fname = '%s/%s.short.pre' % (out_path,out_name)
+	if format in ['short','short.gz','mcool']: fname = '%s/short.%s.pre' % (out_path,out_name)
 	else: fname = '%s/%s.pre' % (out_path,out_name)
 	with open(fname,'w') as f:
 		for file in files:

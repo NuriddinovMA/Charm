@@ -58,15 +58,15 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 						if path_to_juicertools:
 							if path_to_java_dir: 
 								command = "%s/java -jar %s dump observed %s %s %s %s BP %i %s"
-								gf.printlog(command % (path_to_java_dir, path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,file_name) , log_file)
-								control = os.system(command % (path_to_java_dir, path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,path_to_contact_dump,sim_name,resolution,l2i[i],l2i[j],normalization) )
+								gf.printlog(command % (path_to_java_dir, path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution, file_name) , log_file)
+								control = os.system(command % (path_to_java_dir, path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution, file_name) )
 								if control != 0:
 									gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
 									raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')
 							else: 
 								command = "java -jar %s dump observed %s %s %s %s BP %i %s"
-								gf.printlog(command % (path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,file_name) , log_file)
-								control = os.system(command % (path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution,path_to_contact_dump,sim_name,resolution,l2i[i],l2i[j],normalization) )
+								gf.printlog(command % (path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution, file_name) , log_file)
+								control = os.system(command % (path_to_juicertools, normalization, path_to_hic_map, l2i[i],l2i[j],resolution, file_name) )
 								if control != 0:
 									gf.printlog('\n!!!Java or juicertools, or hic-file is absent on defined path!!!', log_file)
 									raise OSError('\n!!!Java or juicertools, or hic-file is absent on defined path!!!')

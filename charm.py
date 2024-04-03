@@ -554,7 +554,7 @@ if __name__ == "__main__":
 					contactData+contactStatistic, resolution, resolution_low, resolution_pab, MarkPoints1, MarkPointsLow1,
 					l2i_from, l2i_to, (c1,c2), pointviews,
 					model, contact_count, random, predict_null_contacts, noised, add_pairs, MarkPoints2, MarkPointsLow2,
-					sim_id, work_dir, log_file
+					sim_id, work_dir, log_file, user_func
 					)
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...end of contact liftovering %.2fs'% elp, log_file)

@@ -47,7 +47,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		shutil.rmtree(svs_contacts, ignore_errors=True)
 		shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
 
-	if format == 'hic':
+	if format == 'juicer':
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 		O = '%s/%s.hic' % ( out_dir, sim_name )
 		if path_to_java_dir: command = "%s/java -jar %s pre " % (path_to_java_dir,path_to_juicertools)
@@ -86,11 +86,11 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		with open(F , 'rb') as f_in:
 			with gzip.open(F + '.gz', 'wb') as f_out: shutil.copyfileobj(f_in, f_out)
 	else:
-		gf.printlog('Error! Unsupported format, use "hic", "mcool", "short", "short.gz", "pre", or "pre.gz" ',log_file)
+		gf.printlog('Error! Unsupported format, use "juicer", "mcool", "short", "short.gz", "pre", or "pre.gz" ',log_file)
 		exit()
 	if cleaning:
 		shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
-		if format == 'hic':
+		if format == 'juicer':
 			try: os.remove(F)
 			except FileNotFoundError: pass
 			try: os.remove(F + '.gz')

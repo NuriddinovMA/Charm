@@ -28,7 +28,7 @@ If you use Charm in your work, please cite
 ## Test dataset run
 for juicertools:
 ```
-python3 charm.py -i testdataset/EXAMPLE-juicer.ini
+python3 charm.py -i testdataset/EXAMPLE.ini
 ```
 for Cooler:
 ```
@@ -47,6 +47,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
     - "heterozygous" - "YES" if *all* rearrengments are heterozygous; "NO" if *all* rearrengments are homozygous;
     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "NO" should be used for the enriched Hi-C, like promoter-capture\);
     - "reference_id" - the preferred name of the database.
+    - "path_to_juicertools" - delete this, if you work with .mcool files 
   * [preprocessing] section
     - "path_to_hic_map" - the path to the reference hic-file;
   * [SVs] section
@@ -74,7 +75,7 @@ detailed [guide](#simulation-of-the-structural-variant-a-step-by-step-guide). Al
 
 ### 1) Generating reference database without consequent simulations:
 ```
-python3 charm.py -i testdataset/EXAMPLE-juicer.ini -S pre
+python3 charm.py -i testdataset/EXAMPLE.ini -S pre
 ```
 or
 ```
@@ -92,7 +93,7 @@ where {chr1} and {chr2} are the chromosome names and {resolution_pab} is the res
 
 ### 2) Generating a database of randomized wild-type contacts, a.k.a. pseudoreplicates (AFTER the reference database was generated):
 ```
-python3 charm.py -i testdataset/EXAMPLE-juicer.ini -S wt
+python3 charm.py -i testdataset/EXAMPLE.ini -S wt
 ```
 or
 ```
@@ -137,7 +138,7 @@ If your task requires simulating many independent rearrangements, split it into 
      - "reference_id" - the preferred reference name used to build the database;
      - "log_file" - a preferred name of log file.
    * [preprocessing] section
-     - "path_to_hic" - the path to your hic-file;
+     - "path_to_hic_map" - the path to your hic-file;
 2) run
 ```
 python3 charm.py -i your-pre.ini -S pre

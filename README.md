@@ -21,10 +21,10 @@ If you use Charm in your work, please cite
 
 ## Requirements
 1) Python >= 3.7 with NumPy
-2.1) [Juicer Tools](https://github.com/aidenlab/juicer) and Java (for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
-2.2) Cooler (for dumping the contacts from the existing .mcool-files and/or creating the new .mcool-files)
-3) the generation of database from Hi-C map with 600 million contacts requires around 48-60Gb RAM and 9 hours of real time
-4) the simulation of rearrangement for *one chromosome pair* from given database requires around 6-36Gb RAM and 1-2 hours of real time
+2) [Juicer Tools](https://github.com/aidenlab/juicer) and Java (for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
+   Cooler (for dumping the contacts from the existing .mcool-files and/or creating the new .mcool-files)
+4) the generation of database from Hi-C map with 600 million contacts requires around 48-60Gb RAM and 9 hours of real time
+5) the simulation of rearrangement for *one chromosome pair* from given database requires around 6-36Gb RAM and 1-2 hours of real time
 ## Test dataset run
 for juicertools:
 ```

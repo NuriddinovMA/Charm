@@ -120,7 +120,7 @@ def sv_Simulation(
 	contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
 	l2i_from, l2i_to, chosen_chroms_to, pointviews,
 	model, contact_count, random, predict_null_contacts, noised, add_pairs, Untouched, UntouchedLow,
-	sim_name, work_dir, log_file
+	sim_name, work_dir, log_file, user_func
 	):
 	contact_count = int(contact_count)
 	predict_null_contacts = gf.boolean(predict_null_contacts)

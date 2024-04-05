@@ -1,6 +1,7 @@
 if __name__ == "__main__":
 	
 	import os
+	import shutil
 	import timeit
 	import argparse
 	from configparser import ConfigParser, ExtendedInterpolation
@@ -308,7 +309,7 @@ if __name__ == "__main__":
 		map_file = config['simulation']['map_file']
 		pointviews = config['simulation']['pointviews']
 		
-		os.system('rm -r %s' % sim_dir)
+		shutil.rmtree( sim_dir, ignore_errors=True )
 		os.makedirs( sim_dir )
 
 		gf.printlog('Stage "sim" - the simulation of contacts in mutant genome...', log_file)
@@ -472,7 +473,7 @@ if __name__ == "__main__":
 		try: log_file = config['liftover']['log_file']
 		except KeyError: log_file = config['global']['log_file']
 
-		os.system('rm -r %s' % sim_dir)
+		shutil.rmtree( sim_dir, ignore_errors=True )
 		os.makedirs( sim_dir )
 		gf.printlog('Stage "lift" - the contact liftovering to the reference genome...', log_file)
 		gf.printlog('\tStep 0: chromosome indexing...',log_file)
@@ -563,9 +564,7 @@ if __name__ == "__main__":
 				gf.printlog('\t...no markpoints, no contact liftovering %.2fs'% elp, log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end of stage "lift" %.2f' % elp, log_file)
-		if cleaning:
-			print('cleaning',contact_dir)
-			os.system('rm -r %s' % contact_dir)
+		if cleaning: shutil.rmtree( contact_dir, ignore_errors=True )
 	if 'hic' in skip_stages: pass
 	else:
 		try: config['hic']['svs_contacts']

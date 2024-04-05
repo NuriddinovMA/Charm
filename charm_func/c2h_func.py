@@ -19,7 +19,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 			F[parse[-3],parse[-2]] = [dir_mut+'/'+file,'',1]
 	if dir_wt1:
 		files = os.listdir(dir_wt1)
-		for file in files: 
+		for file in files:
 			parse = file.split('.')
 			if (parse[-3],parse[-2]) in F: pass
 			else: F[parse[-3],parse[-2]] = [dir_wt1+'/'+file,'',resolution]

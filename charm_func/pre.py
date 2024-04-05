@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import timeit
 from charm_func import pre_func as prf
 from charm_func import global_func as gf
@@ -197,7 +198,7 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t...Pseudocompartments transformed time %.2fs' % elp, log_file)
 	
-	if cleaning: os.system('rm -r %s' % path_to_contact_dump)
+	if cleaning: shutil.rmtree( path_to_contact_dump, ignore_errors=True )
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\tFull processing for %.2fs' % elp, log_file)
 	return out_name_res,out_name_low,out_name_pab

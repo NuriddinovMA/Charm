@@ -26,8 +26,13 @@ If you use Charm in your work, please cite
 3) the generation of database from Hi-C map with 600 million contacts requires around 48-60Gb RAM and 9 hours of real time
 4) the simulation of rearrangement for *one chromosome pair* from given database requires around 6-36Gb RAM and 1-2 hours of real time
 ## Test dataset run
+for juicertools:
 ```
-python3 charm.py -i testdataset/EXAMPLE.ini
+python3 charm.py -i testdataset/EXAMPLE-juicer.ini
+```
+for Cooler:
+```
+python3 charm.py -i testdataset/EXAMPLE-mcool.ini
 ```
 As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C file with simulated rearrangement named "example.cnv-X.hic"
 
@@ -43,7 +48,7 @@ As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C f
     - "one_as_null" - if "YES" contacts == 1 are processed as 0 \("YES" should be used for the whole genomic Hi-C, and "NO" should be used for the enriched Hi-C, like promoter-capture\);
     - "reference_id" - the preferred name of the database.
   * [preprocessing] section
-    - "path_to_hic" - the path to the reference hic-file;
+    - "path_to_hic_map" - the path to the reference hic-file;
   * [SVs] section
     - "path_to_svs_list" - the path to your file with the [description of rearrangments](#the-svs-description);
     - "simulation_id" - the unique id of simulated rearrangement from your file with the description of rearrangements;
@@ -65,11 +70,11 @@ python3 charm.py -i YOUR-INI-FILE.ini
 ## Example tasks
 
 Charm includes several steps. If your task requires simulating many independent rearrangements, split it into subtasks as shown in the examples below and in a 
-detailed [guide](#simulation-of-the-structural-variant-a-step-by-step-guide).
+detailed [guide](#simulation-of-the-structural-variant-a-step-by-step-guide). All example ini-file adapted for juicertools.
 
 ### 1) Generating reference database without consequent simulations:
 ```
-python3 charm.py -i testdataset/EXAMPLE.ini -S pre
+python3 charm.py -i testdataset/EXAMPLE-juicer.ini -S pre
 ```
 or
 ```
@@ -87,7 +92,7 @@ where {chr1} and {chr2} are the chromosome names and {resolution_pab} is the res
 
 ### 2) Generating a database of randomized wild-type contacts, a.k.a. pseudoreplicates (AFTER the reference database was generated):
 ```
-python3 charm.py -i testdataset/EXAMPLE.ini -S wt
+python3 charm.py -i testdataset/EXAMPLE-juicer.ini -S wt
 ```
 or
 ```

@@ -60,8 +60,8 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		if control != 0: raise OSError('Java or juicertools absent!')
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
-		with open('gzip ' + F , 'rb') as f_in:
-			with gzip.open('gzip ' + F + '.gz', 'wb') as f_out: shutil.copyfileobj(f_in, f_out)
+		with open(F , 'rb') as f_in:
+			with gzip.open(F + '.gz', 'wb') as f_out: shutil.copyfileobj(f_in, f_out)
 	elif format == 'mcool':
 		F = '%s/short.%s.pre' % ( out_dir, sim_name )
 		O = '%s/%s.mcool' % ( out_dir, sim_name )

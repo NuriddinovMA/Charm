@@ -31,7 +31,7 @@ def ChromSizes(path,resolution):
 	f.close()
 	for i in range(len(lines)):
 		parse = lines[i].split()
-		try: ChrSzs[parse[0]] = (int(parse[1])-1)//int(resolution)+1
+		try: ChrSzs[parse[0]] = int(parse[1])//int(resolution)+1
 		except IndexError: break
 	del lines
 	return ChrSzs

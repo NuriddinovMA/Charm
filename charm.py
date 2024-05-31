@@ -705,9 +705,9 @@ if __name__ == "__main__":
 		for replica_id in replica_ids.split(','):
 			wt_path.append('%s/wt/%s/%s/%s' % (work_dir,sim_id,contact_count,replica_id))
 		try: config['hic']['wt1_contacts'] 
-		except KeyError: config['hic']['wt1_contacts']  = wt_path[0]
+		except KeyError: config['hic']['wt1_contacts'] = wt_path[0]
 		try: config['hic']['wt2_contacts']
-		except KeyError: config['hic']['wt2_contacts']  = wt_path[1]
+		except KeyError: config['hic']['wt2_contacts'] = wt_path[1]
 
 	##################################
 	#HIC-MAP GENERATION STAGE hic/hic+#

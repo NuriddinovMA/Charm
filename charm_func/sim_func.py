@@ -586,9 +586,9 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 					cl = _randomizing(cl, contact_count, allCon, random)
 					for c in cl:
 						if (ChrIdxs[c[0]] < ChrIdxs[c[2]]) or ((ChrIdxs[c[0]] == ChrIdxs[c[2]]) and (c[1] < c[3])):
-							out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
+							out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.2f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
 						else:
-							out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[2]], c[3], ChrIdxs[c[0]], c[1], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
+							out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.2f %.2f %.2f\n' % (ChrIdxs[c[2]], c[3], ChrIdxs[c[0]], c[1], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
 					cl = []
 					elp = timeit.default_timer() - start_time
 					gf.printlog('\t\t\t\t %.2f from %i interactions are processed, %.2fs.' % (100.*num/total,total,elp), logname)
@@ -596,9 +596,9 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 			cl = _randomizing(cl, contact_count, allCon, random)
 			for c in cl: 
 				if (ChrIdxs[c[0]] < ChrIdxs[c[2]]) or ((ChrIdxs[c[0]] == ChrIdxs[c[2]]) and (c[1] < c[3])):
-					out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
+					out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.2f %.2f %.2f\n' % (ChrIdxs[c[0]], c[1], ChrIdxs[c[2]], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
 				else:
-					out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.8f %.2f %.2f\n' % (ChrIdxs[c[2]], c[3], ChrIdxs[c[0]], c[1], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
+					out.write('%s %i %s %i %.8f %.8f %2f %.8f %.8f %.2f %.2f %i %.2f %.2f %.2f\n' % (ChrIdxs[c[2]], c[3], ChrIdxs[c[0]], c[1], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12], c[13],c[14]) )
 			cl = []
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\t\t\t\t all %i interactions are processed, %.2fs.' % (total,elp), logname)

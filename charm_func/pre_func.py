@@ -37,7 +37,7 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 	fullBins,CI,Chrms = [],{},sorted(ChrSzs)
 	Chrms.sort()
 	files = os.listdir(path)
-	S,SO,N = 0,0,0
+	S,SO,N,US = 0,0,0,0
 	nf,lnf,lnc = 0,len(files),len(Chrms)
 	gf.printlog('\t\tstart % i file reading' % lnf,logname)
 	start_time = timeit.default_timer()
@@ -79,9 +79,10 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 					The number of bin must be less then 
 					chromosome %s, size %i, called bin %i
 					chromosome %s, size %i, called bin %i
+					line in contact file: %s
 					'''
-					gf.printlog(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2),logname)
-					raise IndexError(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2))
+					gf.printlog(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2,line),logname)
+					raise IndexError(text % (c1,ChrSzs[c1], b1, c2, ChrSzs[c2], b2,line))
 		elpf = timeit.default_timer() - stf
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t\t...processed %i/%i files %.2fs (%.2fs)' % (nf,lnf,elpf,elp),logname)
@@ -113,11 +114,13 @@ def iBinCoverage(path, ChrSzs, resolution, **kwargs):
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\tmean coverage %.2f, calculating %.2fs' % (SO,elp),logname)
 	if out:
-		fout = open('%s.binCov' % out,'w')
+		fout = open('%s.binCov.stat' % out,'w')
+		fout.write('all_contacts %.2f\n' % S)
+		fout.write('mean_coverage_sum %.2f\n' % M)
+		fout.write('mean_coverage_multiple %.2f\n' % SO)
+		fout.close()
 		gf.printlog('\t\twrite to ' + out +'.binCov',logname)
-		fout.write('all_contacts: %.2f\n' % S)
-		fout.write('mean_coverage: %.2f\n' % M)
-		fout.write('mean_coverage_multiple: %.2f\n' % SO)
+		fout = open('%s.binCov' % out,'w')
 		if capture:
 			fout.write('chr1 bin1 coverage\n')
 		else:
@@ -442,17 +445,20 @@ def iDistanceRead(lmax,**kwargs):
 	return iDH
 
 def iMeanStatistics(contactDistanceHash, count):
-	start_time = timeit.default_timer()
 	mean = 1.*np.sum(contactDistanceHash,axis=0)[0]/count
 	prop = np.mean(contactDistanceHash,axis=0)
-	c1 = len(np.array(contactDistanceHash)[np.array(contactDistanceHash)[:,0] == 1])
-	try: prcList = ( np.min(contactDistanceHash,axis=0)[0],mean,np.max(contactDistanceHash,axis=0)[0],prop[0],prop[1],prop[2],c1)
-	except ValueError: prcList = (0,0,0,0,0,0,0)
+	c1 = len(np.array(contactDistanceHash)[:,0] == 1)
+	# try: prcList = ( np.min(contactDistanceHash,axis=0)[0],np.max(contactDistanceHash,axis=0)[0],mean,prop[0],prop[1],prop[2],c1)
+	# except ValueError: prcList = (0,0,0,0,0,0,0)
+	try: prcList = ( c1,mean,prop[0],prop[1],prop[2])
+	except ValueError: prcList = (0,0,0,0,0)
 	return prcList
 
 def iMeaner(contactDistanceHash,counts,path,**kwargs):
 	try: logname = kwargs['log']
-	except KeyError: logname = False
+	except KeyError: logname = False 
+	try: user_statistic = kwargs['user_statistic']
+	except KeyError: user_statistic = False
 	start_time = timeit.default_timer()
 	Keys = sorted(counts)
 	ld = len(Keys)
@@ -460,9 +466,9 @@ def iMeaner(contactDistanceHash,counts,path,**kwargs):
 	f = open(path + '.stat','w')
 	base_count = counts[0]
 	gf.printlog('\tstart statistic for %i distances' % ld,logname)
-	f.write('distances\tall_contacts\tcontacts=0\tcontacts=1\tdistance_combined\tmin\tmean\tmax\tno_null_mean\tmean_mult_coverage\tmean_sum_coverage\n')
+	f.write('distances\tdistance_combined\tall_contacts\tcontacts=0\tcontacts=1\tmean\tno_null_mean\tmean_mult_coverage\tmean_sum_coverage\n')
 	for l in Keys:
-		count,d = counts[l],0,
+		count,d = counts[l],0
 		try: cdh = contactDistanceHash[l][:]
 		except KeyError: cdh = []
 		while (5*count < base_count) or (len(cdh) == 0):
@@ -478,9 +484,14 @@ def iMeaner(contactDistanceHash,counts,path,**kwargs):
 			except KeyError: pass
 		cdh.sort()
 		meanHash[l] = iMeanStatistics(cdh, count)
-		if l >= 0: f.write( '%i\t%i\t%i\t%i\t%i' % (l, count,(count-len(cdh)), meanHash[l][-1],d) )
-		else: f.write('interchromosome\t%i\t%i\t%i\t0' % (count,(count-len(cdh)), meanHash[l][-1]) )
-		for i in meanHash[l][:-1]: f.write( '\t%f' % i )
+		
+		#if l >= 0:
+		f.write( '%i\t%i\t%i\t%i\t%i\t' % (l, d, count,(count-len(cdh)),meanHash[l][0]) )
+		#else: f.write('interchromosome\t%i\t%i\t%i\t0\t' % (count,(count-len(cdh)), meanHash[l][-1]) )
+		f.write( '\t'.join( '%f' % i for i in meanHash[l][1:])+'\t' )
+		if user_statistic: 
+			try: f.write( '\t'.join( '%f' % i for i in user_statistic[l]) )
+			except KeyError: f.write( '\tna')
 		f.write('\n')
 		if (l % 10 == 0) or (l < 0):
 			elp = timeit.default_timer() - start_time
@@ -504,8 +515,8 @@ def iTotalContactListing( meanHash, binCov, resolution, out, **kwargs):
 	except KeyError: hash=False
 	try: capture = kwargs['capture']
 	except KeyError: capture = False
-	try: user_func = kwargs['user_func']
-	except KeyError: user_func = False
+	# try: user_func = kwargs['user_func']
+	# except KeyError: user_func = False
 	if path:
 		files = os.listdir(path)
 		n,lnf = 0,len(files)

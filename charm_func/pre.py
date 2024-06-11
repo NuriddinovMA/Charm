@@ -12,7 +12,8 @@ except ModuleNotFoundError:
 
 def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_pab,
 	capture, work_dir, path_to_hic_map, normalization, path_to_contact_dump,
-	path_to_java_dir, path_to_juicertools, log_file, cleaning, user_func
+	path_to_java_dir, path_to_juicertools, log_file, cleaning,
+	user_coverage_statistic_func, user_distance_dependent_statistic_func
 	):
 	
 	start_time = timeit.default_timer()
@@ -85,18 +86,37 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		binCov=prf.iBinCoverage(path_to_contact_dump,c2s,resolution,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...bin coverage calculated for %.2fs' % elp, log_file)
-
+		
+		user_binCovStatistic = False
+		if user_coverage_statistic_func:
+			gf.printlog('\t\t Calculating bin coverage by user-defined function...', log_file)
+			user_binCovStatistic = user_coverage_statistic_func(path_to_contact_dump, resolution)
+			fout = open('%s.binCov.stat' % out_name,'a')
+			for key in user_binCovStatistic: fout.write('%s %.2f\n' % (key, user_binCovStatistic[key]))
+			fout.close()
+			gf.printlog('\t\t...bin coverage by user-defined function calculated for %.2fs' % elp, log_file)
+		del user_binCovStatistic
+		
 		gf.printlog('\t\tGenome analysis...', log_file)
 		counts = prf.diag_counts(c2s,binCov,capture=capture,log=log_file)
 		maxd = max(counts.keys())
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t...end genome analysing %.2fs' % elp, log_file)
-		
+
 		currentStep += 1
 		gf.printlog('\tStep %i.2 / %i: Distance depended statistics...' % (currentStep, stepCount), log_file)
+		
+		user_meanHash = False
+		if user_distance_dependent_statistic_func:
+			gf.printlog('\t\t Calculating distance depended statistics by user-defined function...', log_file)
+			user_meanHash = user_distance_dependent_statistic_func(path_to_contact_dump, resolution)
+			gf.printlog('\t\t...distance depended statistics by user-defined function calculated for %.2fs' % elp, log_file)
+		
 		contactDistanceHash = prf.iDistanceRead(maxd,path=path_to_contact_dump,capture=capture,resolution=resolution,coverage=binCov,log=log_file)
-		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name,log=log_file,user_func=user_func)
+		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name, user_statistic=user_meanHash,log=log_file)
 		del contactDistanceHash
+		del user_meanHash
+
 		elp = timeit.default_timer() - start_time
 		gf.printlog('...distance analyzed for %.2fs' % elp, log_file)
 		out_name = pre_path+suffix+'/'+suffix
@@ -126,6 +146,17 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 		currentStep += 1
 		gf.printlog('\tStep %i.1 / %i: Calculating bin coverage...' % (currentStep, stepCount), log_file)
 		binCov=prf.iBinCoverage(path_to_contact_dump,c2s,resolution_low,out=out_name,chrm_index=l2i,capture=capture,log=log_file)
+		
+		user_binCovStatisticLow = False
+		if user_coverage_statistic_func:
+			gf.printlog('\t\t Calculating bin coverage by user-defined function...', log_file)
+			user_binCovStatisticLow = user_coverage_statistic_func(path_to_contact_dump, resolution)
+			fout = open('%s.binCov.stat' % out_name_low,'a')
+			for key in user_binCovStatisticLow: fout.write('%s %.2f\n' % (key, user_binCovStatisticLow[key]))
+			fout.close()
+			gf.printlog('\t\t...distance depended statistics by user-defined function calculated for %.2fs' % elp, log_file)
+		del user_binCovStatisticLow
+		
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...bin coverage calculated for %.2fs' % elp, log_file)
 		
@@ -137,11 +168,19 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 
 		currentStep += 1
 		gf.printlog('\tStep %i.2 / %i: Distance depended statistics...' % (currentStep, stepCount), log_file)
-		contactDistanceHash = prf.iDistanceRead(maxd,path=path_to_contact_dump,capture=capture,resolution=resolution_low,coverage=binCov,log=log_file)
-		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name,log=log_file)
-		del contactDistanceHash
-		elp = timeit.default_timer() - start_time
 		
+		user_meanHashLow = False
+		if user_distance_dependent_statistic_func:
+			gf.printlog('\t\t Calculating distance depended statistics by user-defined function...', log_file)
+			user_meanHashLow = user_distance_dependent_statistic_func(path_to_contact_dump, resolution)
+			gf.printlog('\t\t...distance depended statistics by user-defined function calculated for %.2fs' % elp, log_file)
+			
+		contactDistanceHash = prf.iDistanceRead(maxd,path=path_to_contact_dump,capture=capture,resolution=resolution_low,coverage=binCov,log=log_file)
+		meanHash = prf.iMeaner( contactDistanceHash, counts, out_name, user_statistic=user_meanHashLow, log=log_file)
+		del contactDistanceHash
+		del user_meanHashLow
+		
+		elp = timeit.default_timer() - start_time
 		gf.printlog('\t...distance analyzed for %.2fs' % elp, log_file)
 		out_name = pre_path+suffix+'/'+suffix
 		currentStep += 1

@@ -24,10 +24,10 @@ def read_Contact_Statistics(
 	coverage_file = gf.boolean(coverage_file)
 	if coverage_file: 
 		covHash = sf.readCovHash(coverage_file,l2i_from,log=log_file)
+		totalHash = sf.readTotalStatHash(coverage_file+'.stat',log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t...coverage reading end time %.2fs' % elp, log_file)
-	else: covHash = False
-
+	else: covHash,totalHash = False,False
 	psList = sf.readMeanHash(distance_file,log=log_file)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\t...read distance end time %.2fs' % elp, log_file)
@@ -35,9 +35,10 @@ def read_Contact_Statistics(
 	
 	if coverage_low:
 		covLow = sf.readCovHash(coverage_low,l2i_from,log=log_file)
+		totalLow =  sf.readTotalStatHash(coverage_low+'.stat',log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t... coef coverage reading end time %.2fs' % elp, log_file)
-	else: covLow = False
+	else: covLow,totalLow = False,False
 	
 	if distance_low:
 		psListLow = sf.readMeanHash(distance_low,log=log_file)
@@ -56,7 +57,7 @@ def read_Contact_Statistics(
 			gf.printlog('\t\t... compartments coverage reading end time %.2fs' % elp, log_file)
 	else: covPAB = False
 	
-	return covHash, psList, covLow, psListLow, covPAB
+	return covHash, totalHash, psList, covLow, totalLow, psListLow, covPAB
 
 def read_Contact_Data(
 	contact_dir, resolution,
@@ -119,21 +120,20 @@ def read_RearMap(rear_file,resolution,resolution_low,l2i_from,l2i_to,chosen_chro
 def sv_Simulation(
 	contactData, resolution, resolution_low, resolution_pab, MarkPoints, MarkPointsLow,
 	l2i_from, l2i_to, chosen_chroms_to, pointviews,
-	model, contact_count, random, predict_null_contacts, noised, add_pairs, Untouched, UntouchedLow,
-	sim_name, work_dir, log_file, user_func
+	model, contact_count, random_func, predict_null_contacts_func, pick_contacts_func, noised, 
+	add_pairs, Untouched, UntouchedLow,
+	sim_name, work_dir, log_file, path_to_user_func
 	):
 	contact_count = int(contact_count)
-	predict_null_contacts = gf.boolean(predict_null_contacts)
 	log_file = gf.boolean(log_file)
-	contactHash, contactLow, contactPAB, covHash, psList, covLow, psListLow, covPAB = contactData
+	contactHash, contactLow, contactPAB, covHash, totalHash, psList, covLow, totalLow, psListLow, covPAB = contactData
 	resolution, resolution_low = int(resolution),int(resolution_low)
 	if resolution_pab:
 		resolution_pab = [int(pab) for pab in resolution_pab.split(',')]
 		resolution_pab.sort()
-	out_dir = '%s/mdl/%s' % (work_dir,sim_name)
-	out_name = '%s/mdl/%s/%s' % (work_dir,sim_name,sim_name)
+	out_dir  = '%s/mdl/%s' % (work_dir,sim_name)
+	out_name  = '%s/mdl/%s/%s' % (work_dir,sim_name,sim_name)
 	
-	random=gf.boolean(random)
 	pviews = []
 	if pointviews and MarkPointsLow:
 		pointviews = pointviews.strip().split('\n')
@@ -150,39 +150,40 @@ def sv_Simulation(
 	header = "chr1 bin1 chr2 bin2 contact oe mult_cov prev_contact prev_oe prev_mult_cov reality expected normolize_coef balance_coef\n"
 	i,j = chosen_chroms_to
 	if l2i_to[i] <= l2i_to[j]:
-		fname = "%s.%s.%s.liftCon" % (out_name,i,j)
+		fname  = "%s.%s.%s.liftCon" % (out_name,i,j)
 		with open(fname,'w') as f: f.write(header)
 	else:
-		fname = "%s.%s.%s.liftCon" % (out_name,j,i)
+		fname  = "%s.%s.%s.liftCon" % (out_name,j,i)
 		with open(fname,'w') as f: f.write(header)
 	
-	sf.iLiftOverContact(contactHash, covHash, MarkPoints, resolution, l2i_to, fname,pointviews=pviews,
-		model=model, scoring=psList, random=random, contact_count=contact_count, predict_null_contacts=predict_null_contacts,
-		contact_low=contactLow, coverage_low=covLow, scoring_low=psListLow, markpoints_low=MarkPointsLow, resolution_low=resolution_low,
+	sf.iLiftOverContact(contactHash, covHash, MarkPoints, resolution, l2i_to, fname, pointviews=pviews,
+		model=model, total_statistics=totalHash, distance_dependence=psList, random_func=random_func, contact_count=contact_count,
+		predict_null_contacts=predict_null_contacts_func, pick_contacts=pick_contacts_func,
+		contact_low=contactLow, coverage_low=covLow, total_statistics_low=totalLow, distance_dependence_low=psListLow, markpoints_low=MarkPointsLow, resolution_low=resolution_low,
 		contact_pab=contactPAB, coverage_pab=covPAB, resolution_pab=resolution_pab, noised=noised,
 		untouched=Untouched,untouched_low=UntouchedLow,
-		log=log_file)
+		path_to_user_func=path_to_user_func, log=log_file)
 	return out_dir
 
 def wt_Simulation(
 	contactData, resolution, resolution_low, resolution_pab,
 	c1_c2, c2s_low, l2i,
-	model, contact_count, random, predict_null_contacts, noised,
-	sim_name, replica_id, work_dir, log_file
+	model, contact_count, random_func, predict_null_contacts_func, pick_contacts_func, noised,
+	sim_name, replica_id, work_dir, log_file, path_to_user_func
 	):
-	resolution, resolution_low = int(resolution),int(resolution_low)
-	resolution_pab = [int(pab) for pab in resolution_pab.split(',')]
-	contact_count = int(contact_count)
-	predict_null_contacts = gf.boolean(predict_null_contacts)
-	log_file = gf.boolean(log_file)
-	contactHash, contactLow, contactPAB, covHash, psList, covLow, psListLow, covPAB = contactData
-	out_dir = '%s/wt/%s/%i/%s' % (work_dir,sim_name,contact_count,replica_id)
+	resolution, resolution_low  = int(resolution),int(resolution_low)
+	resolution_pab  = [int(pab) for pab in resolution_pab.split(',')]
+	contact_count  = int(contact_count)
+	
+	log_file  = gf.boolean(log_file)
+	contactHash, contactLow, contactPAB, covHash, totalHash, psList, covLow, totalLow, psListLow, covPAB = contactData
+	out_dir  = '%s/wt/%s/%i/%s' % (work_dir,sim_name,contact_count,replica_id)
 	
 	out_name = '%s/wt/%s/%i/%s/%s.%s' % (work_dir,sim_name,contact_count,replica_id,sim_name,replica_id)
 	sf.iContactRegression( covHash, resolution, c1_c2, l2i, c2s_low, out_name,
-		model=model, scoring=psList, random=random, contact_count=contact_count,
-		contact_low=contactLow, coverage_low=covLow, scoring_low=psListLow, resolution_low=resolution_low,
+		model=model, total_statistics=totalHash, distance_dependence=psList, random_func=random_func, contact_count=contact_count,
+		contact_low=contactLow, coverage_low=covLow, total_statistics_low=totalLow, distance_dependence_low=psListLow, resolution_low=resolution_low,
 		contact_pab=contactPAB, coverage_pab=covPAB, resolution_pab=resolution_pab,
-		predict_null_contacts=predict_null_contacts, noised=noised, log=log_file
-		)
+		predict_null_contacts=predict_null_contacts_func, pick_contacts=pick_contacts_func, noised=noised,
+		path_to_user_func=path_to_user_func, log=log_file)
 	return out_dir

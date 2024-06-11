@@ -44,8 +44,12 @@ if __name__ == "__main__":
 	except KeyError: global_noised = False
 	try: heterozygous = gf.boolean(config['global']['heterozygous'])
 	except KeyError: heterozygous = True
-	try: user_func = gf.boolean(config['global']['path_to_user_functions'])
-	except KeyError: user_func = False
+	try:
+		path_to_user_func = gf.boolean(config['global']['path_to_user_functions'])
+		with open(path_to_user_func,'r') as f: user_file = f.read()
+		exec(user_file)
+	except KeyError: path_to_user_func = False
+	
 	try:
 		global_count = gf.boolean(config['global']['contact_count'])
 		if heterozygous: global_count = str(int(global_count)//2)
@@ -107,10 +111,24 @@ if __name__ == "__main__":
 	except KeyError:
 		try: path_to_java_dir = config['global']['path_to_java_dir']
 		except KeyError: path_to_java_dir = ''
-	try: user_func = gf.boolean(config['preprocessing']['path_to_user_functions'])
-	except KeyError: 
-		try: user_func = gf.boolean(config['global']['path_to_user_functions'])
-		except KeyError: user_func = False
+	
+	try:
+		user_coverage_statistic_func_name = gf.boolean(config['preprocessing']['user_coverage_statistic_func_name'])
+		try:
+			print('''Using user defined function for coverage statistic calculation''')
+			exec("user_coverage_statistic_func = %s" % user_coverage_statistic_func_name)
+		except NameError:
+			raise NameError('''!!!The unknown name of user defined function: %s.''' % user_coverage_statistic_func_name)
+	except KeyError: user_coverage_statistic_func = False
+	try:
+		user_distance_dependent_statistic_func_name = gf.boolean(config['preprocessing']['user_distance_dependent_statistic_func_name'])
+		try:
+			print('''Using user defined function for distance dependent statistic calculation''')
+			exec("user_distance_dependent_statistic_func = %s" % user_distance_dependent_statistic_func_name)
+		except NameError:
+			raise NameError('''!!!The unknown name of user defined function: %s.''' % user_distance_dependent_statistic_func_name)
+	except KeyError: user_distance_dependent_statistic_func = False
+
 	try: log_file = config['preprocessing']['log_file']
 	except KeyError:
 		log_file = config['global']['log_file']
@@ -145,7 +163,8 @@ if __name__ == "__main__":
 		from charm_func import pre
 		name_res, name_low, name_pab = pre.preprocessing(sim_id, chrom_sizes, resolution, resolution_low, resolution_pab,
 			capture, work_dir, path_to_hic_map, normalization, path_to_contact_dump,
-			path_to_java_dir, path_to_juicertools, log_file, cleaning, user_func)
+			path_to_java_dir, path_to_juicertools, log_file, cleaning,
+			user_coverage_statistic_func, user_distance_dependent_statistic_func)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('... end of stage "pre" %.2f' % elp, log_file)
 
@@ -178,20 +197,30 @@ if __name__ == "__main__":
 		
 		if args.stage in ['pre+','SVs+']:
 			chosen_chroms,add_pairs,map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV = Map_data
-			config['simulation']['pointviews'] = pointviews
-			config['simulation']['chrom_sizes_to'] = chrom_sizes_SV
-			config['simulation']['chosen_chroms_to'] = chosen_chroms[1].strip()
-			config['simulation']['map_file'] = map_SV_from_ref
-			config['liftover']['chosen_chroms_to'] = chosen_chroms[0].strip()
-			config['liftover']['map_file'] = map_SV_to_ref
+			try: config['simulation']['pointviews']
+			except KeyError: config['simulation']['pointviews'] = pointviews
+			try: config['simulation']['chrom_sizes_to']
+			except KeyError: config['simulation']['chrom_sizes_to'] = chrom_sizes_SV
+			try: config['simulation']['chosen_chroms_to']
+			except KeyError: config['simulation']['chosen_chroms_to'] = chosen_chroms[1].strip()
+			try: config['simulation']['map_file']
+			except KeyError: config['simulation']['map_file'] = map_SV_from_ref
+			try: config['liftover']['chosen_chroms_to']
+			except KeyError: config['liftover']['chosen_chroms_to'] = chosen_chroms[0].strip()
+			try: config['liftover']['map_file']
+			except KeyError: config['liftover']['map_file'] = map_SV_to_ref
 			elp = timeit.default_timer() - start_time
 			gf.printlog('\tthe rearranged chromosome pairs %s' % chosen_chroms[0], log_file)
 			gf.printlog('\tthe resulted chromosome pairs %s' % chosen_chroms[1], log_file)
 			if add_pairs[0]:
-				gf.printlog('\tthe additional chromosome pairs from %s' % add_pairs[0], log_file)
-				gf.printlog('\tthe additional chromosome pairs to %s' % add_pairs[1], log_file)
-				config['liftover']['add_pairs_to'] = add_pairs[0].strip()
-				config['simulation']['add_pairs_to'] = add_pairs[1].strip()
+				try: config['liftover']['add_pairs_to']
+				except KeyError:
+					config['liftover']['add_pairs_to'] = add_pairs[0].strip()
+					gf.printlog('\tthe additional chromosome pairs from %s' % add_pairs[0], log_file)
+				try: config['simulation']['add_pairs_to']
+				except KeyError:
+					config['simulation']['add_pairs_to'] = add_pairs[1].strip()
+					gf.printlog('\tthe additional chromosome pairs to %s' % add_pairs[1], log_file)
 	elp = timeit.default_timer() - start_time
 	gf.printlog('... end of stage "SVs" %.2f' % elp, log_file)
 
@@ -263,10 +292,10 @@ if __name__ == "__main__":
 			coverage_pab = config['simulation']['coverage_pab']
 	except KeyError: resolution_pab = config['global']['resolution_pab']
 	
-	try: user_func = gf.boolean(config['simulation']['path_to_user_functions'])
+	try: path_to_user_func = gf.boolean(config['simulation']['path_to_user_functions'])
 	except KeyError:
-		try: user_func = gf.boolean(config['global']['path_to_user_functions'])
-		except KeyError: user_func == False
+		try: path_to_user_func = gf.boolean(config['global']['path_to_user_functions'])
+		except KeyError: path_to_user_func == False
 	
 	if 'sim' in skip_stages and 'lift' in skip_stages: pass
 	else:
@@ -277,19 +306,39 @@ if __name__ == "__main__":
 
 		chrom_sizes_to = config['simulation']['chrom_sizes_to']
 		chosen_chroms_to = config['simulation']['chosen_chroms_to'].strip()
-		try: add_pairs = config['simulation']['add_pairs_to']
+		try: add_pairs = gf.boolean(config['simulation']['add_pairs_to'])
 		except KeyError: add_pairs = False
 	
 	model = config['simulation']['model']
-	random = config['simulation']['random']
+	random_func_name = config['simulation']['random']
+	try: random_func = gf.define_random_func(random_func_name)
+	except NameError:
+		try: exec("random_func = %s" % random_func_name)
+		except NameError: raise NameError('The function %s not found' % random_func_name)
+	
 	try: contact_count = config['simulation']['contact_count']
 	except KeyError:
 		try:
 			config['simulation']['contact_count'] = global_count
 			contact_count = config['simulation']['contact_count']
 		except NameError: raise NameError('The value "contact_count" in section [global] or [simulation] is not defined!')
-		
-	predict_null_contacts = config['simulation']['predict_null_contacts']
+	
+	try: predict_null_contacts_func_name = config['simulation']['predict_null_contacts']
+	except KeyError: predict_null_contacts_func_name = 'no'
+	try: predict_null_contacts_func = gf.default_predict_function(predict_null_contacts_func_name)
+	except NameError:
+		try: exec("predict_null_contacts_func = %s" % predict_null_contacts_func_name)
+		except NameError: raise NameError('The function %s not found' % predict_null_contacts_func_name)
+	
+	try: pick_contacts_func_name = config['simulation']['pick_contacts']
+	except KeyError: 
+		try: pick_contacts_func_name = gf.define_pick_from_predict(predict_null_contacts_func_name)
+		except NameError: raise NameError('The parameter "pick_contacts" absent and the default value for "predict_null_contacts" = %s is not found' % predict_null_contacts_func_name)
+	try: pick_contacts_func = gf.default_pick_function(pick_contacts_func_name)
+	except NameError:
+		try: exec("pick_contacts_func = %s" % pick_contacts_func_name)
+		except NameError: raise NameError('The function %s not found' % pick_contacts_func_name)
+
 	noised = global_noised
 	pair = False
 	try: log_file = config['simulation']['log_file']
@@ -336,8 +385,8 @@ if __name__ == "__main__":
 		lc = len(cct)
 		for i in range(lc):
 			c1,c2 = cct[i]
-			gf.printlog('\tSimulation contacts on the mutant chromosome pair %s %s %i/%i' % (c1,c2,i+1,lc), log_file)
-			gf.printlog('\tStep 1: Reading mark points...', log_file)
+			gf.printlog('\tStep %i/%i Simulation contacts on the mutant chromosome pair %s %s %i/%i' % (i,lc+2,c1,c2,i+1,lc), log_file)
+			gf.printlog('\tStep %i.1: Reading mark points...' % i, log_file)
 			
 			if c1 == c2:
 				MarkPoints1, MarkPointsLow1,ccf1 = sim.read_RearMap(map_file,resolution,resolution_low,l2i_from,l2i_to,[c1],log_file)
@@ -376,7 +425,7 @@ if __name__ == "__main__":
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...mark point red for %.2f sec' % elp, log_file)
 	
-				gf.printlog('\tStep 2: data reading...', log_file)
+				gf.printlog('\tStep %i.2: data reading...' % i, log_file)
 				contactData = sim.read_Contact_Data(
 					contact_dir, resolution,
 					contact_low, resolution_low,
@@ -386,12 +435,13 @@ if __name__ == "__main__":
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t... end data reading %.2fs'% elp, log_file)
 				
-				gf.printlog('\tStep 3: The starting of contact simulation...', log_file)
+				gf.printlog('\tStep %i.3: The starting of contact simulation...' % i, log_file)
 				sim_dir = sim.sv_Simulation(
 					contactData+contactStatistic, resolution, resolution_low, resolution_pab, MarkPoints1, MarkPointsLow1,
 					l2i_from, l2i_to, (c1,c2), pointviews,
-					model, contact_count, random, predict_null_contacts, noised, add_pairs, MarkPoints2, MarkPointsLow2,
-					sim_id, work_dir, log_file, user_func
+					model, contact_count, random_func, predict_null_contacts_func, pick_contacts_func, noised, 
+					add_pairs, MarkPoints2, MarkPointsLow2,
+					sim_id, work_dir, log_file, path_to_user_func
 					)
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...end of contact simulation %.2fs'% elp, log_file)
@@ -411,11 +461,21 @@ if __name__ == "__main__":
 		config['liftover']['chrom_sizes_from'] = str(chrom_sizes_to)
 		config['liftover']['chrom_sizes_to'] = str(chrom_sizes_from)
 		config['liftover']['simulation_id'] = config['simulation']['simulation_id']
-	try: config['wild_type']['simulation_id']
-	except KeyError: config['wild_type']['simulation_id'] = '%s.%s' % (config['global']['reference_id'],config['simulation']['predict_null_contacts'])
-	try: config['wild_type']['contact_count']
-	except KeyError: config['wild_type']['contact_count'] = config['simulation']['contact_count']
 	
+	if 'wt' in skip_stages: pass
+	else:
+		try: config['wild_type']['simulation_id']
+		except KeyError: config['wild_type']['simulation_id'] = '%s.%s' % (config['global']['reference_id'],config['simulation']['predict_null_contacts'])
+		try: config['wild_type']['contact_count']
+		except KeyError: config['wild_type']['contact_count'] = config['simulation']['contact_count']
+		try: config['wild_type']['model']
+		except KeyError: config['wild_type']['model'] = model
+		try: config['wild_type']['random']
+		except KeyError: config['wild_type']['random'] = random_func_name
+		try: config['wild_type']['predict_null_contacts']
+		except KeyError: config['simulation']['predict_null_contacts'] = predict_null_contacts_func_name
+		try: config['wild_type']['pick_contacts']
+		except KeyError: config['simulation']['pick_contacts'] = pick_contacts_func_name
 
 	########################################
 	#LIFTOVER TO REFERENCE STAGE lift/lift+#
@@ -455,6 +515,8 @@ if __name__ == "__main__":
 		try: chrom_sizes_to = config['liftover']['chrom_sizes_to']
 		except KeyError: chrom_sizes_to = config['global']['chrom_sizes']
 		
+		path_to_user_func == False
+		
 		chosen_chroms_to = config['liftover']['chosen_chroms_to']
 		cc_to = [c.split(',') for c in chosen_chroms_to.split(';')]
 		cc_ts = set()
@@ -463,11 +525,12 @@ if __name__ == "__main__":
 		map_file = config['liftover']['map_file']
 		pointviews = False
 		model = 'easy'
-		random = 'no'
+		random_func = False
 		contact_count = False
-		predict_null_contacts = False
+		predict_null_contacts_func = False
+		pick_contacts_func = False
 		noised = False
-		try: add_pairs = config['liftover']['add_pairs_to']
+		try: add_pairs = gf.boolean(config['liftover']['add_pairs_to'])
 		except KeyError: add_pairs = False
 		if add_pairs: add_pairs = [c.split(',') for c in add_pairs.split(';')]
 		try: log_file = config['liftover']['log_file']
@@ -554,8 +617,9 @@ if __name__ == "__main__":
 				sim_dir = sim.sv_Simulation(
 					contactData+contactStatistic, resolution, resolution_low, resolution_pab, MarkPoints1, MarkPointsLow1,
 					l2i_from, l2i_to, (c1,c2), pointviews,
-					model, contact_count, random, predict_null_contacts, noised, add_pairs, MarkPoints2, MarkPointsLow2,
-					sim_id, work_dir, log_file, user_func
+					model, contact_count, random_func, predict_null_contacts_func, pick_contacts_func, noised,
+					add_pairs, MarkPoints2, MarkPointsLow2,
+					sim_id, work_dir, log_file, path_to_user_func
 					)
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t...end of contact liftovering %.2fs'% elp, log_file)
@@ -628,11 +692,30 @@ if __name__ == "__main__":
 		except KeyError: chosen_chroms = config['liftover']['chosen_chroms_to'].strip()
 		try: model = config['wild_type']['model']
 		except KeyError: model = config['simulation']['model']
-		try: random = config['wild_type']['random']
-		except KeyError: random = config['simulation']['random']
-		try: predict_null_contacts = config['wild_type']['predict_null_contacts']
-		except KeyError: predict_null_contacts = config['simulation']['predict_null_contacts']
+		
+		try: random_func_name = config['wild_type']['random']
+		except KeyError: random_func_name = config['simulation']['random']
+		try: random_func = gf.define_random_func(random_func_name)
+		except NameError:
+			try: exec("random_func = %s" % random_func_name)
+			except NameError: raise NameError('The function %s not found' % random_func_name)
+		try: predict_null_contacts_func_name = config['simulation']['predict_null_contacts']
+		except KeyError: predict_null_contacts_func_name = 'no'
+		try: predict_null_contacts_func = gf.default_predict_function(predict_null_contacts_func_name)
+		except NameError:
+			try: exec("predict_null_contacts_func = %s" % predict_null_contacts_func_name)
+			except NameError: raise NameError('The function %s not found' % predict_null_contacts_func_name)
+		
+		try: pick_contacts_func_name = config['simulation']['pick_contacts']
+		except KeyError: 
+			try: pick_contacts_func_name = gf.define_pick_from_predict(predict_null_contacts_func_name)
+			except NameError: raise NameError('The parameter "pick_contacts" absent and the default value for "predict_null_contacts" = %s is not found' % predict_null_contacts_func_name)
+		try: pick_contacts_func = gf.default_pick_function(pick_contacts_func_name)
+		except NameError:
+			try: exec("pick_contacts_func = %s" % pick_contacts_func_name)
+			except NameError: raise NameError('The function %s not found' % pick_contacts_func_name)
 		noised = global_noised
+		
 		try: log_file = config['wild_type']['log_file']
 		except KeyError: log_file = config['global']['log_file']
 		
@@ -690,8 +773,8 @@ if __name__ == "__main__":
 					sim.wt_Simulation(
 							contactData+contactStatistic, resolution, resolution_low, resolution_pab,
 							c1_c2, c2s_low, l2i,
-							model, contact_count, random, predict_null_contacts, noised,
-							sim_id, replica_id, work_dir, log_file
+							model, contact_count, random_func, predict_null_contacts_func, pick_contacts_func, noised,
+							sim_id, replica_id, work_dir, log_file, path_to_user_func
 							)
 					elp = timeit.default_timer() - start_time
 					gf.printlog('\t\tend simulation %i/%i: %.2fs' % (currentStep,stepCount,elp), log_file)
@@ -756,10 +839,10 @@ if __name__ == "__main__":
 	
 		gf.printlog('Stage "hic" - hic map generation - start', log_file)
 		gf.printlog('\tStep 1: the generation of pre/hic files',log_file)
-		c2h.hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
+		c2h.hic_generate(svs_contacts, wt1_contacts, wt2_contacts,
 			chosen_chroms, chrom_sizes, resolution, #capture,
 			format, path_to_java_dir, path_to_juicertools, hic_resolutions,
-			sim_id,work_dir,log_file,cleaning
+			sim_id, work_dir, log_file, cleaning
 			)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end "hic" stage, %.2f' % elp, log_file)

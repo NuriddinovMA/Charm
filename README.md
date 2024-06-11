@@ -184,8 +184,8 @@ python3 charm.py -i your-simulation.ini -S SVs+
 5) Repeat this step for every independent simulation.
 
 ## Using of custom functions for simulations.
-The Charm supports using of custom functions for simultaion. This functions must be organized as python3 module and are hard limited in input parameters and output data format [see examples](charm_func/user_defined_func.py).
-To use this functions for processing:
+The Charm supports using of custom functions for simultaion. These functions must be organized as python3 module and are hard restricted in their input parameters and output data format [see examples](charm_func/user_defined_func.py).
+To use these functions the user must specify them in the ini-file:
 1) Copy the [EXAMPLE.ini](testdataset/EXAMPLE.ini) and modify:
    * [global] section:
      - "path_to_user_functions" - the full path to python3-module with custom functions

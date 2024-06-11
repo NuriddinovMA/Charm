@@ -154,8 +154,8 @@ The database with statistics of reference Hi-C map will be placed in the folder 
      - for other parameters past the values from the ini-file created in the first step;
    * [preprocessing] sections - past the values from the ini-file created in the first step;
    * [simulation]
-     - predict_null_contacts - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
-     - contact_count - the desired sum of contacts for a simulated Hi-C map;
+     - "predict_null_contacts" - describes how to predict contact count if the reference value is 0. Use "cov_sq_f1" for whole genomic Hi-C, "cov_mixsq_f1" for enriched Hi-C. Other options ("cov_mult_f"/"cov_sq_f"/"cov_mult_f1"/ for whole-genome data and "cov_mixed_f"/ "cov_mixsq_f" / "cov_mixed_f1" for enrichment) are experimental.
+     - "contact_count" - the desired sum of contacts for a simulated Hi-C map;
    * [wild_type]
       - replica_ids - the list of any labels that will be used as unique ids of pseudo-replicas, i.e. 1,2,3
 2) run
@@ -175,13 +175,28 @@ python3 charm.py -i your-replicas.ini -S wt
      - "path_to_svs_list" - the path to your file with the description of rearrangements;
      - "simulation_id" - the unique id of simulated rearrangement from your file containing the description of rearrangements;
    * [wild_type]
-     - replica_ids - use any TWO values from the ini-file created in the second step;
+     - "replica_ids" - use any TWO values from the ini-file created in the second step;
 3) run
 ```
 python3 charm.py -i your-simulation.ini -S SVs+
 ```
 4) The result will be placed in the folder **[global:work_dir]/out** . The name of the resulting file will be **[hic:simulation_id].[hic:format]** .
 5) Repeat this step for every independent simulation.
+
+## Using of custom functions for simulations.
+The Charm supports using of custom functions for simultaion. These functions must be organized as python3 module and are hard restricted in their input parameters and output data format [see examples](charm_func/user_defined_func.py).
+To use these functions the user must specify them in the ini-file:
+1) Copy the [EXAMPLE.ini](testdataset/EXAMPLE.ini) and modify:
+   * [global] section:
+     - "path_to_user_functions" - the full path to python3-module with custom functions
+   * [preprocessing] section:
+     - "user_coverage_statistic_func_name" - the exact name of function to calculate full genomic coverage statistics (for example: sum of coverage of contacting bins);
+     - "user_distance_dependent_statistic_func_name" = the exact name of function to calculate full genome distance dependend statistics (for example: mean contact for given genomic distance)
+   * [simulation] section
+     - "random" - the exact name of function for contact randomization (default: binomial)
+     - "predict_null_contacts" - the exact name of function for prediction of contacts count instead 0;
+     - "pick_contacts" - the exact name of function for distibuting contact from low resolution to high resolution;
+Then, run Charm as described above.
 
 ### The chromosome sizes file
 This file contains chromosome sizes ([example](testdataset/data/test.chrom.sizes)). The chromosome names and chromosome sizes must correspond to the chromosome sizes and chromosome names in .hic-file. 

@@ -148,7 +148,7 @@ The database with statistics of reference Hi-C map will be placed in the folder 
 
 **The second step**: the generation of pseudoreplicates (only required for heterozygous rearrangements)
 
-1) Copy the [example_REPLICAS.ini](testdataset/example_REPLICAS.ini) and modify:
+1) Copy the  [example_REPLICAS.ini](testdataset/example_REPLICAS.ini) and modify:
    * [global]
      - "log_file" - insert the *new* preferred name of log file, in the other case, the log file will be overwritten;
      - for other parameters past the values from the ini-file created in the first step;

@@ -466,7 +466,7 @@ def iMeaner(contactDistanceHash,counts,path,**kwargs):
 	f = open(path + '.stat','w')
 	base_count = counts[0]
 	gf.printlog('\tstart statistic for %i distances' % ld,logname)
-	f.write('distances\tdistance_combined\tall_contacts\tcontacts=0\tcontacts=1\tmean\tno_null_mean\tmean_mult_coverage\tmean_sum_coverage\n')
+	f.write('distances\tdistance_combined\tall_contacts\tcontacts=0\tcontacts=1\tmean_contact\tno_null_mean\tmean_coverage_multiple\tmean_coverage_sum\n')
 	for l in Keys:
 		count,d = counts[l],0
 		try: cdh = contactDistanceHash[l][:]

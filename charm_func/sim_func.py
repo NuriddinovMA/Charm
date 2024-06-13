@@ -75,14 +75,6 @@ def readTotalStatHash(fname,**kwargs):
 	gf.printlog('\t\t\t...end reading coverage statistics %.2fs' % elp, logname)
 	return totalHash
 
-def covAlignment(covHash1,covHash2):
-	covAli = {}
-	for key in covHash1:
-		try: covAli[key] = 1.*(covHash2[key]/covHash2['mean'])/(covHash1[key]/covHash1['mean'])
-		except KeyError: covAli[key] = 0
-		except ZeroDivisionError: covAli[key] = 0
-	return covAli
-
 def iReadInitialContact(path,ChrIdxs,**kwargs): #Reading Contact from database file
 	try: logname = kwargs['log']
 	except KeyError: logname = False
@@ -266,14 +258,14 @@ def _enumerateContacts(coor_to, contH, covHash, totalH, distanceH, mapH1, mapH2,
 	try: distanceH[modeled_dist]
 	except KeyError: modeled_dist = max(distanceH.keys())
 	if lifted_c[-1] != 0:
-		if model == 'balanced': data,norm, balance = 1, distanceH[modeled_dist]['mean'], lifted_c[-1]
-		elif model == 'align_sensitive': data,norm, balance = 1, distanceH[modeled_dist]['mean'], 1.
+		if model == 'balanced': data,norm, balance = 1, distanceH[modeled_dist]['mean_contact'], lifted_c[-1]
+		elif model == 'align_sensitive': data,norm, balance = 1, distanceH[modeled_dist]['mean_contact'], 1.
 		elif model == 'distance_sensitive': data, norm, balance = 0, 1.,lifted_c[-1]
 		elif model == 'easy': data, norm, balance = 0, 1.,1.
 		else: pass
 		cc = round(lifted_c[data]*norm/balance,8)
 	else: cc = 0
-	x = c1, b1, c2, b2, cc, cc/distanceH[modeled_dist]['mean'], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], lifted_c[3], real, distanceH[modeled_dist]['mean'], norm, balance
+	x = c1, b1, c2, b2, cc, cc/distanceH[modeled_dist]['mean_contact'], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], lifted_c[3], real, distanceH[modeled_dist]['mean_contact'], norm, balance
 	return x
 
 def _predictContacts(coor_from, modeled_dist, covHash, totalH, distanceH, res, params_pc,**kwargs):
@@ -312,7 +304,7 @@ def _predictContacts(coor_from, modeled_dist, covHash, totalH, distanceH, res, p
 		cov2 = pab_cov[c2,rb2]
 		try: cov2 += pab_cov[c2,rb2+1]
 		except KeyError: pass
-	pc,poe = pred_null_model(covHash[c1,b1], covHash[c2,b2], cont_AB, oe_AB, modeled_dist, distance_stats, totalH)
+	pc,poe = pred_null_model(covHash[c1,b1], covHash[c2,b2], cont_AB, oe_AB, modeled_dist, distanceH, totalH)
 	modelled_cont = pc, poe, covHash[c1,b1], covHash[c2,b2]
 	return modelled_cont
 
@@ -568,8 +560,8 @@ def _listing(coor, contactHash, covHash, totalH, distanceH, res, params_list, **
 	pc,poe = 0,0
 	if (c1 != c2): real_dist = -1000
 	else: real_dist = abs(b1-b2)
-	try: mean_pc = distanceH[real_dist]['mean']
-	except KeyError: mean_pc = distanceH[max(distanceH.keys())]['mean']
+	try: mean_pc = distanceH[real_dist]['mean_contact']
+	except KeyError: mean_pc = distanceH[max(distanceH.keys())]['mean_contact']
 	if noised: noise = 1
 	else: noise = 0
 	mcov = covHash[c1,b1] * covHash[c2,b2]
@@ -597,8 +589,8 @@ def _easyRescale(high_cl, high_res, covHash, distanceH, res, params_rescale,**kw
 					covHash[c1,ri],covHash[c2,rj]
 					if (c1 != c2): dist = -1000
 					else: dist = abs(ri-rj)
-					try: mean_con = distanceH[dist]['mean']
-					except KeyError: mean_con = distanceH[max(distanceH.keys())]['mean']
+					try: mean_con = distanceH[dist]['mean_contact']
+					except KeyError: mean_con = distanceH[max(distanceH.keys())]['mean_contact']
 					_clh.append((c1,ri,c2,rj,1.,1., covHash[c1,ri], covHash[c2,rj], mean_con))
 				except KeyError: pass
 				except ZeroDivisionError: pass

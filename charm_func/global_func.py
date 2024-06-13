@@ -92,55 +92,55 @@ def _pick_default(cov1, cov2, distance_coef, **kwargs):
 
 def _predict_model_pts(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = 1.
-	pc = poe*distance_dependent_coef['mean']
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_pts_ab(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB
-	pc = poe*distance_dependent_coef['mean']
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_mult_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	poe = oe_AB*(cov1*cov2)/distance_independent_coef['mean_mult_coverageiple']
-	pc = poe*distance_dependent_coef['mean']
+	poe = oe_AB*(cov1*cov2)/distance_independent_coef['mean_coverage_multiple']
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_sq_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	poe = oe_AB*np.sqrt((cov1*cov2)/distance_independent_coef['mean_mult_coverageiple'])
-	pc = poe*distance_dependent_coef['mean']
+	poe = oe_AB*np.sqrt((cov1*cov2)/distance_independent_coef['mean_coverage_multiple'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_sum_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_mult_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	poe = oe_AB*(cov1*cov2)/distance_dependent_coef['mean_mult_coverage']
-	pc = poe*distance_dependent_coef['mean']
+	poe = oe_AB*(cov1*cov2)/distance_dependent_coef[contact_distance]['mean_coverage_multiple']
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_sq_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef['mean_mult_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef[contact_distance]['mean_coverage_multiple'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_sum_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_mixed_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	if contact_distance == -1000: poe = oe_AB*cov1*cov2/distance_independent_coef['mean_mult_coverageiple']
-	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	if contact_distance == -1000: poe = oe_AB*cov1*cov2/distance_independent_coef['mean_coverage_multiple']
+	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_mixsq_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	if contact_distance == -1000: poe = oe_AB*np.sqrt((cov1*cov2)/distance_independent_coef['mean_mult_coverageiple'])
-	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	if contact_distance == -1000: poe = oe_AB*np.sqrt((cov1*cov2)/distance_independent_coef['mean_coverage_multiple'])
+	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_mixed_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	if contact_distance == -1000: poe = oe_AB*cov1*cov2/distance_dependent_coef['mean_mult_coverageiple']
-	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	if contact_distance == -1000: poe = oe_AB*cov1*cov2/distance_dependent_coef[contact_distance]['mean_coverage_multiple']
+	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 def _predict_model_cov_mixsq_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
-	if contact_distance == -1000: poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef['mean_mult_coverageiple'])
-	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
-	pc = poe*distance_dependent_coef['mean']
+	if contact_distance == -1000: poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef[contact_distance]['mean_coverage_multiple'])
+	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
+	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
 	return pc,poe
 
 def default_pick_function(pick_func_name):

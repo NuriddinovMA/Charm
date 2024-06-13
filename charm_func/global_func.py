@@ -98,11 +98,11 @@ def _predict_model_pts_ab(cov1, cov2, cont_AB, oe_AB, contact_distance, distance
 	poe = oe_AB
 	pc = poe*distance_dependent_coef['mean']
 	return pc,poe
-def _predict_model_cov_mult_f(cov1, cov2, cont_AB, oe_AB, distance_dependent_coef, distance_independent_coef):
+def _predict_model_cov_mult_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*(cov1*cov2)/distance_independent_coef['mean_mult_coverageiple']
 	pc = poe*distance_dependent_coef['mean']
 	return pc,poe
-def _predict_model_cov_sq_f(cov1, cov2, cont_AB, oe_AB, distance_dependent_coef, distance_independent_coef):
+def _predict_model_cov_sq_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*np.sqrt((cov1*cov2)/distance_independent_coef['mean_mult_coverageiple'])
 	pc = poe*distance_dependent_coef['mean']
 	return pc,poe
@@ -110,11 +110,11 @@ def _predict_model_cov_sum_f(cov1, cov2, cont_AB, oe_AB, contact_distance, dista
 	poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_sum_coverage'])
 	pc = poe*distance_dependent_coef['mean']
 	return pc,poe
-def _predict_model_cov_mult_f1(cov1, cov2, cont_AB, oe_AB, distance_dependent_coef, distance_independent_coef):
+def _predict_model_cov_mult_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*(cov1*cov2)/distance_dependent_coef['mean_mult_coverage']
 	pc = poe*distance_dependent_coef['mean']
 	return pc,poe
-def _predict_model_cov_sq_f1(cov1, cov2, cont_AB, oe_AB, distance_dependent_coef, distance_independent_coef):
+def _predict_model_cov_sq_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef['mean_mult_coverage'])
 	pc = poe*distance_dependent_coef['mean']
 	return pc,poe

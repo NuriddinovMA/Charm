@@ -312,7 +312,7 @@ def _predictContacts(coor_from, modeled_dist, covHash, totalH, distanceH, res, p
 		cov2 = pab_cov[c2,rb2]
 		try: cov2 += pab_cov[c2,rb2+1]
 		except KeyError: pass
-	pc,poe = pred_null_model(covHash[c1,b1], covHash[c2,b2], cont_AB, oe_AB, distance_stats, totalH)
+	pc,poe = pred_null_model(covHash[c1,b1], covHash[c2,b2], cont_AB, oe_AB, modeled_dist, distance_stats, totalH)
 	modelled_cont = pc, poe, covHash[c1,b1], covHash[c2,b2]
 	return modelled_cont
 

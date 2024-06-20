@@ -23,19 +23,19 @@ If you use Charm in your work, please cite
 1) Python >= 3.7 with NumPy
 2)
   	- [Juicer Tools](https://github.com/aidenlab/juicer) and Java (for dumping the contacts from the existing .hic-files and/or creating the new .hic-files)
-  	- Cooler (for dumping the contacts from the existing .mcool-files and/or creating the new .mcool-files)
-3) the generation of database from Hi-C map with 600 million contacts requires around 48-60Gb RAM and 9 hours of real time
-4) the simulation of rearrangement for *one chromosome pair* from given database requires around 6-36Gb RAM and 1-2 hours of real time
+  	- [Cooler](https://github.com/open2c/cooler) (for dumping the contacts from the existing .mcool-files and/or creating the new .mcool-files)
+3) the generation of the database (this is a main file required for SV simulation) based on Hi-C map with 600 million contacts requires around 48-60Gb RAM and ~9 hours
+4) the simulation of rearrangement for *one chromosome pair* using a pre-computed database requires around 6-36Gb RAM and 1-2 hours
 ## Test dataset run
-for juicertools:
+for juicertools-based .hic inputs and outputs:
 ```
 python3 charm.py -i testdataset/EXAMPLE.ini
 ```
-for Cooler:
+for cooler-based .cool inputs and outputs:
 ```
 python3 charm.py -i testdataset/EXAMPLE-mcool.ini
 ```
-As ending, the Charm creates in "testdataset" folder "out" containing the Hi-C file with simulated rearrangement named "example.cnv-X.hic"
+After run, Charm creates "out" folder within "testdataset" directory containing the Hi-C file with simulated rearrangement named "example.cnv-X.hic" or "example.cnv-X.mcool"
 
 # Quick Start
 
@@ -183,19 +183,19 @@ python3 charm.py -i your-simulation.ini -S SVs+
 4) The result will be placed in the folder **[global:work_dir]/out** . The name of the resulting file will be **[hic:simulation_id].[hic:format]** .
 5) Repeat this step for every independent simulation.
 
-## Using of custom functions for simulations.
-The Charm supports using of custom functions for simultaion. These functions must be organized as python3 module and are hard restricted in their input parameters and output data format [see examples](testdataset/data/user_defined_func.py).
-To use these functions the user must specify them in the ini-file:
+## Customizing dependence between simulated and reference contacts.
+Charm simulates contacts based on properties of loci, defined based on reference dataset, and their genomic distance after rearrangement. There are default functions that compute simulated contact probability based on loci properties and genomic distance described in [preprint](https://doi.org/10.1101/2023.11.22.568374). User can provide their own functions to substitute default. This is a 2-step process, where at the first step user provides functions to compute relevant statistics based on reference data, and at the second step provides functions employing collected statistics to define simulated contact counts. These functions must be organized as python3 modules and are restricted in their input parameters and output data format ([see examples](testdataset/data/user_defined_func.py)).
+To use these functions user must specify them in the ini-file:
 1) Copy the [EXAMPLE-custom-func.ini](testdataset/EXAMPLE-custom-func.ini) and modify:
    * [global] section:
      - "path_to_user_functions" - the full path to python3-module with custom functions
    * [preprocessing] section:
-     - "user_coverage_statistic_func_name" - the exact name of function to calculate full genomic coverage statistics (for example: sum of coverage of contacting bins);
-     - "user_distance_dependent_statistic_func_name" = the exact name of function to calculate full genome distance dependend statistics (for example: mean contact for given genomic distance)
+     - "user_coverage_statistic_func_name" - the exact name of the function to calculate genomic coverage statistics for pairs of loci (for example, the sum of coverages of contacting bins);
+     - "user_distance_dependent_statistic_func_name" = the exact name of the function to calculate statistics based on contacts scaling with genomic distance (for example: mean contact count for given genomic distance)
    * [simulation] section
-     - "random" - the exact name of function for contact randomization (default: binomial)
-     - "predict_null_contacts" - the exact name of function for prediction of contacts count instead 0;
-     - "pick_contacts" - the exact name of function for distibuting contact from low resolution to high resolution;
+     - "random" - the exact name of the function for contact randomization (default: binomial)
+     - "predict_null_contacts" - the exact name of the function for prediction of contacts count instead 0;
+     - "pick_contacts" - the exact name of the function for distributing contact from low resolution to high resolution;
 Then, run Charm as described above.
 
 ### The chromosome sizes file

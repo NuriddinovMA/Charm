@@ -14,18 +14,21 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 	names = set([])
 	if dir_mut:
 		files = os.listdir(dir_mut)
-		for file in files: 
+		for file in files:
+			print(file)
 			parse = file.split('.')
 			F[parse[-3],parse[-2]] = [dir_mut+'/'+file,'',1]
 	if dir_wt1:
 		files = os.listdir(dir_wt1)
 		for file in files:
+			print(file)
 			parse = file.split('.')
 			if (parse[-3],parse[-2]) in F: pass
 			else: F[parse[-3],parse[-2]] = [dir_wt1+'/'+file,'',resolution]
 	if dir_wt2:
 		files = os.listdir(dir_wt2)
-		for file in files: 
+		for file in files:
+			print(file)
 			parse = file.split('.')
 			try: F[parse[-3],parse[-2]][1] = dir_wt2+'/'+file
 			except KeyError: pass

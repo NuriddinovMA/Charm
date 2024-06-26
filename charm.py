@@ -40,6 +40,14 @@ if __name__ == "__main__":
 	try: os.makedirs(config['global']['work_dir'])
 	except FileExistsError: pass
 	except KeyError: raise KeyError('The work directory in global section is not defined')
+	
+	try: resolution = config['global']['resolution']
+	except KeyError: config['global']['resolution'] = 'NO'
+	try: resolution_low = config['global']['resolution_low']
+	except KeyError: config['global']['resolution_low'] = 'NO'
+	try: resolution_pab = config['global']['resolution_pab']
+	except KeyError: config['global']['resolution_pab'] = 'NO'
+	
 	try: global_noised = gf.boolean(config['global']['one_as_null'])
 	except KeyError: global_noised = False
 	try: heterozygous = gf.boolean(config['global']['heterozygous'])

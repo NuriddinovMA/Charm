@@ -195,6 +195,7 @@ To use these functions user must specify them in the ini-file:
    * [simulation] section
      - "predict_null_contacts" - the exact name of the function for prediction of contacts count instead 0;
      - "pick_contacts" - the exact name of the function for distributing contact from low resolution to high resolution;
+
 Then, run Charm as described above.
 
 ## Customizing of contact randomiztion function.

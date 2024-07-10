@@ -204,7 +204,8 @@ To use these functions user must specify them in the ini-file:
    * [global] section:
      - "path_to_user_functions" - the full path to python3-module with custom functions
    * [simulation] section
-     - "random" - the exact name of the function for contact randomization (default: binomial)
+     - "random" - the exact name of the function for contact randomization (default: binomial);
+
 Then, run Charm as described above.
 
 ### The chromosome sizes file

@@ -193,9 +193,20 @@ To use these functions user must specify them in the ini-file:
      - "user_coverage_statistic_func_name" - the exact name of the function to calculate genomic coverage statistics for pairs of loci (for example, the sum of coverages of contacting bins);
      - "user_distance_dependent_statistic_func_name" = the exact name of the function to calculate statistics based on contacts scaling with genomic distance (for example: mean contact count for given genomic distance)
    * [simulation] section
-     - "random" - the exact name of the function for contact randomization (default: binomial)
      - "predict_null_contacts" - the exact name of the function for prediction of contacts count instead 0;
      - "pick_contacts" - the exact name of the function for distributing contact from low resolution to high resolution;
+
+Then, run Charm as described above.
+
+## Customizing of contact randomiztion function.
+Charm simulates replica-to-replica difference by contact randomization. The default functions take into consideration the predicted contact count, the total contacts in reference and the simulated contact count. The Charm allows randomizing contacts with binomial  (default), normal and hypergeometric distributions. Additionally, the user can simulate hi-c-like matrices without randomizations, rounding the predicting contacts to close integer numbers. The user can provide their own functions to substitute default, too. These functions must be organized as python3 modules and are restricted in their input parameters and output data format ([see examples](testdataset/data/user_defined_func.py)).
+To use these functions user must specify them in the ini-file:
+1) Copy the [EXAMPLE-custom-func.ini](testdataset/EXAMPLE-custom-func.ini) and modify:
+   * [global] section:
+     - "path_to_user_functions" - the full path to python3-module with custom functions
+   * [simulation] section
+     - "random" - the exact name of the function for contact randomization (default: binomial);
+
 Then, run Charm as described above.
 
 ### The chromosome sizes file

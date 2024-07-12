@@ -224,7 +224,7 @@ To simulate SVs, Charm requires the file with a description of rearrangement. In
 
 ![graphical description](chromosome_fates.png)
 
-The file describing rearrangments must include the following columns (also see the example "test.svs_list.txt" in the testdataset folder):
+The file describing rearrangments must include the following columns (also see the example [test.svs_list.tsv](testdataset/data/test.svs_list.tsv) in the testdataset folder):
 ```
 <reference_id> <simulation_id> <chromosome_name> <block_start> <block_end> <indicator> <new_chromosome_name> <copy_number>
 ```

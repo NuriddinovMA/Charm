@@ -15,32 +15,50 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Parameters for generation of rearrangement maps')
 	parser.add_argument( '-i', dest='ini',metavar='ini-file', help='path to ini-file')
 	parser.add_argument('-S', dest='stage', metavar='Stage',default='pre+',help='must be one of "pre+", "SVs+", "sim+", "lift+",  "wt", "hic"')
+	parser.add_argument('-g','--global', dest='glo', metavar='global', nargs='?',default=False ,help='must be parameter:value pairs from global section "parameter2:value2"')
+	parser.add_argument('-p','--pre', dest='pre', metavar='preprocessing', nargs='?',default=False,help='must be parameter:value pairs from preprocessing section "parameter2:value2"')
+	parser.add_argument('-v','--svs', dest='svs', metavar='SVs', nargs='?',default=False, help='must be parameter:value pairs from SVs section "parameter2:value2"')
+	parser.add_argument('-s','--sim', dest='sim', metavar='simulation', nargs='?',default=False, help='must be parameter:value pairs from simulation section "parameter2:value2"')
+	parser.add_argument('-l','--lift', dest='lift', metavar='liftover', nargs='?',default=False, help='must be parameter:value pairs from liftover section "parameter2:value2"')
+	parser.add_argument('-w','--wt', dest='wt', metavar='wild_type', nargs='?',default=False, help='must be parameter:value pairs from wild_type section "parameter2:value2"')
+	parser.add_argument('-o','--hic', dest='hic', metavar='hic', nargs='?',default=False, help='must be parameter:value pairs from hic section "parameter2:value2"')
 	args = parser.parse_args()
-
+	
 	config = ConfigParser(interpolation=ExtendedInterpolation())
 	config.read(args.ini)
+	commandLineConfig = {}
 
-	if args.stage == 'pre': skip_stages = set(['svs','sim','lift','wt','hic'])
-	elif args.stage == 'pre+':skip_stages = set([])
-	elif args.stage == 'SVs': skip_stages = set(['pre','sim','lift','wt','hic'])
-	elif args.stage == 'SVs+': skip_stages = set(['pre'])
-	elif args.stage == 'sim': skip_stages = set(['pre','svs','lift','wt','hic'])
-	elif args.stage == 'sim+': skip_stages = set(['pre','svs'])
-	elif args.stage == 'lift': skip_stages = set(['pre','svs','sim','wt','hic'])
-	elif args.stage == 'lift+': skip_stages = set(['pre','svs','sim'])
-	elif args.stage == 'wt': skip_stages = set(['pre','svs','sim','lift','hic'])
-	elif args.stage == 'wt+': skip_stages = set(['pre','svs','sim','lift'])
-	elif args.stage == 'hic': skip_stages = set(['pre','svs','sim','lift','wt'])
+	if args.glo:
+		print( args.glo )
+		commandLineConfig['global'] = {}
+		key_value = args.glo.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['global'][key] = value
+			config['global'][key] = value
+
+	if args.stage == 'pre': config['global']['skip_stages'] = "svs,sim,lift,wt,hic"
+	elif args.stage == 'pre+': config['global']['skip_stages'] = ""
+	elif args.stage == 'SVs': config['global']['skip_stages'] = "pre,sim,lift,wt"
+	elif args.stage == 'SVs+': config['global']['skip_stages'] = "pre"
+	elif args.stage == 'fast': config['global']['skip_stages'] = "pre,wt"
+	elif args.stage == 'sim': config['global']['skip_stages'] = "pre,svs,lift,wt,hic"
+	elif args.stage == 'sim+': config['global']['skip_stages'] = "pre,svs"
+	elif args.stage == 'lift': config['global']['skip_stages'] = "pre,svs,sim,wt,hic"
+	elif args.stage == 'lift+': config['global']['skip_stages'] = "pre,svs,sim"
+	elif args.stage == 'wt': config['global']['skip_stages'] = "pre,svs,sim,lift,wt"
+	elif args.stage == 'wt+': config['global']['skip_stages'] = "pre,svs,sim,lift"
+	elif args.stage == 'hic': config['global']['skip_stages'] = "pre,svs,sim,lift,wt"
 	else: 
 		raise NameError(args.stage,'''is the incorrect stage id!
-	Use one from: pre pre+ SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
+	Use one from: pre pre+ fast SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
 
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
 	try: os.makedirs(config['global']['work_dir'])
 	except FileExistsError: pass
 	except KeyError: raise KeyError('The work directory in global section is not defined')
-	
+
 	try: resolution = config['global']['resolution']
 	except KeyError: config['global']['resolution'] = 'NO'
 	try: resolution_low = config['global']['resolution_low']
@@ -50,6 +68,10 @@ if __name__ == "__main__":
 	
 	try: global_noised = gf.boolean(config['global']['one_as_null'])
 	except KeyError: global_noised = False
+	try: coverage_treshold = int(config['global']['coverage_treshold'])
+	except KeyError: coverage_treshold = 0
+	try: coverage_low_treshold = int(config['global']['coverage_low_treshold'])
+	except KeyError: coverage_low_treshold = 0
 	try: heterozygous = gf.boolean(config['global']['heterozygous'])
 	except KeyError: heterozygous = True
 	try:
@@ -63,10 +85,13 @@ if __name__ == "__main__":
 		if heterozygous: global_count = str(int(global_count)//2)
 	except KeyError: pass
 	
-	try: skip_stages |= set(config['global']['skip_stages'].split(','))
+	try: skip_stages = set(config['global']['skip_stages'].split(','))
 	except KeyError: pass
+
 	try: cleaning = gf.boolean(config['global']['cleaning'])
-	except KeyError: cleaning = True
+	except KeyError: 
+		cleaning = True
+		config['global']['cleaning'] = "YES"
 	try: 
 		log_file = config['global']['log_file']
 		f = open(log_file,'w')
@@ -78,7 +103,16 @@ if __name__ == "__main__":
 	##############################
 	#PREPROCESSING STAGE PRE/PRE+#
 	##############################
-		
+
+	if args.pre: 
+		print( args.pre )
+		commandLineConfig['preprocessing'] = {}
+		key_value = args.pre.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['preprocessing'][key] = value
+			config['preprocessing'][key] = value
+
 	try: sim_id = config['preprocessing']['reference_id']
 	except KeyError: 
 		sim_id = config['global']['reference_id']
@@ -180,7 +214,15 @@ if __name__ == "__main__":
 	############################
 	#BILD SV MAP STAGE SVs/SVs+#
 	############################
-		
+	
+	if args.svs: 
+		print( args.svs )
+		commandLineConfig['SVs'] = {}
+		key_value = args.svs.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['SVs'][key] = value
+			config['SVs'][key] = value
 	
 	if args.stage == 'SVs': stand_alone = True
 	else: stand_alone = False
@@ -196,14 +238,14 @@ if __name__ == "__main__":
 	except KeyError: log_file = config['global']['log_file']
 	try: rname = config['SVs']['simulation_id']
 	except KeyError: rname = False
-	
+
 	if 'svs' in skip_stages: gf.printlog('Stage "SVs" skipped', log_file)
 	else:
 		from charm_func import sv_maps as sm
 		gf.printlog('Stage "SVs" - SV descriptions preparing...', log_file)
 		Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, rname, stand_alone,log_file)
 		
-		if args.stage in ['pre+','SVs+']:
+		if args.stage in ['pre+','SVs+','fast']:
 			chosen_chroms,add_pairs,map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV = Map_data
 			try: config['simulation']['pointviews']
 			except KeyError: config['simulation']['pointviews'] = pointviews
@@ -235,6 +277,15 @@ if __name__ == "__main__":
 	##################################
 	#MUTANT SIMULATION STAGE sim/sim+#
 	##################################
+
+	if args.sim:
+		print( args.sim )
+		commandLineConfig['simulation'] = {}
+		key_value = args.sim.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['simulation'][key] = value
+			config['simulation'][key] = value
 
 	try: sim_id = 'in_mut.' + config['simulation']['simulation_id']
 	except KeyError:
@@ -381,7 +432,7 @@ if __name__ == "__main__":
 		contactStatistic = sim.read_Contact_Statistics(
 			coverage_file, distance_file,
 			coverage_low, distance_low,
-			coverage_pab,
+			coverage_pab, coverage_treshold, coverage_low_treshold,
 			l2i_from, work_dir, log_file
 			)
 		elp = timeit.default_timer() - start_time
@@ -489,6 +540,15 @@ if __name__ == "__main__":
 	#LIFTOVER TO REFERENCE STAGE lift/lift+#
 	########################################
 
+	if args.lift: 
+		print( args.lift )
+		commandLineConfig['liftover'] = {}
+		key_value = args.lift.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['liftover'][key] = value
+			config['liftover'][key] = value
+
 	try: sim_id = 'to_ref.' + config['liftover']['simulation_id']
 	except KeyError: 
 		try: sim_id = 'to_ref.' + config['simulation']['simulation_id']
@@ -498,6 +558,7 @@ if __name__ == "__main__":
 
 	sim_dir = '%s/mdl/%s' % (work_dir,sim_id)
 	chosen_chroms_to = 'all'
+
 	if 'lift' in skip_stages: gf.printlog('Stage "lift" skipped', log_file)
 	else:
 		from charm_func import sim
@@ -559,7 +620,7 @@ if __name__ == "__main__":
 		contactStatistic = sim.read_Contact_Statistics(
 			coverage_file, distance_file,
 			coverage_low, distance_low,
-			coverage_pab,
+			coverage_pab, 0,
 			l2i_from, work_dir, log_file
 			)
 		
@@ -652,6 +713,14 @@ if __name__ == "__main__":
 	#WILD-TYPE REPLICA STAGE wt/wt+#
 	################################
 	
+	if args.wt: 
+		print( args.wt )
+		commandLineConfig['wild_type'] = {}
+		key_value = args.wt.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['wild_type'][key] = value
+			config['wild_type'][key] = value
 
 	try: sim_id = config['wild_type']['simulation_id']
 	except KeyError: 
@@ -667,7 +736,7 @@ if __name__ == "__main__":
 		except KeyError: 
 			try: contact_count = global_count
 			except NameError: raise NameError('The value "contact_count" in sections [global], or [simulation], or [wt] is not defined!')
-	
+
 	if 'wt' in skip_stages: gf.printlog('Stage "wt" skipped', log_file)
 	else:
 		from charm_func import sim
@@ -766,7 +835,7 @@ if __name__ == "__main__":
 					contactStatistic = sim.read_Contact_Statistics(
 						coverage_file, distance_file,
 						coverage_low, distance_low,
-						coverage_pab,
+						coverage_pab, coverage_treshold, coverage_low_treshold,
 						l2i, work_dir, log_file
 					)
 					contactData = sim.read_Contact_Data(
@@ -804,6 +873,15 @@ if __name__ == "__main__":
 	#HIC-MAP GENERATION STAGE hic/hic+#
 	##################################
 
+	if args.hic: 
+		print( args.hic )
+		commandLineConfig['hic'] = {}
+		key_value = args.hic.split()
+		for kv in key_value: 
+			key,value = kv.split('=')
+			commandLineConfig['hic'][key] = value
+			config['hic'][key] = value
+
 	try: sim_id = config['hic']['simulation_id']
 	except KeyError:
 		try: sim_id = config['simulation']['simulation_id']
@@ -823,9 +901,11 @@ if __name__ == "__main__":
 	except KeyError: 
 		try: path_to_juicertools = config['global']['path_to_juicertools']
 		except KeyError: path_to_juicertools = False
-	#if path_to_juicertools: 
+ 
 	try: hic_resolutions = config['hic']['hic_resolutions']
 	except KeyError: hic_resolutions = False
+	try: cleaning = gf.boolean(config['hic']['cleaning'])
+	except KeyError: cleaning = gf.boolean(config['global']['cleaning'])
 	try: log_file = config['hic']['log_file']
 	except KeyError: log_file = config['global']['log_file']
 	
@@ -857,3 +937,4 @@ if __name__ == "__main__":
 
 	elp = timeit.default_timer() - start_time
 	gf.printlog('The End, %.2f' % elp, log_file)
+	print(commandLineConfig)

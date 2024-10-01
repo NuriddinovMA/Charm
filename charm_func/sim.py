@@ -12,7 +12,7 @@ except ModuleNotFoundError:
 def read_Contact_Statistics(
 	coverage_file, distance_file,
 	coverage_low, distance_low,
-	coverage_pab,
+	coverage_pab, coverage_treshold, coverage_low_treshold,
 	l2i_from, work_dir, log_file
 	):
 	
@@ -23,7 +23,7 @@ def read_Contact_Statistics(
 	
 	coverage_file = gf.boolean(coverage_file)
 	if coverage_file: 
-		covHash = sf.readCovHash(coverage_file,l2i_from,log=log_file)
+		covHash = sf.readCovHash(coverage_file,l2i_from,treshold=coverage_treshold,log=log_file)
 		totalHash = sf.readTotalStatHash(coverage_file+'.stat',log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t...coverage reading end time %.2fs' % elp, log_file)
@@ -34,7 +34,7 @@ def read_Contact_Statistics(
 
 	
 	if coverage_low:
-		covLow = sf.readCovHash(coverage_low,l2i_from,log=log_file)
+		covLow = sf.readCovHash(coverage_low,l2i_from,treshold=coverage_low_treshold,log=log_file)
 		totalLow =  sf.readTotalStatHash(coverage_low+'.stat',log=log_file)
 		elp = timeit.default_timer() - start_time
 		gf.printlog('\t\t... coef coverage reading end time %.2fs' % elp, log_file)
@@ -180,6 +180,7 @@ def wt_Simulation(
 	out_dir  = '%s/wt/%s/%i/%s' % (work_dir,sim_name,contact_count,replica_id)
 	
 	out_name = '%s/wt/%s/%i/%s/%s.%s' % (work_dir,sim_name,contact_count,replica_id,sim_name,replica_id)
+	gf.printlog('\t\tWT simulation will be writed to %s ' % out_name, log_file)
 	sf.iContactRegression( covHash, resolution, c1_c2, l2i, c2s_low, out_name,
 		model=model, total_statistics=totalHash, distance_dependence=psList, random_func=random_func, contact_count=contact_count,
 		contact_low=contactLow, coverage_low=covLow, total_statistics_low=totalLow, distance_dependence_low=psListLow, resolution_low=resolution_low,

@@ -52,7 +52,6 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 				
 				if path_to_juicertools == False: 
 					from charm_func import cooler_func as cf
-	
 				else: command = "java -jar %s dump observed %s %s %s %s BP %i %s/%s.%i.%s.%s.%s"
 				for i in range(1,chr_num+1):
 					for j in range(i,chr_num+1):

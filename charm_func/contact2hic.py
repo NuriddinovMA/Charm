@@ -43,9 +43,9 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 
 	elp = timeit.default_timer() - start_time
 	gf.printlog( '\tpre writing %.2f' % elp, log_file)
-	if cleaning:
-		shutil.rmtree(svs_contacts, ignore_errors=True)
-		shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
+	
+	if cleaning: shutil.rmtree(svs_contacts, ignore_errors=True)
+	shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
 
 	if format == 'juicer':
 		F = '%s/%s.pre' % ( out_dir, sim_name )
@@ -69,6 +69,8 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		cf.create_cool_from_contacts( F, O, c2s, resolution, hic_resolutions )
 		with open(F , 'rb') as f_in:
 			with gzip.open(F + '.gz', 'wb') as f_out: shutil.copyfileobj(f_in, f_out)
+		try: os.remove('%s.%s.cool' % (O, resolution))
+		except FileNotFoundError: print('%s.%s.cool' % (O, resolution))
 	elif format == 'pre': 
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 	elif format == 'pre.gz':
@@ -88,23 +90,18 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	else:
 		gf.printlog('Error! Unsupported format, use "juicer", "mcool", "short", "short.gz", "pre", or "pre.gz" ',log_file)
 		exit()
+	
+	if format not in ['pre','short']:
+		try: os.remove(F)
+		except FileNotFoundError: pass
+	
 	if cleaning:
 		shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
 		if format == 'juicer':
-			try: os.remove(F)
-			except FileNotFoundError: pass
-			try: os.remove(F + '.gz')
+			try: os.remove(F+'.gz')
 			except FileNotFoundError: pass
 		elif format == 'mcool':
-			try: os.remove(F)
-			except FileNotFoundError: pass
-			try: os.remove('%s.%s.cool' % (O, resolution))
-			except FileNotFoundError: print('%s.%s.cool' % (O, resolution))
-		elif format == 'short.gz':
-			try: os.remove(F)
-			except FileNotFoundError: pass
-		elif format == 'pre.gz':
-			try: os.remove(F)
+			try: os.remove(F+'.gz')
 			except FileNotFoundError: pass
 		else: pass
 

@@ -1,5 +1,7 @@
 import os
 import cooler
+import cooler
+import numpy as np
 import pandas as pd
 import subprocess
 import logging
@@ -16,8 +18,8 @@ def create_contacts_from_cool(path_to_hic_map, path_to_contact_dump, resolution,
 	bins_chrm2 = cool_ref.bins().fetch(chrm2)
 	BinDict_chrm1 = {index: (index - min(bins_chrm1.index.to_list())) for index in bins_chrm1.index.to_list()}
 	BinDict_chrm2 = {index: (index - min(bins_chrm2.index.to_list())) for index in bins_chrm2.index.to_list()}
-	contacts["bin1"] = contacts["bin1_id"].apply(lambda x: BinDict_chrm1[x])
-	contacts["bin2"] = contacts["bin2_id"].apply(lambda x: BinDict_chrm2[x])
+	contacts["bin1"] = contacts["bin1_id"].apply(lambda x: BinDict_chrm1[x]*resolution)
+	contacts["bin2"] = contacts["bin2_id"].apply(lambda x: BinDict_chrm2[x]*resolution)
 	if normalization == False:
 		contacts[["bin1", "bin2", "count"]].to_csv(path_to_contact_dump, index=False, header = False, sep="\t")
 	elif normalization == True:
@@ -49,27 +51,36 @@ def create_cool_from_contacts(path_to_contact_file, path_to_out_mcool, chrom_siz
 	bins = pd.DataFrame(data = {"chrom":chrom_names, "start" : starts, "end" : ends})
 	#print(len(bins),ChrmStarts[chroms[-1]])
 	bins["index"] = list(range(0,ChrmStarts[chroms[-1]]+lnc1))
-	bins.to_csv('bins.csv', index=False,sep='\t')
+	#bins.to_csv('bins.csv', index=False,sep='\t')
 	#print(ChrmStarts)
 	#print(chrom_sizes)
-	contacts_data.to_csv('chrom_pair0.csv', index=False,sep='\t')
+	#contacts_data.to_csv('chrom_pair0.csv', index=False,sep='\t')
 	contacts_data['bin1']//= resolution
 	contacts_data['bin2']//= resolution
-	contacts_data.to_csv('chrom_pair1.csv', index=False,sep='\t')
+	#contacts_data.to_csv('chrom_pair1.csv', index=False,sep='\t')
 	contacts_data = contacts_data.groupby(['chrm1','bin1','chrm2','bin2']).agg({'counts':'sum'})
 	contacts_data = contacts_data.reset_index()
-	contacts_data.to_csv('chrom_pair2.csv', index=False,sep='\t')
+	contacts_data['chrm1'] = contacts_data['chrm1'].astype(str)
+	contacts_data['chrm2'] = contacts_data['chrm2'].astype(str)
+	#contacts_data.to_csv(path_to_out_cool+'chrom_pair2.csv', index=True,sep='\t')
+	#print(contacts_data.dtypes)
 	for i in range(len(chroms)):
-		for j in range(i,len(chroms)):
+		for j in range(len(chroms)):
 			chrm1,chrm2 = chroms[i],chroms[j]
-			print(ChrmStarts[chrm1],ChrmStarts[chrm2])
 			chrom_pair = contacts_data[(contacts_data['chrm1'] == chrm1) & (contacts_data['chrm2'] == chrm2)].copy()
+			#if i != j: chrom_pair.update(contacts_data[(contacts_data['chrm1'] == chrm2) & (contacts_data['chrm2'] == chrm1)].copy())
+			#print(chrm1,ChrmStarts[chrm1],chrm2,ChrmStarts[chrm2],len(chrom_pair))
 			chrom_pair['bin1'] = chrom_pair['bin1'].apply(lambda x: x + ChrmStarts[chrm1])
 			chrom_pair['bin2'] = chrom_pair['bin2'].apply(lambda x: x + ChrmStarts[chrm2])
 			contacts_data.update(chrom_pair)
-	contacts_data.to_csv('chrom_pair3.csv', index=False,sep='\t')
+	chrom_pair = contacts_data[contacts_data['bin1'] > contacts_data['bin2'] ].copy()
+	chrom_pair['chrm1'],chrom_pair['bin1'],chrom_pair['chrm2'],chrom_pair['bin2'] = chrom_pair['chrm2'],chrom_pair['bin2'],chrom_pair['chrm1'],chrom_pair['bin1']
+	contacts_data.update(chrom_pair)
+	#print(np.unique(contacts_data['chrm1']))
+	#contacts_data.to_csv(path_to_out_cool+'chrom_pair3.csv', index=True,sep='\t')
+	#contacts_data[contacts_data['bin1'] > contacts_data['bin2']].to_csv(path_to_out_cool+'chrom_pair4.csv', index=False,sep='\t')
 	pixels = pd.DataFrame(data = {"bin1_id" : contacts_data['bin1'], "bin2_id" : contacts_data['bin2'], "count" : contacts_data['counts']})
-	pixels.to_csv('pixels.csv', index=False,sep='\t')
+	#pixels.to_csv('pixels.csv', index=False,sep='\t')
 	cooler.create_cooler(path_to_out_cool, bins, pixels)
 	## cooler zoomify
 	cons_command1 = f"cooler zoomify {path_to_out_cool} -r {hic_resolutions}N -o {path_to_out_mcool}"

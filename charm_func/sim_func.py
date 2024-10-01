@@ -49,13 +49,18 @@ def readMeanHash(fname,**kwargs):
 def readCovHash(fname,ChrIdxs,**kwargs):
 	try: logname = kwargs['log']
 	except KeyError: logname = False
+	try: treshold = kwargs['treshold']
+	except KeyError: treshold = 0
+	print(treshold)
 	covHash = {}
 	gf.printlog('\t\t\tstart reading coverage statistics '+fname, logname)
 	start_time = timeit.default_timer()
 	with open(fname,'r') as f: lines = f.readlines()
 	for i in range(1,len(lines)):
 		parse = lines[i].split()
-		try: covHash[ChrIdxs[parse[0]],int(parse[1])] = float(parse[2])
+		coverage = float(parse[2])
+		if coverage <= treshold: coverage = 0
+		try: covHash[ChrIdxs[parse[0]],int(parse[1])] = coverage
 		except KeyError: pass
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\t\t...end reading coverage statistics %.2fs' % elp, logname)
@@ -265,7 +270,7 @@ def _enumerateContacts(coor_to, contH, covHash, totalH, distanceH, mapH1, mapH2,
 		else: pass
 		cc = round(lifted_c[data]*norm/balance,8)
 	else: cc = 0
-	x = c1, b1, c2, b2, cc, cc/distanceH[modeled_dist]['mean_contact'], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], lifted_c[3], real, distanceH[modeled_dist]['mean_contact'], norm, balance
+	x = c1, b1, c2, b2, cc, cc/distanceH[modeled_dist]['mean_contact'], round(lifted_c[2]*norm/balance,8), lifted_c[0], lifted_c[1], lifted_c[2], lifted_c[3], real, distanceH[modeled_dist]['mean_contact'], modeled_dist, norm, balance
 	return x
 
 def _predictContacts(coor_from, modeled_dist, covHash, totalH, distanceH, res, params_pc,**kwargs):
@@ -334,7 +339,7 @@ def _rescaleContacts(high_cl, high_res, contH, covHash, totalH, distanceH, mapH1
 				pick_probality_func = params_rc[6]
 				#print(k,pick_probality_func.__name__)
 				#print('!',k*_clh[:,9],k*_clh[:,10],_clh[:,12],'!')
-				p = pick_probality_func(k*_clh[:,9],k*_clh[:,10],_clh[:,12])
+				p = pick_probality_func(k*_clh[:,9],k*_clh[:,10],_clh[:,12],contact_distance=_clh[:,13])
 				p = p/np.sum(p)
 				#print('1',_clh[:,4],p,count)
 				_clh = _randomizing(_clh, p, count, gf._choice)
@@ -587,11 +592,11 @@ def _easyRescale(high_cl, high_res, covHash, distanceH, res, params_rescale,**kw
 			for rj in range(rj1,rj2):
 				try: 
 					covHash[c1,ri],covHash[c2,rj]
-					if (c1 != c2): dist = -1000
-					else: dist = abs(ri-rj)
-					try: mean_con = distanceH[dist]['mean_contact']
+					if (c1 != c2): distance = -1000
+					else: distance = abs(ri-rj)
+					try: mean_con = distanceH[distance]['mean_contact']
 					except KeyError: mean_con = distanceH[max(distanceH.keys())]['mean_contact']
-					_clh.append((c1,ri,c2,rj,1.,1., covHash[c1,ri], covHash[c2,rj], mean_con))
+					_clh.append((c1,ri,c2,rj,1.,1., covHash[c1,ri], covHash[c2,rj], mean_con,distance))
 				except KeyError: pass
 				except ZeroDivisionError: pass
 		try:
@@ -599,7 +604,8 @@ def _easyRescale(high_cl, high_res, covHash, distanceH, res, params_rescale,**kw
 				_clh = np.array(_clh)
 				k = _clh[:,6]*_clh[:,7]
 				k[k>0] = 1.
-				p = pick_probality_func(k*_clh[:,6],k*_clh[:,7],_clh[:,8])
+				p = pick_probality_func(k*_clh[:,6],k*_clh[:,7],_clh[:,8],contact_distance=_clh[:,9])
+				# p = np.apply_along_axis(pick_probality_func,1,[k*_clh[:,6],k*_clh[:,7],_clh[:,8],_clh[:,9]])
 				p = p/np.sum(p)
 				_clh = _randomizing(_clh, p, count, gf._choice)
 			else: _clh = _randomizing(_clh, allCon, contact_count, False)
@@ -674,6 +680,7 @@ def iContactRegression(covHash,resolution,c1_c2,ChrIdxs,low_ChrSizes,out_name,**
 	
 	chrm1,chrm2 = c1_c2
 	full_name = '%s.%s.%s.allCon'% (out_name,chrm1,chrm2)
+	gf.printlog('\t\t\t\twrite to %s' % (full_name), logname)
 	out = open( full_name,'w')
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\t\t\tcontact_count %s %s chromosome pair, %.2fs.' % (chrm1,chrm2,elp), logname)

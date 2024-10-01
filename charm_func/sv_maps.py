@@ -31,7 +31,6 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 				mutChrmIdx = {i:ChrmIdx[i] for i in ChrmIdx}
 				mutChrmSzs = {c2:ChrmSzs[c2] for c2 in ChrmSzs}
 				
-				
 			idxStart = len(mutChrmIdx) + 1
 			try: mutChrmIdx[c2]
 			except KeyError:
@@ -65,7 +64,6 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 			
 			if a in ['->','>!']:
 				svf.markgenerate(MT,resolution,(cnt,mut),outdir)
-				
 				chrm_from, chrm_to = set([]),set([])
 				for c1 in cc_from:
 					lenc = len(cc_from[c1])

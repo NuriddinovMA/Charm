@@ -77,19 +77,24 @@ def _pick_mult(cov1, cov2, distance_coef, **kwargs):
 	return 1.*cov1*cov2*distance_coef
 def _pick_mixsq(cov1, cov2, distance_coef, **kwargs):
 	contact_distance = kwargs['contact_distance']
-	if contact_distance == -1000: return np.sqrt(cov1*cov2)*distance_coef
-	else: return 1.*cov1*cov2*distance_coef
+	h = np.sign(contact_distance)
+	h[h == 0] = 1
+	return ((cov1+cov2)*distance_coef*(h+1) - 1.*np.sqrt(cov1*cov2)*distance_coef*(h-1))/2
 def _pick_mixed(cov1, cov2, distance_coef, **kwargs):
 	contact_distance = kwargs['contact_distance']
-	if contact_distance == -1000: return cov1*cov2*distance_coef
-	else: return 1.*cov1*cov2*distance_coef
+	h = np.sign(contact_distance)
+	h[h == 0] = 1
+	return ((cov1+cov2)*distance_coef*(h+1) - 1.*cov1*cov2*distance_coef*(h-1))/2
+	#if contact_distance == -1000: return cov1*cov2*distance_coef
+	#else: return 1.*cov1*cov2*distance_coef
+	
 def _pick_sum(cov1,cov2,distance_coef, **kwargs):
 	return 1.*(cov1+cov2)*distance_coef
 def _pick_ps(cov1, cov2, distance_coef, **kwargs):
 	return 1.*distance_coef
 def _pick_default(cov1, cov2, distance_coef, **kwargs):
 	return 1
-
+	
 def _predict_model_pts(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = 1.
 	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
@@ -112,15 +117,15 @@ def _predict_model_cov_sum_f(cov1, cov2, cont_AB, oe_AB, contact_distance, dista
 	return pc,poe
 def _predict_model_cov_mult_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*(cov1*cov2)/distance_dependent_coef[contact_distance]['mean_coverage_multiple']
-	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
+	pc = poe*distance_dependent_coef[contact_distance]['no_null_mean']
 	return pc,poe
 def _predict_model_cov_sq_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef[contact_distance]['mean_coverage_multiple'])
-	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
+	pc = poe*distance_dependent_coef[contact_distance]['no_null_mean']
 	return pc,poe
 def _predict_model_cov_sum_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
-	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
+	pc = poe*distance_dependent_coef[contact_distance]['no_null_mean']
 	return pc,poe
 def _predict_model_cov_mixed_f(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	if contact_distance == -1000: poe = oe_AB*cov1*cov2/distance_independent_coef['mean_coverage_multiple']
@@ -135,12 +140,12 @@ def _predict_model_cov_mixsq_f(cov1, cov2, cont_AB, oe_AB, contact_distance, dis
 def _predict_model_cov_mixed_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	if contact_distance == -1000: poe = oe_AB*cov1*cov2/distance_dependent_coef[contact_distance]['mean_coverage_multiple']
 	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
-	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
+	pc = poe*distance_dependent_coef[contact_distance]['no_null_mean']
 	return pc,poe
 def _predict_model_cov_mixsq_f1(cov1, cov2, cont_AB, oe_AB, contact_distance, distance_dependent_coef, distance_independent_coef):
 	if contact_distance == -1000: poe = oe_AB*np.sqrt((cov1*cov2)/distance_dependent_coef[contact_distance]['mean_coverage_multiple'])
 	else: poe = oe_AB*(cov1+cov2)/(2*distance_independent_coef['mean_coverage_sum'])
-	pc = poe*distance_dependent_coef[contact_distance]['mean_contact']
+	pc = poe*distance_dependent_coef[contact_distance]['no_null_mean']
 	return pc,poe
 
 def default_pick_function(pick_func_name):
@@ -162,10 +167,10 @@ def default_predict_function(pred_null_model_name):
 	elif pred_null_model_name == 'cov_mult_f1': pred_null_model_func = _predict_model_cov_mult_f1
 	elif pred_null_model_name == 'cov_sq_f1': pred_null_model_func = _predict_model_cov_sq_f1
 	elif pred_null_model_name == 'cov_sum_f1': pred_null_model_func = _predict_model_cov_sum_f1
-	elif pred_null_model_name == 'cov_mixed_f': pred_null_model_func = _predict_model_mixed_f
-	elif pred_null_model_name == 'cov_mixsq_f': pred_null_model_func = _predict_model_mixsq_f
-	elif pred_null_model_name == 'cov_mixed_f1': pred_null_model_func = _predict_model_mixed_f1
-	elif pred_null_model_name == 'cov_mixsq_f1': pred_null_model_func = _predict_model_mixsq_f1
+	elif pred_null_model_name == 'cov_mixed_f': pred_null_model_func = _predict_model_cov_mixed_f
+	elif pred_null_model_name == 'cov_mixsq_f': pred_null_model_func = _predict_model_cov_mixsq_f
+	elif pred_null_model_name == 'cov_mixed_f1': pred_null_model_func = _predict_model_cov_mixed_f1
+	elif pred_null_model_name == 'cov_mixsq_f1': pred_null_model_func = _predict_model_cov_mixsq_f1
 	elif pred_null_model_name == 'pts_ab': pred_null_model_func = _predict_model_pts_ab
 	elif pred_null_model_name == 'pts': pred_null_model_func = _predict_model_pts
 	elif boolean(pred_null_model_name) == False: pred_null_model_func = False

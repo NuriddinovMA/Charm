@@ -63,7 +63,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		with open(F , 'rb') as f_in:
 			with gzip.open(F + '.gz', 'wb') as f_out: shutil.copyfileobj(f_in, f_out)
 	elif format == 'mcool':
-		F = '%s/short.%s.pre' % ( out_dir, sim_name )
+		F = '%s/%s.short.pre' % ( out_dir, sim_name )
 		O = '%s/%s.mcool' % ( out_dir, sim_name )
 		from charm_func import cooler_func as cf
 		cf.create_cool_from_contacts( F, O, c2s, resolution, hic_resolutions )

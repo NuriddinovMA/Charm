@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser(description='Parameters for generation of rearrangement maps')
 	parser.add_argument( '-i', dest='ini',metavar='ini-file', help='path to ini-file')
-	parser.add_argument('-S', dest='stage', metavar='Stage',default='pre+',help='must be one of "pre+", "SVs+", "sim+", "lift+",  "wt", "hic"')
+	parser.add_argument('-S', dest='stage', metavar='Stage',default='no',help='must be one of "no", "pre+", "SVs+", "sim+", "lift+",  "wt", "hic"')
 	parser.add_argument('-g','--global', dest='glo', metavar='global', nargs='?',default=False ,help='must be parameter:value pairs from global section "parameter2:value2"')
 	parser.add_argument('-p','--pre', dest='pre', metavar='preprocessing', nargs='?',default=False,help='must be parameter:value pairs from preprocessing section "parameter2:value2"')
 	parser.add_argument('-v','--svs', dest='svs', metavar='SVs', nargs='?',default=False, help='must be parameter:value pairs from SVs section "parameter2:value2"')
@@ -37,7 +37,8 @@ if __name__ == "__main__":
 			commandLineConfig['global'][key] = value
 			config['global'][key] = value
 
-	if args.stage == 'pre': config['global']['skip_stages'] = "svs,sim,lift,wt,hic"
+	if args.stage == 'no': pass
+	elif args.stage == 'pre': config['global']['skip_stages'] = "svs,sim,lift,wt,hic"
 	elif args.stage == 'pre+': config['global']['skip_stages'] = ""
 	elif args.stage == 'SVs': config['global']['skip_stages'] = "pre,sim,lift,wt"
 	elif args.stage == 'SVs+': config['global']['skip_stages'] = "pre"
@@ -51,7 +52,8 @@ if __name__ == "__main__":
 	elif args.stage == 'hic': config['global']['skip_stages'] = "pre,svs,sim,lift,wt"
 	else: 
 		raise NameError(args.stage,'''is the incorrect stage id!
-	Use one from: pre pre+ fast SVs SVs+ sim sim+ lift lift+ wt wt+ hic''')
+	Use one from: pre pre+ fast SVs SVs+ sim sim+ lift lift+ wt wt+ hic
+	Use no for ignore''')
 
 	try: os.remove(config['global']['log_file'])
 	except OSError: pass
@@ -245,7 +247,7 @@ if __name__ == "__main__":
 		gf.printlog('Stage "SVs" - SV descriptions preparing...', log_file)
 		Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, rname, stand_alone,log_file)
 		
-		if args.stage in ['pre+','SVs+','fast']:
+		if args.stage in ['pre+','SVs+','fast','no']:
 			chosen_chroms,add_pairs,map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV = Map_data
 			try: config['simulation']['pointviews']
 			except KeyError: config['simulation']['pointviews'] = pointviews
@@ -620,7 +622,7 @@ if __name__ == "__main__":
 		contactStatistic = sim.read_Contact_Statistics(
 			coverage_file, distance_file,
 			coverage_low, distance_low,
-			coverage_pab, 0,
+			coverage_pab, 0, 0,
 			l2i_from, work_dir, log_file
 			)
 		

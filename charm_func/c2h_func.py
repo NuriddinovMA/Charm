@@ -69,7 +69,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 		else: Keys = sorted(H,key=lambda k:(k[0],k[2],k[1],k[3]))
 		
 		if format in ['short','short.gz','mcool']:
-			fname='%s/%s/short.%s.%s.%s.pre' % (out_path,out_name,out_name,name[0],name[1])
+			fname='%s/%s/%s.%s.%s.short.pre' % (out_path,out_name,out_name,name[0],name[1])
 			with open(fname,'w') as f:
 				for key in Keys: f.write('%s\t%i\t%s\t%i\t%.8f\n' % (key[0],key[1],key[2],key[3],H[key]))
 		else:

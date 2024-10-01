@@ -1,3 +1,0 @@
-#<reference_id>	<simulation_id>	<chromosome>	<block_start>	<block_end>	<indicator>	<new_chromosome>	<copy_number>
-3-10	unbal	3	0	48230000	!>	H	1
-3-10	unbal	10	0	87850000	>!	H	-1

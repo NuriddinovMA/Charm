@@ -322,18 +322,21 @@ test	several	chr2	7000000	+		>!	der2	1
 ```
 
 ## Advanced description
-charm [-i ini_file] [-S stage] 
+python charm.py [-i ini_file] [-S stage] [-g global] [-p preprocessing] [-v svs] [-s simulation] [-l liftover] [-w wild_type] [-o hic]
 * [ini_file]: the path to ini-file containing paths to the working directory, hic-file, unique SV id(s), model parameters, and others. See the full ini-file description in the [BIG_EXAMPLE.ini](BIG_EXAMPLE.ini). See the common description of ini-file in the python module [confiparser](https://docs.python.org/3/library/configparser.html), class configparser.ExtendedInterpolation.
-* [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" (default "pre+")
+* [stage]: optional, must be one of "pre+","SVs+","sim+","lift+","wt+","hic" and "fast" (default "pre+")
+  - Use "pre" to create the database with contact statistics only
   - "pre+" is the default parameter, from hic-file with the wild-type data to hic-file with simulated SVs
+  - Use "SVs" to create the rearrangement description files only; in this mode, Charm can process the file containing any number of independent SVs 
   - Use "SVs+" when the database with contact statistics exists, but the file with rearrangement description has not yet been created 
+  - Use "sim" to only simulate contacts within *mutated* genome based on the provided database
   - Use "sim+" when the rearrangement description and database are done, but the contacts of the mutant genome have not yet been simulated
+  - Use "lift" to liftover contacts from the provided defined mutant genome
   - Use "lift+" when the contacts of the mutant genome are simulated ("in_mut.[simulation_id]" files created), but these contacts are not yet lifted on the reference genome
+  - Use "wt" to simulate wild-type replicas
   - Use "wt+" when the simulation is fully processed ("in_ref.[simulation_id]" created), but wild-type replicas are not
   - Use "hic" when all previous stages are successfully completed, but .hic-file is not created
-* advanced settings for [stage]:
-  - Use "pre" to create the database with contact statistics only
-  - Use "SVs" to create the rearrangement description files only; in this mode, Charm can process the file containing any number of independent SVs 
-  - Use "sim" to only simulate contacts within *mutated* genome based on the provided database
-  - Use "lift" to liftover contacts from the provided defined mutant genome
-  - Use "wt" to simulate wild-type replicas
+  - Use "fast" when contact statistis and wildtype database exist; helpfull when some rearrangments are simulated from a same reference
+* [global],[preprocessing],[svs],[liftover],[wild_type],[hic]: optional, use to give the model parametrs from the command line, without changing of ini-file; the name of parameter see in correspondent section of ini-file;
+  the syntax: "parameter_name1=value1 parameter_name2=value2 ..." 
+

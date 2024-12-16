@@ -46,6 +46,8 @@ if __name__ == "__main__":
 	elif args.stage == 'fast': config['global']['skip_stages'] = "pre,wt"
 	elif args.stage == 'sim': config['global']['skip_stages'] = "pre,svs,lift,wt,hic"
 	elif args.stage == 'sim+': config['global']['skip_stages'] = "pre,svs"
+	elif args.stage == 'CS': config['global']['skip_stages'] = "lift,wt"
+	elif args.stage == 'fast_CS': config['global']['skip_stages'] = "pre,svs,lift,wt"
 	elif args.stage == 'lift': config['global']['skip_stages'] = "pre,svs,sim,wt,hic"
 	elif args.stage == 'lift+': config['global']['skip_stages'] = "pre,svs,sim"
 	elif args.stage == 'wt': config['global']['skip_stages'] = "pre,svs,sim,lift,hic"

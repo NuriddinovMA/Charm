@@ -22,9 +22,9 @@ def maf2mark(maf_path, resolution, rname, qname, chromSizes_ref, chromSizes_qu, 
 		mafs = [f'{maf_path}/{maf}' for maf in maf_list]
 	except OSError: mafs = [maf_path]
 	
+	Maf_seq,Syn_blocks = [],[]
 	for maf in mafs:
 		with open(maf,'r') as m: lines = m.readlines()
-		Maf_seq,Syn_blocks = [],[]
 		for i in range(len(lines)):
 			if lines[i][0] == 'a':
 				c1,p11,ln = lines[i+1].split()[1:4]
@@ -53,7 +53,7 @@ def maf2mark(maf_path, resolution, rname, qname, chromSizes_ref, chromSizes_qu, 
 		else: gap2 = ps21 - p22
 		if gap1 < 100: gap1 = 100
 		if gap2 < 100: gap2 = 100
-		if c1 == cs1 and c2 == cs2 and dir == dirs and gap1 < 100000 and gap2 < 100000 and gap1/gap2 > 0.5:
+		if c1 == cs1 and c2 == cs2 and dir == dirs and gap1 < 1000000 and gap2 < 1000000 and gap1/gap2 > 0.5:
 			if dir > 0: Syn_blocks[-1] = cs1,ps11,p12,cs2,ps21,p22,dirs
 			else: Syn_blocks[-1] = cs1,ps11,p12,cs2,p21,ps22,dirs
 		else: Syn_blocks.append((c1,p11,p12,c2,p21,p22,dir))

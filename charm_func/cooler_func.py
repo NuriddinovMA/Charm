@@ -13,6 +13,7 @@ def create_contacts_from_cool(path_to_hic_map, path_to_contact_dump, resolution,
 	if normalization != True and normalization != False:
 		print("Please use True or False for 'normalization' field")
 	cool_ref = cooler.Cooler(path_to_hic_map+"::resolutions/"+str(resolution))
+
 	contacts = cool_ref.matrix(balance=normalization, as_pixels=True).fetch(chrm1, chrm2)
 	bins_chrm1 = cool_ref.bins().fetch(chrm1)
 	bins_chrm2 = cool_ref.bins().fetch(chrm2)
@@ -24,6 +25,8 @@ def create_contacts_from_cool(path_to_hic_map, path_to_contact_dump, resolution,
 		contacts[["bin1", "bin2", "count"]].to_csv(path_to_contact_dump, index=False, header = False, sep="\t")
 	elif normalization == True:
 		contacts[["bin1", "bin2", "balanced"]].to_csv(path_to_contact_dump, index=False, header = False, sep="\t")
+	
+	
 	logging.getLogger(__name__).info(
 			f"succesfully create {path_to_contact_dump}")
 
@@ -77,10 +80,10 @@ def create_cool_from_contacts(path_to_contact_file, path_to_out_mcool, chrom_siz
 	chrom_pair['chrm1'],chrom_pair['bin1'],chrom_pair['chrm2'],chrom_pair['bin2'] = chrom_pair['chrm2'],chrom_pair['bin2'],chrom_pair['chrm1'],chrom_pair['bin1']
 	contacts_data.update(chrom_pair)
 	#print(np.unique(contacts_data['chrm1']))
-	#contacts_data.to_csv(path_to_out_cool+'chrom_pair3.csv', index=True,sep='\t')
+	contacts_data.to_csv(path_to_out_cool+'chrom_pair3.csv', index=True,sep='\t')
 	#contacts_data[contacts_data['bin1'] > contacts_data['bin2']].to_csv(path_to_out_cool+'chrom_pair4.csv', index=False,sep='\t')
 	pixels = pd.DataFrame(data = {"bin1_id" : contacts_data['bin1'], "bin2_id" : contacts_data['bin2'], "count" : contacts_data['counts']})
-	#pixels.to_csv('pixels.csv', index=False,sep='\t')
+	pixels.to_csv(path_to_out_cool+'pixels.csv', index=True,sep='\t')
 	cooler.create_cooler(path_to_out_cool, bins, pixels)
 	## cooler zoomify
 	cons_command1 = f"cooler zoomify {path_to_out_cool} -r {hic_resolutions}N -o {path_to_out_mcool}"

@@ -8,7 +8,7 @@ except ModuleNotFoundError:
 	print('Lethal Error! NumPy not found!')
 	exit()
 	
-def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname, stand_alone,log_file):
+def generate_SV_map(rearrangement_list, rname, resolution, chrom_sizes, work_dir, stand_alone, log_file):
 	
 	outdir = work_dir + '/rear'
 	try: os.makedirs(outdir)
@@ -144,6 +144,16 @@ def generate_SV_map(chrom_sizes, resolution, rearrangement_list, work_dir, rname
 					if c1[-1] == '|': c1 = c1[:-1]
 					if c2[-1] == '|': c2 = c2[:-1]
 					at = '%s,%s;%s' % (c1,c2,at)
-				if stand_alone == False: return (cf[:-1],ct[:-1]),(af[:-1],at[:-1]),map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV
+				if stand_alone == False: return (cf[:-1],ct[:-1]),(af[:-1],at[:-1]),map_SV_from_ref, pointviews, map_SV_to_ref, chrom_sizes_SV
 
+def generate_SV_map_from_maf(maf_files, rname,chrom_sizes_ref, qname, chrom_sizes_qu, resolution, work_dir, stand_alone, log_file):
+	
+	outdir = work_dir + '/rear'
+	try: os.makedirs(outdir)
+	except OSError: pass
+	resolution = int(resolution)
 
+	ChrmSzs_ref = gf.ChromSizes(chrom_sizes_ref,1)
+	ChrmSzs_qu = gf.ChromSizes(chrom_sizes_qu,1)
+	map_SV_from_ref, chrm_from, chrm_to = svf.maf2mark(maf_files, resolution, rname, qname, ChrmSzs_ref, ChrmSzs_qu, outdir)
+	if stand_alone == False: return (chrm_from,chrm_to),('',''), map_SV_from_ref, pointviews, 'NO', chrom_sizes_qu

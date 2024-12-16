@@ -27,7 +27,8 @@ if __name__ == "__main__":
 	config = ConfigParser(interpolation=ExtendedInterpolation())
 	config.read(args.ini)
 	commandLineConfig = {}
-
+	
+	print(sorted(config.keys()))
 	if args.glo:
 		print( args.glo )
 		commandLineConfig['global'] = {}
@@ -40,14 +41,14 @@ if __name__ == "__main__":
 	if args.stage == 'no': pass
 	elif args.stage == 'pre': config['global']['skip_stages'] = "svs,sim,lift,wt,hic"
 	elif args.stage == 'pre+': config['global']['skip_stages'] = ""
-	elif args.stage == 'SVs': config['global']['skip_stages'] = "pre,sim,lift,wt"
+	elif args.stage == 'SVs': config['global']['skip_stages'] = "pre,sim,lift,wt,hic"
 	elif args.stage == 'SVs+': config['global']['skip_stages'] = "pre"
 	elif args.stage == 'fast': config['global']['skip_stages'] = "pre,wt"
 	elif args.stage == 'sim': config['global']['skip_stages'] = "pre,svs,lift,wt,hic"
 	elif args.stage == 'sim+': config['global']['skip_stages'] = "pre,svs"
 	elif args.stage == 'lift': config['global']['skip_stages'] = "pre,svs,sim,wt,hic"
 	elif args.stage == 'lift+': config['global']['skip_stages'] = "pre,svs,sim"
-	elif args.stage == 'wt': config['global']['skip_stages'] = "pre,svs,sim,lift,wt"
+	elif args.stage == 'wt': config['global']['skip_stages'] = "pre,svs,sim,lift,hic"
 	elif args.stage == 'wt+': config['global']['skip_stages'] = "pre,svs,sim,lift"
 	elif args.stage == 'hic': config['global']['skip_stages'] = "pre,svs,sim,lift,wt"
 	else: 
@@ -85,7 +86,7 @@ if __name__ == "__main__":
 	try:
 		global_count = gf.boolean(config['global']['contact_count'])
 		if heterozygous: global_count = str(int(global_count)//2)
-	except KeyError: pass
+	except KeyError: global_count = "NO"
 	
 	try: skip_stages = set(config['global']['skip_stages'].split(','))
 	except KeyError: pass
@@ -235,17 +236,31 @@ if __name__ == "__main__":
 	except KeyError: resolution = config['global']['resolution']
 	try: work_dir = config['SVs']['work_dir']
 	except KeyError: work_dir = config['global']['work_dir']
-	path_to_svs_list = config['SVs']['path_to_svs_list']
 	try: log_file = config['SVs']['log_file']
 	except KeyError: log_file = config['global']['log_file']
-	try: rname = config['SVs']['simulation_id']
-	except KeyError: rname = False
+	
+	try: cross_species = gf.boolean(config['SVs']['cross_species'])
+	except KeyError: cross_species = False
+	
+	if cross_species:
+		path_to_maf = config['SVs']['path_to_maf_files']
+		rname = config['SVs']['reference_id']
+		try: chrom_sizes_ref = config['SVs']['chrom_sizes_reference']
+		except KeyError: chrom_sizes_ref = chrom_sizes
+		qname = config['SVs']['query_id']
+		chrom_sizes_qu = config['SVs']['chrom_sizes_query']
+	else: 
+		path_to_svs_list = config['SVs']['path_to_svs_list']
+		sname = config['SVs']['simulation_id']
+
 
 	if 'svs' in skip_stages: gf.printlog('Stage "SVs" skipped', log_file)
 	else:
 		from charm_func import sv_maps as sm
 		gf.printlog('Stage "SVs" - SV descriptions preparing...', log_file)
-		Map_data = sm.generate_SV_map(chrom_sizes, resolution, path_to_svs_list, work_dir, rname, stand_alone,log_file)
+		
+		if cross_species == False: Map_data = sm.generate_SV_map(path_to_svs_list, sname, resolution, chrom_sizes, work_dir, stand_alone,log_file)
+		else: Map_data = sm.generate_SV_map_from_maf(path_to_maf, rname, chrom_sizes_ref, qname, chrom_sizes_qu,  resolution, work_dir, stand_alone, log_file)
 		
 		if args.stage in ['pre+','SVs+','fast','no']:
 			chosen_chroms,add_pairs,map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV = Map_data
@@ -417,7 +432,7 @@ if __name__ == "__main__":
 
 		if add_pairs: add_pairs = [c.split(',') for c in add_pairs.split(';')]
 		map_file = config['simulation']['map_file']
-		pointviews = config['simulation']['pointviews']
+		pointviews = gf.boolean(config['simulation']['pointviews'])
 		
 		shutil.rmtree( sim_dir, ignore_errors=True )
 		os.makedirs( sim_dir )
@@ -767,7 +782,7 @@ if __name__ == "__main__":
 		except KeyError: resolution_pab = config['global']['resolution_pab']
 		try: chrom_sizes = config['wild_type']['chrom_sizes_from']
 		except KeyError: chrom_sizes = config['global']['chrom_sizes']
-		try: chosen_chroms = config['wild_type']['chosen_chroms'].strip()
+		try: chosen_chroms = gf.boolean(config['wild_type']['chosen_chroms'].strip())
 		except KeyError: chosen_chroms = config['liftover']['chosen_chroms_to'].strip()
 		try: model = config['wild_type']['model']
 		except KeyError: model = config['simulation']['model']
@@ -810,7 +825,7 @@ if __name__ == "__main__":
 			currentStep,stepCount,currentReplica,replicaCount = 0,0,0,len(replica_ids.split(','))
 			for replica_id in replica_ids.split(','):
 				chroms,pair_list = [],[]
-				if chosen_chroms == 'all':
+				if chosen_chroms == 'all' or chosen_chroms == False:
 					lnc = len(c2s_low.keys())
 					stepCount += lnc*(lnc+1)/2
 				else: stepCount += len(chosen_chroms.split(';'))
@@ -820,7 +835,7 @@ if __name__ == "__main__":
 				try: os.makedirs( wt_name )
 				except FileExistsError: pass
 				chroms,pair_list = [],[]
-				if chosen_chroms == 'all':
+				if chosen_chroms == 'all' or chosen_chroms == False:
 					chroms = sorted(c2s_low.keys())
 					for ci in range(len(chroms)):
 						i = chroms[ci]
@@ -922,7 +937,7 @@ if __name__ == "__main__":
 			try: wt2_contacts = config['hic']['wt2_contacts']
 			except KeyError: wt2_contacts = False
 		else: wt2_contacts = False
-		try: chosen_chroms = config['hic']['chosen_chroms']
+		try: chosen_chroms = gf.boolean(config['hic']['chosen_chroms'])
 		except KeyError: chosen_chroms = config['simulation']['chosen_chroms_from']
 		try: chrom_sizes = config['hic']['chrom_sizes']
 		except KeyError: chrom_sizes = config['global']['chrom_sizes']

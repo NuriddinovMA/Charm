@@ -29,7 +29,13 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	l2i = gf.ChromIndexing(chrom_sizes)
 	c2s = gf.ChromSizes(chrom_sizes,1)
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
-	chosen_chroms = chosen_chroms.split(',')
+	chrom_pairs = []
+	if chosen_chroms:
+		chosen_chroms = chosen_chroms.split(';')
+		for chroms in chosen_chroms:
+			chrom_list = chroms.split(',')
+			for i in chrom_list:
+				for j in chrom_list: chrom_pairs.append((i,j))
 	svs_contacts = gf.boolean(svs_contacts)
 	wt1_contacts = gf.boolean(wt1_contacts)
 	wt2_contacts = gf.boolean(wt2_contacts)
@@ -38,15 +44,18 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	gf.printlog( '\t\tsumming muntant and wild type contacts, %.2f' % (elp), log_file)
 
 	c2h.SummingPre( svs_contacts, wt1_contacts, wt2_contacts, resolution, sim_name, out_dir, 
-		order=l2i, format=format
+		order=l2i, chosen_chrom_pairs=chrom_pairs, format=format
 		)
 
 	elp = timeit.default_timer() - start_time
 	gf.printlog( '\tpre writing %.2f' % elp, log_file)
 	
-	if cleaning: shutil.rmtree(svs_contacts, ignore_errors=True)
-	shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
-
+	if cleaning: 
+		try: shutil.rmtree(svs_contacts, ignore_errors=True)
+		except TypeError: pass
+		try: shutil.rmtree('%s/%s' % (out_dir,sim_name), ignore_errors=True)
+		except TypeError: pass
+		
 	if format == 'juicer':
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 		O = '%s/%s.hic' % ( out_dir, sim_name )

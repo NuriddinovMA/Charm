@@ -434,7 +434,8 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	except TypeError: allCon,meanCov,meanMCov = -1,-1,-1
 	try: contact_count = kwargs['contact_count']
 	except KeyError: contact_count = allCon
-	if contact_count == 0: contact_count = allCon
+	if contact_count: pass 
+	else: contact_count = allCon
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\t\tmodel %s' % model, logname)
 	try: gf.printlog('\t\t\trandomize %s' % random_func.__name__, logname)

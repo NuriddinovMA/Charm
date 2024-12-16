@@ -178,7 +178,7 @@ def default_predict_function(pred_null_model_name):
 	return pred_null_model_func
 
 def define_pick_from_predict(pred_null_model_name):
-	if pred_null_model_name == 'cov_mult_f': 'multiply'
+	if pred_null_model_name == 'cov_mult_f': pick_func_name = 'multiply'
 	elif pred_null_model_name == 'cov_sq_f': pick_func_name = 'square_root'
 	elif pred_null_model_name == 'cov_sum_f': pick_func_name = 'sum'
 	elif pred_null_model_name == 'cov_mult_f1': pick_func_name = 'multiply'

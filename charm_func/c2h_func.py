@@ -5,6 +5,8 @@ except ModuleNotFoundError:
 	exit()
 
 def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
+	try: chosen_chrom_pairs = kwargs['chosen_chrom_pairs']
+	except KeyError: chosen_chrom_pairs = False
 	try: order = kwargs['order']
 	except KeyError: order = False
 	try: format = kwargs['format']
@@ -17,21 +19,25 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 		for file in files:
 			#print(file)
 			parse = file.split('.')
-			F[parse[-3],parse[-2]] = [dir_mut+'/'+file,'',1]
+			if chosen_chrom_pairs == False or (parse[-3],parse[-2]) in chosen_chrom_pairs:
+				F[parse[-3],parse[-2]] = [dir_mut+'/'+file,'',1]
 	if dir_wt1:
 		files = os.listdir(dir_wt1)
 		for file in files:
 			#print(file)
 			parse = file.split('.')
 			if (parse[-3],parse[-2]) in F: pass
-			else: F[parse[-3],parse[-2]] = [dir_wt1+'/'+file,'',resolution]
+			elif chosen_chrom_pairs == False or (parse[-3],parse[-2]) in chosen_chrom_pairs:
+				F[parse[-3],parse[-2]] = [dir_wt1+'/'+file,'',resolution]
+			else: pass
 	if dir_wt2:
 		files = os.listdir(dir_wt2)
 		for file in files:
 			#print(file)
 			parse = file.split('.')
-			try: F[parse[-3],parse[-2]][1] = dir_wt2+'/'+file
-			except KeyError: pass
+			if chosen_chrom_pairs == False or (parse[-3],parse[-2]) in chosen_chrom_pairs:
+				try: F[parse[-3],parse[-2]][1] = dir_wt2+'/'+file
+				except KeyError: pass
 	try: os.makedirs('%s/%s' % (out_path,out_name))
 	except FileExistsError: pass
 	for name in sorted(F):

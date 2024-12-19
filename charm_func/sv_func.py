@@ -123,8 +123,8 @@ def maf2mark(maf_path, resolution, rname, qname, chromSizes_ref, chromSizes_qu, 
 	
 	
 	cf, ct = '', ''
-	for chr in chromSizes_ref: cf += f'{chr} '
-	for chr in chromSizes_qu: ct += f'{chr} '
+	for chr in chromSizes_ref: cf = f'{chr},{chr};{cf}'
+	for chr in chromSizes_qu: ct = f'{chr},{chr};{cf}'
 	
 	return map_name,cf,ct
 

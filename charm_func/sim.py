@@ -124,10 +124,10 @@ def sv_Simulation(
 	add_pairs, Untouched, UntouchedLow,
 	sim_name, work_dir, log_file, path_to_user_func
 	):
-	contact_count = int(contact_count)
+	contact_count =  gf.boolean(contact_count)
 	log_file = gf.boolean(log_file)
 	contactHash, contactLow, contactPAB, covHash, totalHash, psList, covLow, totalLow, psListLow, covPAB = contactData
-	resolution, resolution_low = int(resolution),int(resolution_low)
+	resolution, resolution_low = int(resolution), gf.boolean(resolution_low)
 	if resolution_pab:
 		resolution_pab = [int(pab) for pab in resolution_pab.split(',')]
 		resolution_pab.sort()

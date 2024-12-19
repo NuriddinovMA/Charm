@@ -373,14 +373,14 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 		cov_low = False
 		distance_dependence_low = False
 		LowObjCoorMP = False
-	try: low_res = kwargs['resolution_low']
-	except KeyError: low_res = 1
+	try: low_res = int(kwargs['resolution_low'])
+	except KeyError: low_res = False
 	try: pab_cov = kwargs['coverage_pab']
 	except KeyError: pab_cov = False
 	try: pab_cont = kwargs['contact_pab']
 	except KeyError: pab_cont,pab_cov = False,False
 	try: pab_res = kwargs['resolution_pab']
-	except KeyError: pab_res = 1
+	except KeyError: pab_res = False
 	try: model = kwargs['model']
 	except KeyError: model = 'easy'
 	try: random_func = kwargs['random_func']
@@ -434,7 +434,7 @@ def iLiftOverContact(ContactsHash, covHash, ObjCoorMP, resolution, ChrIdxs, out_
 	except TypeError: allCon,meanCov,meanMCov = -1,-1,-1
 	try: contact_count = kwargs['contact_count']
 	except KeyError: contact_count = allCon
-	if contact_count: pass 
+	if contact_count: contact_count = int(contact_count) 
 	else: contact_count = allCon
 	elp = timeit.default_timer() - start_time
 	gf.printlog('\t\t\tmodel %s' % model, logname)

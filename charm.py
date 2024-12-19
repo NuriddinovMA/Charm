@@ -46,8 +46,8 @@ if __name__ == "__main__":
 	elif args.stage == 'fast': config['global']['skip_stages'] = "pre,wt"
 	elif args.stage == 'sim': config['global']['skip_stages'] = "pre,svs,lift,wt,hic"
 	elif args.stage == 'sim+': config['global']['skip_stages'] = "pre,svs"
-	elif args.stage == 'CS': config['global']['skip_stages'] = "lift,wt"
-	elif args.stage == 'fast_CS': config['global']['skip_stages'] = "pre,svs,lift,wt"
+	elif args.stage == 'evo': config['global']['skip_stages'] = "lift,wt"
+	elif args.stage == 'fast_evo': config['global']['skip_stages'] = "pre,lift,wt"
 	elif args.stage == 'lift': config['global']['skip_stages'] = "pre,svs,sim,wt,hic"
 	elif args.stage == 'lift+': config['global']['skip_stages'] = "pre,svs,sim"
 	elif args.stage == 'wt': config['global']['skip_stages'] = "pre,svs,sim,lift,hic"
@@ -264,7 +264,7 @@ if __name__ == "__main__":
 		if cross_species == False: Map_data = sm.generate_SV_map(path_to_svs_list, sname, resolution, chrom_sizes, work_dir, stand_alone,log_file)
 		else: Map_data = sm.generate_SV_map_from_maf(path_to_maf, rname, chrom_sizes_ref, qname, chrom_sizes_qu,  resolution, work_dir, stand_alone, log_file)
 		
-		if args.stage in ['pre+','SVs+','fast','no']:
+		if args.stage in ['pre+','SVs+','fast','no','evo+','fast_evo']:
 			chosen_chroms,add_pairs,map_SV_from_ref,pointviews,map_SV_to_ref,chrom_sizes_SV = Map_data
 			try: config['simulation']['pointviews']
 			except KeyError: config['simulation']['pointviews'] = pointviews
@@ -375,7 +375,7 @@ if __name__ == "__main__":
 		try: path_to_user_func = gf.boolean(config['global']['path_to_user_functions'])
 		except KeyError: path_to_user_func == False
 	
-	if 'sim' in skip_stages and 'lift' in skip_stages: pass
+	if 'sim' in skip_stages and 'lift' in skip_stages : pass
 	else:
 		try: chrom_sizes_from = config['simulation']['chrom_sizes_from']
 		except KeyError: 

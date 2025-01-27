@@ -37,6 +37,10 @@ python3 charm.py -i testdataset/EXAMPLE-mcool.ini
 ```
 After run, Charm creates "out" folder within "testdataset" directory containing the Hi-C file with simulated rearrangement named "example.cnv-X.hic" or "example.cnv-X.mcool"
 
+# Pregenerated dataset
+To test SV-calling software, we provide a dataset included [the 4400 simulated rearrangements](simulations). Due to files are too big, we placed on GitHub only links to external depository. 
+All SVs were simulated as heterozygous variant with ~30.000.000 depth of sequencing. Every simulation are saved as juicertools compitable pre-files. 
+
 # Quick Start
 
 1) Create your file with the description of rearrangements (see [The SVs description](#the-svs-description))

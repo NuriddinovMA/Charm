@@ -91,7 +91,7 @@ if __name__ == "__main__":
 	except KeyError: global_count = "NO"
 	
 	try: skip_stages = set(config['global']['skip_stages'].split(','))
-	except KeyError: pass
+	except KeyError: skip_stages = set([])
 
 	try: cleaning = gf.boolean(config['global']['cleaning'])
 	except KeyError: 

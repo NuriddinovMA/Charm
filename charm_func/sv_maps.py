@@ -115,6 +115,8 @@ def generate_SV_map(rearrangement_list, rname, resolution, chrom_sizes, work_dir
 					map_SV_to_ref ='%s/%s.%s.%i.mark' % (outdir, mut, cnt, resolution)
 					chrom_sizes_SV = '%s/%s.%s.chr.sizes' % (outdir, mut,cnt)
 				
+				add_from -= chrm_from
+				add_to -= chrm_to
 				chrm_from,add_from,chrm_to,add_to = list(chrm_from),list(add_from),list(chrm_to),list(add_to)
 				chrm_from.sort(),add_from.sort(),chrm_to.sort(),add_to.sort()
 				gf.printlog('\t\tchrm_from %s' % chrm_from,log_file)

@@ -128,6 +128,7 @@ def sv_Simulation(
 	log_file = gf.boolean(log_file)
 	contactHash, contactLow, contactPAB, covHash, totalHash, psList, covLow, totalLow, psListLow, covPAB = contactData
 	resolution, resolution_low = int(resolution), gf.boolean(resolution_low)
+	if resolution_low: resolution_low = int(resolution_low)
 	if resolution_pab:
 		resolution_pab = [int(pab) for pab in resolution_pab.split(',')]
 		resolution_pab.sort()
@@ -135,7 +136,7 @@ def sv_Simulation(
 	out_name  = '%s/mdl/%s/%s' % (work_dir,sim_name,sim_name)
 	
 	pviews = []
-	if pointviews and MarkPointsLow:
+	if pointviews and MarkPointsLow and resolution_low:
 		pointviews = pointviews.strip().split('\n')
 		for pointview in pointviews:
 			pv = pointview.strip().split()

@@ -30,12 +30,19 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	c2s = gf.ChromSizes(chrom_sizes,1)
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
 	chrom_pairs = []
+	
 	if chosen_chroms:
-		chosen_chroms = chosen_chroms.split(';')
-		for chroms in chosen_chroms:
-			chrom_list = chroms.split(',')
-			for i in chrom_list:
-				for j in chrom_list: chrom_pairs.append((i,j))
+		if chosen_chroms == 'all': 
+			chosen_chroms = sorted(c2s.keys())
+			for i in chosen_chroms:
+				for j in chosen_chroms: chrom_pairs.append((i,j))
+		else: 
+			chosen_chroms = chosen_chroms.split(';')
+			for chroms in chosen_chroms:
+				chrom_list = chroms.split(',')
+				for i in chrom_list:
+					for j in chrom_list: chrom_pairs.append((i,j))
+	
 	svs_contacts = gf.boolean(svs_contacts)
 	wt1_contacts = gf.boolean(wt1_contacts)
 	wt2_contacts = gf.boolean(wt2_contacts)
@@ -66,7 +73,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 		else: resolution_list= ''
 		gf.printlog('\t\texecuted command: %s %s %s ' %( command, params, resolution_list),log_file)
 		control = os.system( command + params + resolution_list)
-		if control != 0: raise OSError('Java or juicertools absent!')
+		if control != 0: raise OSError('Java or juicertools or pre-file absent!')
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
 		with open(F , 'rb') as f_in:

@@ -14,6 +14,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 
 	H,F = {},{}
 	names = set([])
+	# print(chosen_chrom_pairs)
 	if dir_mut:
 		files = os.listdir(dir_mut)
 		for file in files:
@@ -40,7 +41,9 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 				except KeyError: pass
 	try: os.makedirs('%s/%s' % (out_path,out_name))
 	except FileExistsError: pass
+	#print(F)
 	for name in sorted(F):
+		# print(name)
 		H = {}
 		with open(F[name][0], 'r') as f: lines = f.readlines()
 		for i in range(len(lines)-1,-1,-1):
@@ -91,6 +94,7 @@ def SummingPre(dir_mut,dir_wt1,dir_wt2,resolution,out_name,out_path,**kwargs):
 	else: fname = '%s/%s.pre' % (out_path,out_name)
 	with open(fname,'w') as f:
 		for file in files:
+			print(file)
 			with open('%s/%s/%s' % (out_path,out_name,file) ) as g:
 				lines = g.read()
 				f.write(lines)

@@ -529,7 +529,11 @@ if __name__ == "__main__":
 		elp = timeit.default_timer() - start_time
 		gf.printlog('... end of stage "sim" %.2f' % elp, log_file)
 
-	if 'lift' in skip_stages: pass
+	if 'lift' in skip_stages:
+		try: config['hic']['svs_contacts']
+		except KeyError: config['hic']['svs_contacts'] = sim_dir
+		try: config['hic']['chrom_sizes']
+		except KeyError: config['hic']['chrom_sizes'] = chrom_sizes_to
 	else:
 		config['liftover']['contact_dir'] = sim_dir
 		config['liftover']['distance_file'] = distance_file
@@ -721,8 +725,6 @@ if __name__ == "__main__":
 	else:
 		try: config['hic']['svs_contacts']
 		except KeyError: config['hic']['svs_contacts'] = sim_dir
-		try: config['hic']['chosen_chroms']
-		except KeyError: config['hic']['chosen_chroms'] = chosen_chroms_to
 		try: config['hic']['resolution'] 
 		except KeyError: config['hic']['resolution'] = resolution
 	
@@ -940,10 +942,12 @@ if __name__ == "__main__":
 			except KeyError: wt2_contacts = False
 		else: wt2_contacts = False
 		try: chosen_chroms = gf.boolean(config['hic']['chosen_chroms'])
-		except KeyError: chosen_chroms = config['simulation']['chosen_chroms_from']
+		except KeyError: chosen_chroms = False#config['simulation']['chosen_chroms_from']
 		try: chrom_sizes = config['hic']['chrom_sizes']
 		except KeyError: chrom_sizes = config['global']['chrom_sizes']
-	
+		
+		print(chosen_chroms)
+		
 		gf.printlog('Stage "hic" - hic map generation - start', log_file)
 		gf.printlog('\tStep 1: the generation of pre/hic files',log_file)
 		c2h.hic_generate(svs_contacts, wt1_contacts, wt2_contacts,

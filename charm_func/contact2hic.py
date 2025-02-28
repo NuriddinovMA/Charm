@@ -31,18 +31,18 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
 	chrom_pairs = []
 	
-	if chosen_chroms:
-		if chosen_chroms == 'all': 
-			chosen_chroms = sorted(c2s.keys())
-			for i in chosen_chroms:
-				for j in chosen_chroms: chrom_pairs.append((i,j))
-		else: 
-			chosen_chroms = chosen_chroms.split(';')
-			for chroms in chosen_chroms:
-				chrom_list = chroms.split(',')
-				for i in chrom_list:
-					for j in chrom_list: chrom_pairs.append((i,j))
+	if chosen_chroms == 'all' or chosen_chroms == False: 
+		chosen_chroms = sorted(c2s.keys())
+		for i in chosen_chroms:
+			for j in chosen_chroms: chrom_pairs.append((i,j))
+	else: 
+		chosen_chroms = chosen_chroms.split(';')
+		for chroms in chosen_chroms:
+			chrom_list = chroms.split(',')
+			for i in chrom_list:
+				for j in chrom_list: chrom_pairs.append((i,j))
 	
+	print(chrom_pairs)
 	svs_contacts = gf.boolean(svs_contacts)
 	wt1_contacts = gf.boolean(wt1_contacts)
 	wt2_contacts = gf.boolean(wt2_contacts)

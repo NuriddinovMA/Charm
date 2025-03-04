@@ -182,10 +182,18 @@ python3 charm.py -i your-replicas.ini -S wt
      - "replica_ids" - use any TWO values from the ini-file created in the second step;
 3) run
 ```
-python3 charm.py -i your-simulation.ini -S SVs+
+python3 charm.py -i your-simulation.ini -S fast
 ```
 4) The result will be placed in the folder **[global:work_dir]/out** . The name of the resulting file will be **[hic:simulation_id].[hic:format]** .
 5) Repeat this step for every independent simulation.
+
+## Typical errors
+* The most typical error is a "juicertools dump error" raised during preprocessing step. If you face this, we recommend:
+	- Check the correspondense of chromosome names in the chromosome sizes file and the .hic-file. Attention, "chr1" and "1" are the different names.
+	- Check the path to the hic-file, juicertools .jar-file or java specificed in the .ini-file. 
+	- In some cases, command "java" (path to java) could be not default in you system; try specifice the "path_to_java_dir" parameter in the .ini-file . 
+* The Charm is sensitive to the names of parameters and values. Many python derived errors (like "OSError: file not found") could be caused by typos in .ini-file. Be carefull, if you use command-line options to specifize the parameters ([see below](#advanced-description)).
+* Some python derived errors (like "OSError: file not found") could be caused by running the Charm from not default stages (the value of -S is _not_ "pre"/"pre+", "wt"/"wt+" and "fast"). In this case, we recommend using [BIG_EXAMPLE.ini](BIG_EXAMPLE.ini) as the example for you custom .ini-file and specifize all parameters and values.  
 
 ## Customizing dependence between simulated and reference contacts.
 Charm simulates contacts based on properties of loci, defined based on reference dataset, and their genomic distance after rearrangement. There are default functions that compute simulated contact probability based on loci properties and genomic distance described in [preprint](https://doi.org/10.1101/2023.11.22.568374). User can provide their own functions to substitute default. This is a 2-step process, where at the first step user provides functions to compute relevant statistics based on reference data, and at the second step provides functions employing collected statistics to define simulated contact counts. These functions must be organized as python3 modules and are restricted in their input parameters and output data format ([see examples](testdataset/data/user_defined_func.py)).
@@ -343,10 +351,3 @@ python charm.py [-i ini_file] [-S stage] [-g global] [-p preprocessing] [-v svs]
   - Use "fast" when contact statistis and wildtype database exist; helpfull when some rearrangments are simulated from a same reference
 * [global],[preprocessing],[svs],[liftover],[wild_type],[hic]: optional, use to give the model parametrs from the command line, without changing of ini-file; the name of parameter see in correspondent section of ini-file;
   the syntax: "parameter_name1=value1 parameter_name2=value2 ..." 
-
-## Typical errors
-* The most typical error is a "juicertools dump error" raised during preprocessing step. If you face this, we recommend:
-	- Check the correspondense of chromosome names in the chromosome sizes file and the .hic-file: "chr1" and "1" are the different names.
-	- Check the path to the hic-file, juicertools .jar-file or java specificed in the .ini-file. 
-	- In some cases, command "java" (path to java) could be not default in you system; try specifice the "path_to_java_dir" parameter in the .ini-file . 
-* The Charm is sencitive to the names of parameters and values. Many python derived errors (like "OSError: file not found") could be caused by typos in .ini-file. Be carefull. if you use command-line options to specifize the paramters.

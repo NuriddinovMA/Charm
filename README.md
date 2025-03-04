@@ -26,6 +26,13 @@ If you use Charm in your work, please cite
   	- [Cooler](https://github.com/open2c/cooler) for dumping the contacts from the existing .mcool-files and/or creating the new .mcool-files
 3) the generation of the database (this is a main file required for SV simulation) based on Hi-C map with 600 million contacts requires around 48-60Gb RAM and ~9 hours
 4) the simulation of rearrangement for *one chromosome pair* using a pre-computed database requires around 6-36Gb RAM and 1-2 hours
+
+## Installation
+
+git clone https://github.com/genomech/Charm.git
+cd <myCharmDir>
+conda install -n <myCondaEnvName> -c conda-forge -c bioconda -c hcc --file requirements.txt
+
 ## Test dataset run
 for juicertools-based .hic inputs and outputs:
 ```

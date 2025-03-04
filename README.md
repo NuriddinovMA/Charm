@@ -344,3 +344,9 @@ python charm.py [-i ini_file] [-S stage] [-g global] [-p preprocessing] [-v svs]
 * [global],[preprocessing],[svs],[liftover],[wild_type],[hic]: optional, use to give the model parametrs from the command line, without changing of ini-file; the name of parameter see in correspondent section of ini-file;
   the syntax: "parameter_name1=value1 parameter_name2=value2 ..." 
 
+## Typical errors
+* The most typical error is a "juicertools dump error" raised during preprocessing step. If you face this, we recommend:
+	- Check the correspondense of chromosome names in the chromosome sizes file and the .hic-file: "chr1" and "1" are the different names.
+	- Check the path to the hic-file, juicertools .jar-file or java specificed in the .ini-file. 
+	- In some cases, command "java" (path to java) could be not default in you system; try specifice the "path_to_java_dir" parameter in the .ini-file . 
+* The Charm is sencitive to the names of parameters and values. Many python derived errors (like "OSError: file not found") could be caused by typos in .ini-file. Be carefull. if you use command-line options to specifize the paramters.

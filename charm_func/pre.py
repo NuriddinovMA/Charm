@@ -76,7 +76,17 @@ def preprocessing(sim_name, chrom_sizes, resolution, resolution_low, resolution_
 									raise OSError('''\n!!!Juicertools dump error: check path to Java, juicertools, hic-file or
 	 									\nthe correspondence of given chromosome names to hic-file!!!''')
 						else:
-							cf.create_contacts_from_cool(path_to_hic_map, file_name, resolution, l2i[i], l2i[j], gf.boolean(normalization))
+							if path_to_hic_map[-3:] == 'hic':
+								command = "juicer_tools dump observed %s %s %s %s BP %i %s"
+								gf.printlog(command % (normalization, path_to_hic_map, l2i[i],l2i[j],resolution, file_name) , log_file)
+								control = os.system(command % ( normalization, path_to_hic_map, l2i[i],l2i[j],resolution, file_name) )
+								if control != 0:
+									gf.printlog('''\n!!!Juicertools dump error: check path to Java, juicertools, hic-file or
+	 									\nthe correspondence of given chromosome names to hic-file!!!''', log_file)
+									raise OSError('''\n!!!Juicertools dump error: check path to Java, juicertools, hic-file or
+	 									\nthe correspondence of given chromosome names to hic-file!!!''')
+							else: 
+								cf.create_contacts_from_cool(path_to_hic_map, file_name, resolution, l2i[i], l2i[j], gf.boolean(normalization))
 							
 				elp = timeit.default_timer() - start_time
 				gf.printlog('\t\t...end dumping %.2fs' % elp, log_file)

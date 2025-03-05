@@ -29,20 +29,16 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	l2i = gf.ChromIndexing(chrom_sizes)
 	c2s = gf.ChromSizes(chrom_sizes,1)
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
-	chrom_pairs = []
 	
-	if chosen_chroms == 'all' or chosen_chroms == False: 
-		chosen_chroms = sorted(c2s.keys())
-		for i in chosen_chroms:
-			for j in chosen_chroms: chrom_pairs.append((i,j))
-	else: 
+	if chosen_chroms != 'all':
+		chrom_pairs = []
 		chosen_chroms = chosen_chroms.split(';')
 		for chroms in chosen_chroms:
 			chrom_list = chroms.split(',')
 			for i in chrom_list:
 				for j in chrom_list: chrom_pairs.append((i,j))
+	else: chrom_pairs = False
 	
-	print(chrom_pairs)
 	svs_contacts = gf.boolean(svs_contacts)
 	wt1_contacts = gf.boolean(wt1_contacts)
 	wt2_contacts = gf.boolean(wt2_contacts)
@@ -66,14 +62,16 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	if format == 'juicer':
 		F = '%s/%s.pre' % ( out_dir, sim_name )
 		O = '%s/%s.hic' % ( out_dir, sim_name )
-		if path_to_java_dir: command = "%s/java -jar %s pre " % (path_to_java_dir,path_to_juicertools)
-		else: command = "java -jar %s pre " % (path_to_juicertools)
+		if path_to_juicertools:
+			if path_to_java_dir: command = "%s/java -jar %s pre " % (path_to_java_dir,path_to_juicertools)
+			else: command = "java -jar %s pre " % (path_to_juicertools)
+		else: command = "juicer_tools pre "
 		params = "%s %s %s" % (F,O,chrom_sizes)
 		if hic_resolutions: resolution_list = ' -r %s' % hic_resolutions
 		else: resolution_list= ''
 		gf.printlog('\t\texecuted command: %s %s %s ' %( command, params, resolution_list),log_file)
 		control = os.system( command + params + resolution_list)
-		if control != 0: raise OSError('Java or juicertools or pre-file absent!')
+		if control != 0: raise OSError('Java or juicertools absent!')
 		try: os.remove(F + '.gz')
 		except FileNotFoundError: pass
 		with open(F , 'rb') as f_in:

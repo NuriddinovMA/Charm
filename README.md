@@ -30,7 +30,9 @@ If you use Charm in your work, please cite
 ## Installation
 
 git clone https://github.com/genomech/Charm.git
+
 cd <myCharmDir>
+
 conda install -n <myCondaEnvName> -c conda-forge -c bioconda -c hcc --file requirements.txt
 
 ## Test dataset run

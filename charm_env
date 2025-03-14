@@ -1,0 +1,8 @@
+name: charm_env
+dependencies:
+  - python=3.9
+  - pip
+  - numpy
+  - pandas
+  - pip:
+      - -r requirements.txt

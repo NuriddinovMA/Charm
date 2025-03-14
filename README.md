@@ -31,7 +31,7 @@ If you use Charm in your work, please cite
 ```
 git clone https://github.com/genomech/Charm.git
 cd Charm
-conda install -n charm-env -c conda-forge -c bioconda -c hcc --file requirements.txt
+conda create -n charm-env -c conda-forge -c bioconda -c hcc --file requirements.txt
 ```
 
 ## Test dataset run

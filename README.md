@@ -28,17 +28,16 @@ If you use Charm in your work, please cite
 4) the simulation of rearrangement for *one chromosome pair* using a pre-computed database requires around 6-36Gb RAM and 1-2 hours
 
 ## Installation
-
+```
 git clone https://github.com/genomech/Charm.git
-
-cd \<myCharmDir\>
-
-conda install -n \<myCondaEnvName\> -c conda-forge -c bioconda -c hcc --file requirements.txt
+cd <myCharmDir>
+conda install -n <myCondaEnvName> -c conda-forge -c bioconda -c hcc --file requirements.txt
+```
 
 ## Test dataset run
 Activate conda enviroments for runninf Charm:
 ```
-conda activate \<myCondaEnvName\>
+conda activate <myCondaEnvName>
 ```
 for juicertools-based .hic inputs and outputs:
 ```

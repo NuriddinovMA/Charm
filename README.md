@@ -36,7 +36,7 @@ cd \<myCharmDir\>
 conda install -n \<myCondaEnvName\> -c conda-forge -c bioconda -c hcc --file requirements.txt
 
 ## Test dataset run
-Activate conda enviroments for runninf Charm^
+Activate conda enviroments for runninf Charm:
 ```
 conda activate \<myCondaEnvName\>
 ```

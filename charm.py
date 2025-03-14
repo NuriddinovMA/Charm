@@ -532,8 +532,6 @@ if __name__ == "__main__":
 	if 'lift' in skip_stages:
 		try: config['hic']['svs_contacts']
 		except KeyError: config['hic']['svs_contacts'] = sim_dir
-		try: config['hic']['chrom_sizes']
-		except KeyError: config['hic']['chrom_sizes'] = chrom_sizes_to
 	else:
 		config['liftover']['contact_dir'] = sim_dir
 		config['liftover']['distance_file'] = distance_file

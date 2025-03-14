@@ -30,7 +30,7 @@ def hic_generate(svs_contacts,wt1_contacts,wt2_contacts,
 	c2s = gf.ChromSizes(chrom_sizes,1)
 	#if capture: capture = capture[0],int(capture[1]),int(capture[2])
 	
-	if chosen_chroms != 'all':
+	if chosen_chroms != 'all' and chosen_chroms != False:
 		chrom_pairs = []
 		chosen_chroms = chosen_chroms.split(';')
 		for chroms in chosen_chroms:

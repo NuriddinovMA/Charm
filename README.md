@@ -36,6 +36,10 @@ cd \<myCharmDir\>
 conda install -n \<myCondaEnvName\> -c conda-forge -c bioconda -c hcc --file requirements.txt
 
 ## Test dataset run
+Activate conda enviroments for runninf Charm^
+```
+conda activate \<myCondaEnvName\>
+```
 for juicertools-based .hic inputs and outputs:
 ```
 python3 charm.py -i testdataset/EXAMPLE.ini

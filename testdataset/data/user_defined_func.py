@@ -46,7 +46,7 @@ def user_coverage_statistic_example(path_to_contact_dump, resolution):
 	bins = sorted(coverage_Hash.keys())
 	M = []
 	for i in range(len(bins)):
-		for j in range(i,len(bins)): M.append( coverage_Hash[bins[i]] + coverage_Hash[bins[j]] ))
+		for j in range(i,len(bins)): M.append( coverage_Hash[bins[i]] + coverage_Hash[bins[j]] )
 	M = np.array(M)
 	binCoverageStatistic['mean_log_sum'] = np.mean(np.log2(M))
 	return binCoverageStatistic
@@ -82,10 +82,10 @@ def user_distance_dependent_statistic_example(path_to_contact_dump, resolution):
 	########################
 	#Next block calculate statistics, you can change it as wish
 	########################
-	for distance_in_bins in distance_Hash: distanceDependentStatistics[distance_in_bins] = [np.mean(np.log2(H[l]))]
+	for distance_in_bins in distance_Hash: distanceDependentStatistics[distance_in_bins] = [np.mean(np.log2(distance_Hash[distance_in_bins]))]
 	return distanceDependentStatistics
 
-def user_predict_example(covarege_bin1,covarege_bin1,distance_dependent_statistics, cont_AB, oe_AB):
+def user_predict_example(covarege_bin1, covarege_bin2, cont_AB, oe_AB, distance, distance_dependent_statistics, total_contact_statistics):
 	##################
 	#There is the function to predict contact count instead 0 values ("predict_null_contacts" parametr)
 	#covarege_bin1 and covarege_bin1 - the coverages of contacting bins
@@ -98,7 +98,7 @@ def user_predict_example(covarege_bin1,covarege_bin1,distance_dependent_statisti
 	predicted_contact = distance_dependent_statistics['mean']*predicted_contact_oe  #predicted contact count
 	return predicted_contact, predicted_contact_oe
 
-def user_pick_contact_example(coverage_bin1_array,coverage_bin2_array,mean_contact_distance_array):
+def user_pick_contact_example(coverage_bin1_array, coverage_bin2_array, mean_contact_distance_array, **kwargs):
 	##################
 	#There is the function to distribute contact from low resolution to high. 
 	#This function calculate "probability coefficient" to pick given bin pair (in high resolution), in order to put contacts from low resolution

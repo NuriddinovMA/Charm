@@ -6,16 +6,15 @@ Charm is a Python-based tool to simulate Hi-C-maps with user-defined chromosomal
 If you use Charm in your work, please cite
 
 ```bibtex
-@article{Nuriddinov2023Nov,
+@article{Nuriddinov2025,
 	author = {Nuriddinov, M. A. and Belokopytova, P. S. and Fishman, V. S.},
 	title = {{Charm is a flexible pipeline to simulate chromosomal rearrangements on Hi-C-like data}},
-	journal = {bioRxiv},
-	pages = {2023.11.22.568374},
-	year = {2023},
-	month = nov,
-	publisher = {Cold Spring Harbor Laboratory},
-	eprint = {2023.11.22.568374},
-	url = {https://doi.org/10.1101/2023.11.22.568374}
+	journal = {NAR Genomics & Bioinformatics},
+	pages = {lqaf081},
+	year = {2025},
+	month = june,
+	publisher = {Oxford Academic},
+	url = {https://academic.oup.com/nargab/article/7/2/lqaf081/8169141}
 }
 ```
 
